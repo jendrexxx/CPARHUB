@@ -1,5 +1,8 @@
 <?php
 
+use App\Livewire\Admin\AdminDashboard;
+use App\Livewire\User\Cpar\CparRequestForm;
+use App\Livewire\User\UserDashboard;
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
 
@@ -19,4 +22,13 @@ Route::middleware(['auth'])->group(function () {
     Volt::route('settings/appearance', 'settings.appearance')->name('settings.appearance');
 });
 
-require __DIR__.'/auth.php';
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('user_dashboard', UserDashboard::class)->name('user_dashboard');
+    Route::get('cpar_request_form', CparRequestForm::class)->name('cpar_request_form');
+});
+
+Route::middleware(['auth', 'verified', 'role:SUPER-ADMIN'])->group(function () {
+    Route::get('admin_dashboard', AdminDashboard::class)->name('admin_dashboard');
+});
+
+require __DIR__ . '/auth.php';

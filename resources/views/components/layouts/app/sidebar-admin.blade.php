@@ -6,16 +6,19 @@
 </head>
 
 <body class="min-h-screen bg-white dark:bg-zinc-800">
-    <flux:sidebar sticky stashable class="border-r border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900">
+    <flux:sidebar sticky stashable class="border-e border-zinc-200 dark:border-zinc-700 bg-red-800 text-white [&_*]:text-white">
         <flux:sidebar.toggle class="lg:hidden" icon="x-mark" />
 
         <a href="{{ route('dashboard') }}" class="mr-5 flex items-center space-x-2" wire:navigate>
             <x-app-logo class="size-8" href="#"></x-app-logo>
         </a>
 
-        <flux:navlist variant="outline">
+        <flux:navlist
+            variant="outline"
+            class="!border-red-600 !ring-red-600 !text-white [&_*]:!text-white [&_*]:!bg-red-800">
             <flux:navlist.group heading="Platform" class="grid">
-                <flux:navlist.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>Dashboard</flux:navlist.item>
+                <flux:navlist.item icon="home" :href="route('user_dashboard')" :current="request()->routeIs('user_dashboard')" wire:navigate>User Dashboard</flux:navlist.item>
+                <flux:navlist.item icon="home" :href="route('admin_dashboard')" :current="request()->routeIs('admin_dashboard')" wire:navigate>Admin Dashboard</flux:navlist.item>
                 <flux:navlist.item icon="users" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>User Management</flux:navlist.item>
                 <flux:navlist.item icon="clipboard-document-list" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>CPAR Reports</flux:navlist.item>
             </flux:navlist.group>
@@ -34,14 +37,14 @@
         </flux:navlist>
 
         <!-- Desktop User Menu -->
-        <flux:dropdown position="bottom" align="start">
+        <flux:dropdown class="hidden lg:block !text-white[&_*]:!text-white [&_*]:!bg-red-800" position="bottom" align="start">
             <flux:profile
                 :name="auth()->user()->name"
                 :initials="auth()->user()->initials()"
                 icon-trailing="chevrons-up-down" />
 
             <flux:menu class="w-[220px]">
-                <flux:menu.radio.group>
+                <flux:menu.radio.group class="!text-white[&_*]:!text-white [&_*]:!bg-red-800">
                     <div class="p-0 text-sm font-normal">
                         <div class="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                             <span class="relative flex h-8 w-8 shrink-0 overflow-hidden rounded-lg">
