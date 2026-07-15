@@ -19,22 +19,13 @@
             <flux:navlist.group heading="Platform" class="grid">
                 <flux:navlist.item icon="home" :href="route('user_dashboard')" :current="request()->routeIs('user_dashboard')" wire:navigate>User Dashboard</flux:navlist.item>
                 <flux:navlist.item icon="home" :href="route('admin_dashboard')" :current="request()->routeIs('admin_dashboard')" wire:navigate>Admin Dashboard</flux:navlist.item>
-                <flux:navlist.item icon="users" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>User Management</flux:navlist.item>
                 <flux:navlist.item icon="clipboard-document-list" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>CPAR Reports</flux:navlist.item>
+                <flux:navlist.item icon="clipboard-document-list" :href="route('employees')" :current="request()->routeIs('employees')" wire:navigate> Employees</flux:navlist.item>
+                <flux:navlist.item icon="cog-6-tooth" :href="route('system_setup')" :current="request()->routeIs('system_setup')" wire:navigate>System Setup</flux:navlist.item>
             </flux:navlist.group>
         </flux:navlist>
 
         <flux:spacer />
-
-        <flux:navlist variant="outline">
-            <flux:navlist.item icon="folder-git-2" href="https://github.com/laravel/livewire-starter-kit" target="_blank">
-                Repository
-            </flux:navlist.item>
-
-            <flux:navlist.item icon="book-open-text" href="https://laravel.com/docs/starter-kits" target="_blank">
-                Documentation
-            </flux:navlist.item>
-        </flux:navlist>
 
         <!-- Desktop User Menu -->
         <flux:dropdown class="hidden lg:block !text-white[&_*]:!text-white [&_*]:!bg-red-800" position="bottom" align="start">

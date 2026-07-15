@@ -1,5 +1,5 @@
 @php
-$isAdminView = request()->routeIs('admin_dashboard');
+$isAdminView = request()->routeIs('admin_dashboard') || request()->routeIs('user_management') || request()->routeIs('employees') || request()->routeIs('system_setup');
 @endphp
 
 @if($isAdminView)

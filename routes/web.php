@@ -1,10 +1,15 @@
 <?php
 
 use App\Livewire\Admin\AdminDashboard;
+use App\Livewire\Admin\Employees;
+use App\Livewire\System\Modal\CreateUser;
+use App\Livewire\System\Setup;
 use App\Livewire\User\Cpar\CparRequestForm;
 use App\Livewire\User\UserDashboard;
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
+use App\Livewire\System\UserCreate;
+use App\Livewire\System\Users;
 
 Route::get('/', function () {
     return view('welcome');
@@ -16,7 +21,6 @@ Route::view('dashboard', 'dashboard')
 
 Route::middleware(['auth'])->group(function () {
     Route::redirect('settings', 'settings/profile');
-
     Volt::route('settings/profile', 'settings.profile')->name('settings.profile');
     Volt::route('settings/password', 'settings.password')->name('settings.password');
     Volt::route('settings/appearance', 'settings.appearance')->name('settings.appearance');
@@ -29,6 +33,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 Route::middleware(['auth', 'verified', 'role:SUPER-ADMIN'])->group(function () {
     Route::get('admin_dashboard', AdminDashboard::class)->name('admin_dashboard');
+    Route::get('system_setup', Setup::class)->name('system_setup');
+    Route::get('employees', Employees::class)->name('employees');
+    Route::get('/users', Users::class)
+        ->name('users');
 });
 
 require __DIR__ . '/auth.php';
