@@ -36,6 +36,13 @@ class User extends Authenticatable // implements MustVerifyEmail
         'remember_token',
     ];
 
+public function isAdminSide(): bool
+{
+    return $this->hasAnyRole([
+        'SUPER-ADMIN',
+    ]);
+}
+
     /**
      * Get the attributes that should be cast.
      *
@@ -49,6 +56,11 @@ class User extends Authenticatable // implements MustVerifyEmail
         ];
     }
 
+    public function employee()
+    {
+        return $this->hasOne(Employee::class, 'email', 'email');
+    }
+
     /**
      * Get the user's initials
      */
@@ -56,7 +68,7 @@ class User extends Authenticatable // implements MustVerifyEmail
     {
         return Str::of($this->name)
             ->explode(' ')
-            ->map(fn (string $name) => Str::of($name)->substr(0, 1))
+            ->map(fn(string $name) => Str::of($name)->substr(0, 1))
             ->implode('');
     }
 }

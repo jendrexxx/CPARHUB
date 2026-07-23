@@ -1,3 +1,4 @@
+<div>
 <flux:modal name="role-modal" class="w-full max-w-lg">
 
     <form wire:submit="save">
@@ -51,3 +52,4 @@
     </form>
 
 </flux:modal>
+</div>

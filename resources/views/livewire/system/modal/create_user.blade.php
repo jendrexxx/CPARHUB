@@ -1,8 +1,7 @@
 <div>
-
     <flux:modal name="user-create" class="w-full max-w-4xl">
 
-        <form wire:submit="save">
+        <form wire:key="user-form-{{ $user_id ?: 'new' }}" wire:submit="save">
 
             {{-- Header --}}
             <flux:heading size="lg">
@@ -12,10 +11,8 @@
             <flux:text class="mt-1 text-gray-600">
                 {{ $user_id ? 'Update user information.' : 'Enter the user details below.' }}
             </flux:text>
-
             {{-- Form --}}
             <div class="grid grid-cols-2 gap-4 mt-6">
-
                 <flux:input
                     label="Employee No"
                     wire:model="employee_no" />
@@ -35,23 +32,23 @@
 
                 @if(!$user_id)
 
-                    <flux:input
-                        label="Password"
-                        type="password"
-                        wire:model="password" />
+                <flux:input
+                    label="Password"
+                    type="password"
+                    wire:model="password" />
 
-                    <flux:input
-                        label="Confirm Password"
-                        type="password"
-                        wire:model="confirm_password" />
+                <flux:input
+                    label="Confirm Password"
+                    type="password"
+                    wire:model="confirm_password" />
 
                 @else
 
-                    <flux:input
-                        label="New Password"
-                        type="password"
-                        wire:model="password"
-                        class="col-span-2" />
+                <flux:input
+                    label="New Password"
+                    type="password"
+                    wire:model="password"
+                    class="col-span-2" />
 
                 @endif
 
@@ -63,9 +60,9 @@
 
                     @foreach($department_list as $department)
 
-                        <option value="{{ $department }}">
-                            {{ $department }}
-                        </option>
+                    <option value="{{ $department }}">
+                        {{ $department }}
+                    </option>
 
                     @endforeach
 
@@ -79,9 +76,9 @@
 
                     @foreach($branch_list as $branch)
 
-                        <option value="{{ $branch }}">
-                            {{ $branch }}
-                        </option>
+                    <option value="{{ $branch }}">
+                        {{ $branch }}
+                    </option>
 
                     @endforeach
 
@@ -95,9 +92,9 @@
 
                     @foreach($roles as $role)
 
-                        <option value="{{ $role }}">
-                            {{ $role }}
-                        </option>
+                    <option value="{{ $role }}">
+                        {{ $role }}
+                    </option>
 
                     @endforeach
 
@@ -106,7 +103,6 @@
                 <flux:select
                     label="Status"
                     wire:model="status">
-
                     <option value="Active">Active</option>
                     <option value="Inactive">Inactive</option>
 
@@ -139,5 +135,4 @@
         </form>
 
     </flux:modal>
-
 </div>

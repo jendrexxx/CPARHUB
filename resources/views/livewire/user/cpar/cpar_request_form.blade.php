@@ -11,121 +11,126 @@
             </flux:text>
         </div>
 
-        <form class="space-y-6">
+        <form wire:submit.prevent="save" class="space-y-6">
 
             {{-- CPAR No & Date --}}
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 
                 <flux:input
                     label="CPAR No."
-                    value="CPAR-2025-001"
-                    readonly />
-
+                    wire:model="cpar_no"
+                    readonly
+                    class="opacity-60 cursor-not-allowed bg-zinc-100 dark:bg-zinc-800" />
                 <flux:input
                     label="Date Opened"
-                    type="date" />
-
+                    wire:model="date_opened"
+                    type="text"
+                    readonly
+                    class="opacity-60 cursor-not-allowed bg-zinc-100 dark:bg-zinc-800" />
             </div>
 
             {{-- Source Origin --}}
-            <flux:select label="Source Origin">
-
-                <option value="">Select Source</option>
-                <option>Internal Audit</option>
-                <option>Customer Complaint</option>
-                <option>Management Review</option>
-                <option>Employee Suggestion</option>
-
+            <flux:select wire:model="source_origin_id" label="Source Origin">
+                <option>Select Source</option>
+                @foreach ($source_origin as $origin)
+                <option value="{{ $origin->id }}">
+                    {{ $origin->source_name }}
+                </option>
+                @endforeach
             </flux:select>
 
             {{-- Reported By --}}
             <flux:input
                 label="Reported By"
-                placeholder="Juan Dela Cruz" />
+                wire:model="reported_by"
+                placeholder="Juan Dela Cruz"
+                readonly
+                class="opacity-60 cursor-not-allowed bg-zinc-100 dark:bg-zinc-800" />
 
             {{-- Complainant --}}
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-
                 <flux:select
-                    id="category"
+                    wire:model.live="complain_category_id"
                     label="Complainant Category">
-
                     <option value="">Select</option>
-                    <option>Employee</option>
-                    <option>Customer</option>
-                    <option>Supplier</option>
-                    <option>Others</option>
-
+                    @foreach ($cpar_complain as $category)
+                    <option value="{{ $category->id }}">
+                        {{ $category->complain_name }}
+                    </option>
+                    @endforeach
                 </flux:select>
 
                 <flux:input
-                    id="complainant"
-                    label="Complainant Name" />
-
+                    wire:model="complain_name" value="{{ $complain_name }}"
+                    label="Complainant Name" :readonly="$complain_name_disabled" />
             </div>
 
             {{-- Concern Description --}}
             <flux:textarea
                 label="Concern Description"
+                wire:model="concern_description"
                 rows="5" />
 
             {{-- Attachment --}}
-            <div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <flux:field>
+                        <flux:label>Attachment</flux:label>
+                        <input
+                            wire:key="attachment-input"
+                            type="file"
+                            wire:model="attachment"
+                            class="block w-full text-sm text-zinc-900 dark:text-zinc-100
+                       border border-zinc-300 dark:border-zinc-700 rounded-lg
+                       cursor-pointer bg-zinc-50 dark:bg-zinc-800
+                       focus:outline-none file:mr-4 file:py-2 file:px-4
+                       file:rounded-lg file:border-0 file:bg-zinc-200
+                       dark:file:bg-zinc-700 file:text-sm file:font-medium
+                       hover:file:bg-zinc-300 dark:hover:file:bg-zinc-600" />
+                        <flux:error name="attachment" />
+                    </flux:field>
+                </div>
 
-                <flux:label>Attachment</flux:label>
-
-                <input
-                    type="file"
-                    class="mt-2 block w-full rounded-lg border border-zinc-300 dark:border-zinc-700">
-
-                <flux:text size="sm" class="mt-2">
-                    Allowed files: JPG, PNG, PDF, DOC, DOCX
-                </flux:text>
-
+                {{-- Concern Category --}}
+                <flux:select
+                    wire:model.live="concern_category_id"
+                    label="Concern Category">
+                    <option value="">Select</option>
+                    @foreach ($cpar_concern as $concern)
+                    <option value="{{ $concern->id }}">
+                        {{ $concern->concern_name }}
+                    </option>
+                    @endforeach
+                </flux:select>
             </div>
-
-            {{-- Concern Category --}}
-            <flux:select label="Concern Category">
-
-                <option value="">Select</option>
-                <option>Process</option>
-                <option>Quality</option>
-                <option>Compliance</option>
-                <option>Safety</option>
-
-            </flux:select>
 
             {{-- Assigned To --}}
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-
-                <flux:select label="Assigned To">
-
+                <flux:select
+                    wire:model.live="assigned_to"
+                    label="Assigned To">
                     <option value="">Select Employee</option>
-                    <option>John Doe</option>
-                    <option>Jane Smith</option>
-
+                    @foreach ($employees as $employee)
+                    <option value="{{ $employee->id }}">
+                        {{ strtoupper($employee->first_name . ' ' . $employee->last_name) }}
+                    </option>
+                    @endforeach
                 </flux:select>
 
                 <flux:input
-                    label="Department"
-                    value="Quality Assurance"
+                    wire:model="department_name"
+                    label="Department Name" value="{{ $department_name }}"
                     readonly />
-
             </div>
 
-            <div class="flex justify-end">
-
+            <div class="flex justify-end gap-3">
                 <flux:button
                     type="submit"
                     variant="primary">
-
                     Submit Request
-
                 </flux:button>
 
             </div>
-
         </form>
-
     </flux>
 </div>

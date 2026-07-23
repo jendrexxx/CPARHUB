@@ -27,10 +27,9 @@
 
             {{-- Refresh --}}
             <flux:tooltip content="Refresh data">
-
                 <flux:button
                     variant="outline"
-                    wire:click="refresh"
+                    wire:click="$dispatch('refresh')"
                     wire:loading.attr="disabled">
 
                     <svg
@@ -72,7 +71,6 @@
                     </svg>
 
                 </flux:button>
-
             </flux:tooltip>
 
             {{-- Columns --}}
@@ -147,7 +145,7 @@
 
                 @forelse($records as $record)
 
-                <tr>
+                <tr wire:key="user-row-{{ $record->id }}">
 
                     @foreach($columns as $field => $label)
 
@@ -249,7 +247,9 @@
 
     <div class="mt-4">
 
-        {{ $records->links() }}
+        <div wire:key="pagination-{{ $model }}">
+            {{ $records->links() }}
+        </div>
 
     </div>
 

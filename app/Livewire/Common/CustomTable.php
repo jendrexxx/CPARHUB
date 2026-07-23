@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Livewire\Component;
 use Livewire\WithPagination;
+use Livewire\Attributes\On;
 
 class CustomTable extends Component
 {
@@ -75,6 +76,44 @@ class CustomTable extends Component
 
         $this->resetPage();
         $this->dispatch('$refresh');
+    }
+
+    #[On('refresh')]
+    public function refreshUsers() 
+    {  
+        $this->loading = true;
+        try {
+            $response = Http::timeout(5)->withHeaders([
+                'X-API-KEY1' => env('API_KEY1'),
+                'X-API-KEY2' => env('API_KEY2'),
+            ])->get('http://127.0.0.1:8000/api/api_testing_user');
+            if ($response->successful()) {
+                $data = $response->json();
+                $user = $data['data'];
+                foreach ($user as $emp) {
+                    User::updateOrCreate(
+                        ['name' => $emp['name'] ?? null],
+                        [
+                            'username' => $emp['username'] ?? null,
+                            'email' => $emp['email'] ?? null,
+                            'password' => $emp['password'] ?? null,
+                            'created_at' => $emp['created_at'] ?? null,
+                            'updated_at' => $emp['updated_at'] ?? null,
+                        ]
+                    );
+                }
+                $this->message = '✅ User synced successfully from API.';
+                $this->error = null;
+            } else {
+                $this->error = '⚠️ API not available, loaded user from database.';
+                $this->message = null;
+            }
+        } catch (\Exception $e) {
+            Log::error('user API error: ' . $e->getMessage());
+            $this->error = '❌ API not reachable. Loaded user from database.';
+            $this->message = null;
+        }
+        $this->loading = false;
     }
 
     public function fetchUser()
@@ -190,7 +229,7 @@ class CustomTable extends Component
 
     public function editRole($id)
     {
-         $this->dispatch('role-record', id: $id);
+         $this->dispatch('edit-role', id: $id);
     }
 
     public function render()

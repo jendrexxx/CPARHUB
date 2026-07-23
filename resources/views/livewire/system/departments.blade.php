@@ -3,9 +3,8 @@
         :model="'App\Models\Department'"
         refreshEvent="refreshDepartments"
         :columns="[
-            'id' => 'id',
+            'id' => '#',
             'department_name' => 'Department Name',
-            'status' => 'Status',
         ]"
         :searchable="[
             'id',

@@ -15,7 +15,7 @@ return new class extends Migration
             $table->increments('id');
             $table->string('branch_name');
             $table->string('branch_alias');
-            $table->string('status');
+            $table->boolean('active')->default(true);
             $table->timestamps();
         });
     }

@@ -15,7 +15,7 @@ class Role extends Component
     public $selectedPermissions = [];
 
     protected $listeners = [
-        'role-record' => 'edit',
+        'edit-role' => 'editRole',
         'open-modal' => 'createRole',
         'refreshRoles' => 'refreshRoleTable',
     ];
@@ -25,24 +25,24 @@ class Role extends Component
         $this->permissions = Permission::orderBy('name')->get();
     }
 
-    public function createRole()
-    {
-        $this->resetForm();
-        $this->modal('role-modal')->show();
-    }
+public function createRole()
+{
+    $this->resetForm();
+    $this->modal('role-modal')->show();
+}
 
-    public function edit($id)
+    public function editRole($id)
     {
         $role = RoleModel::findOrFail($id);
+
         $this->role_id = $role->id;
         $this->name = $role->name;
-        // Existing permissions
+
         $this->selectedPermissions = $role->permissions
             ->pluck('name')
             ->toArray();
+
         $this->modal('role-modal')->show();
-        // or
-        // $this->dispatch('open-modal', name: 'role-modal');
     }
 
     public function save()

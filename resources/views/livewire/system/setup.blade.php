@@ -17,7 +17,6 @@
         </div>
 
         <div class="col-span-10">
-
             @if($tab == 'users')
                 @include('livewire.system.users')
             @elseif($tab == 'permissions')

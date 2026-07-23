@@ -5,7 +5,7 @@
         addRoute="role-create"
         addLabel="Role"
         :columns="[
-            'id' => 'ID',
+            'id' => '#',
             'name' => 'Role',
             'actions' => 'Action',
         ]"

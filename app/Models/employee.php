@@ -28,4 +28,14 @@ class employee extends Model
         'created_at',
         'updated_at'
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'email', 'email');
+    }
+
+    public function branch()
+    {
+        return $this->belongsTo(branch::class, 'branch_id', 'id');
+    }
 }

@@ -19,9 +19,23 @@
             <flux:navlist.group heading="Platform" class="grid">
                 <flux:navlist.item icon="home" :href="route('user_dashboard')" :current="request()->routeIs('user_dashboard')" wire:navigate>User Dashboard</flux:navlist.item>
                 <flux:navlist.item icon="document" :href="route('admin_dashboard')" :current="request()->routeIs('admin_dashboard')" wire:navigate>Admin Dashboard</flux:navlist.item>
-                <flux:navlist.item icon="document" :href="route('cpar_request_form')" :current="request()->routeIs('cpar_request_form')" wire:navigate>CPAR Request Form</flux:navlist.item>
+                <flux:navlist.item
+                    icon="document"
+                    :href="route('user.cpar_request_form')"
+                    :current="request()->routeIs('user.cpar_request_form')"
+                    wire:navigate>
+                    CPAR Request Form
+                </flux:navlist.item>
+                <flux:navlist.item
+                    icon="document"
+                    :href="route('user.result.result_request_form')"
+                    :current="request()->routeIs('user.result.result_request_form')"
+                    wire:navigate>
+                    Result Concern Form
+                </flux:navlist.item>
             </flux:navlist.group>
         </flux:navlist>
+
 
         <flux:spacer />
 
@@ -70,8 +84,13 @@
             </flux:menu>
         </flux:dropdown>
     </flux:header>
+
     {{ $slot }}
+
     @fluxScripts
+    @livewireScripts
 </body>
+
+</html>
 
 </html>

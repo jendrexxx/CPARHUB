@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Livewire\Admin;
+
 use App\Models\Employee;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
@@ -14,10 +15,14 @@ class Employees extends Component
     public $message = null;
     public $error = null;
 
-    public function fetchEmployees()
+    protected $listeners = [
+        'refresh' => 'refreshEmployees',
+    ];
+
+    public function refreshEmployees()
     {
         $this->loading = true;
-        
+
         try {
 
             $response = Http::timeout(5)

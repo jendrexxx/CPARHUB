@@ -2,7 +2,6 @@
     <livewire:common.custom-table
         :model="'App\Models\User'"
         refreshEvent="refreshUsers"
-        refreshMethod="fetchUser"
         addRoute="user-create"
         addLabel="User"
         :columns="[
@@ -24,7 +23,5 @@
         ]" />
 
     <livewire:system.modal.create_user />
-
     <livewire:system.modal.permission />
-
 </div>

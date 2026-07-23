@@ -6,25 +6,27 @@ use App\Livewire\System\Branches;
 use App\Models\branch;
 use App\Models\department;
 use App\Models\User;
+use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 use Livewire\Attributes\On;
 use Spatie\Permission\Models\Role;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Hash;
 
 class CreateUser extends Component
 {
-    public $name;
-    public $email;
-    public $username;
-    public $password;
+    public $name = '';
+    public $email = '';
+    public $username = '';
+    public $password = '';
     public $user_id = null;
     public $employee_no;
-    public $confirm_password;
-    public $department_name;
-    public $branch_name;
-    public $role;
+    public $confirm_password = '';
+    public $department_name = '';
+    public $branch_name = '';
+    public $role = '';
     public $status = 'Active';
-    public $userId;
+    public $userId = '';
     public $department_list = [];
     public $branch_list = [];
     public $roles = [];
@@ -103,13 +105,33 @@ class CreateUser extends Component
 
     public function editRecord($id)
     {
-        $user = User::findOrFail($id);
+        $user = User::query()
+            ->leftJoin('employees as a', 'a.email', '=', 'users.email')
+            ->leftJoin('model_has_roles as mhr', function ($join) {
+                $join->on('users.id', '=', 'mhr.model_id')
+                    ->where('mhr.model_type', User::class);
+            })
+            ->leftJoin('roles as r', 'r.id', '=', 'mhr.role_id')
+            ->select(
+                'users.*',
+                'a.employee_no',
+                'a.department_name',
+                'a.branch_name',
+                'r.name as role_name'
+            )
+            ->where('users.id', $id)
+            ->firstOrFail();
+
         $this->user_id = $user->id;
+        $this->employee_no = $user->employee_no;
         $this->name = $user->name;
         $this->email = $user->email;
         $this->username = $user->username;
         $this->status = $user->status;
-        $this->role = optional($user->roles->first())->name;
+        $this->department_name = $user->department_name;
+        $this->branch_name = $user->branch_name;
+        $this->role = $user->role_name ?? '';
+
         $this->modal('user-create')->show();
     }
 
@@ -141,9 +163,36 @@ class CreateUser extends Component
     {
         $this->validate();
         if ($this->user_id) {
+            // UPDATE USER
+            $user = User::findOrFail($this->user_id);
 
-            // Update User
+            $data = [
+                'name'     => $this->name,
+                'email'    => $this->email,
+                'username' => $this->username,
+                'status'   => $this->status,
+            ];
 
+            // update password only if entered
+            if (!empty($this->password)) {
+                $user->update([
+                    'password' => Hash::make($this->password)
+                ]);
+            }
+
+            $user->update($data);
+
+            // Update employee table
+            DB::table('employees')
+                ->where('email', $user->email)
+                ->update([
+                    'employee_no'    => $this->employee_no,
+                    'department_name' => $this->department_name,
+                    'branch_name'    => $this->branch_name,
+                ]);
+
+            // Update role
+            $user->syncRoles([$this->role]);
         } else {
             // Create User
             User::create([
