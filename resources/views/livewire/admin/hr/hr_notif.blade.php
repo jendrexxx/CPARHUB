@@ -1,5 +1,5 @@
 <div>
-    <flux:modal name="CPARModal" class="w-[120%] max-w-[1500px] mt-6 top-0 z-50">
+    <flux:modal name="CPARHRModal" class="w-[120%] max-w-[1500px] mt-6 top-0 z-50">
         <div class="space-y-6">
             <div>
                 <flux:heading size="lg">CPAR Request</flux:heading>
@@ -58,13 +58,17 @@
                                     </span>
                                     @endif
                                 </td>
+
                                 <td class="px-4 py-3 text-center">
+
                                     <flux:dropdown align="end">
+
                                         <flux:button
                                             size="sm"
                                             variant="ghost"
                                             icon="ellipsis-vertical">
                                         </flux:button>
+
                                         <flux:menu>
                                             {{-- View Details --}}
                                             <flux:menu.item
@@ -72,8 +76,18 @@
                                                 wire:click="viewDetails({{ $request->id }})">
                                                 View Details
                                             </flux:menu.item>
+
+                                            {{-- Re-Assign --}}
+                                            @if($request->status_name == 'ASSIGNED')
+                                            <flux:menu.item
+                                                icon="arrow-path"
+                                                wire:click="UpdateAssign({{ $request->id }})">
+                                                Re-Assign
+                                            </flux:menu.item>
+                                            @endif
                                         </flux:menu>
                                     </flux:dropdown>
+
                                 </td>
                             </tr>
                             @empty

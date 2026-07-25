@@ -10,7 +10,6 @@
         </flux:text>
 
         <div class="mt-6">
-
             <flux:select
                 label="Role"
                 wire:model="role">
@@ -21,7 +20,6 @@
                 </option>
                 @endforeach
             </flux:select>
-
         </div>
         <div class="grid grid-cols-2 gap-3 mt-3">
 
@@ -57,9 +55,7 @@
             <flux:button
                 variant="primary"
                 wire:click="savePermission">
-
                 Save
-
             </flux:button>
 
         </div>

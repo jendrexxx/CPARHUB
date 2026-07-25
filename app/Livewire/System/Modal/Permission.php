@@ -13,6 +13,7 @@ class Permission extends Component
     public $role;
     public $roles = [];
     public $permission = [];
+    public $selectedPermissions = [];
 
     protected $listeners = [
         'permission-record' => 'open',
@@ -30,6 +31,9 @@ class Permission extends Component
         $this->userId = $id;
         $user = User::findOrFail($id);
         $this->role = optional($user->roles->first())->name;
+        $this->selectedPermissions = $user->permissions
+            ->pluck('name')
+            ->toArray();
         $this->modal('user-permission')->show();
     }
 
@@ -38,18 +42,24 @@ class Permission extends Component
         $this->validate([
             'role' => 'required',
         ]);
-        $user = User::findOrFail($this->user_id);
-        // remove old role
+        $user = User::findOrFail($this->userId);
+        // assign role to user
         $user->syncRoles([
             $this->role
         ]);
-        $this->dispatch('close-modal', name: 'user-permission');
-        $this->dispatch('toast',
+        // optional:
+        // direct permissions sa user
+        $user->syncPermissions(
+            $this->selectedPermissions
+        );
+        $this->dispatch('modal-close', name: 'user-permission');
+        $this->dispatch(
+            'toast',
             type: 'success',
             message: 'Permission updated successfully.'
         );
-
         $this->dispatch('refreshUsers');
+
     }
 
     public function render()

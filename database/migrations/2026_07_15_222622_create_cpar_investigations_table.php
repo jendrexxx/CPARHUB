@@ -16,11 +16,11 @@ return new class extends Migration
             $table->integer('cpar_id');
             $table->longText('identified_cause');
             $table->longText('provided_solution');
-            $table->longText('recommendation')->nullable();
+            $table->longText('recommendation');
             $table->longText('action_taken_by');
-            $table->date('date_completed')->nullable();
-            $table->integer('tat')->nullable();
-            $table->text('remarks')->nullable();
+            $table->date('date_completed');
+            $table->string('tat');
+            $table->text('remarks');
             $table->timestamps();
         });
     }

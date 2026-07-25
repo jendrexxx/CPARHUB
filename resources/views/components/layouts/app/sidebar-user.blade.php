@@ -1,10 +1,6 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="dark">
 
-<head>
-    @include('partials.head')
-</head>
-
 <body class="min-h-screen bg-white dark:bg-zinc-800">
     <flux:sidebar sticky stashable class="border-r border-zinc-200 dark:border-zinc-700 bg-red-800 text-white [&_*]:text-white">
         <flux:sidebar.toggle class="lg:hidden" icon="x-mark" />
@@ -17,15 +13,59 @@
             variant="outline"
             class="!border-red-600 !ring-red-600 !text-white [&_*]:!text-white [&_*]:!bg-red-800">
             <flux:navlist.group heading="Platform" class="grid">
-                <flux:navlist.item icon="home" :href="route('user_dashboard')" :current="request()->routeIs('user_dashboard')" wire:navigate>User Dashboard</flux:navlist.item>
-                <flux:navlist.item icon="document" :href="route('admin_dashboard')" :current="request()->routeIs('admin_dashboard')" wire:navigate>Admin Dashboard</flux:navlist.item>
+
+                @if(auth()->user()->can('View User Dashboard'))
+                <flux:navlist.item
+                    icon="home"
+                    :href="route('user_dashboard')"
+                    :current="request()->routeIs('user_dashboard')"
+                    wire:navigate>
+                    User Dashboard
+                </flux:navlist.item>
+                @endif
+
+                @if(auth()->user()->can('View Department Dashboard'))
+                <flux:navlist.item
+                    icon="home"
+                    :href="route('dept_head_dashboard')"
+                    :current="request()->routeIs('dept_head_dashboard')"
+                    wire:navigate>
+                    Dept Head Dashboard
+                </flux:navlist.item>
+                @endif
+                
+                @if(auth()->user()->can('View HR Dashboard'))
+                <flux:navlist.item
+                    icon="home"
+                    :href="route('hr_dashboard')"
+                    :current="request()->routeIs('hr_dashboard')"
+                    wire:navigate>
+                    HR Dashboard
+                </flux:navlist.item>
+                @endif
+
+                @if(auth()->user()->can('View Admin Dashboard'))
                 <flux:navlist.item
                     icon="document"
-                    :href="route('user.cpar_request_form')"
-                    :current="request()->routeIs('user.cpar_request_form')"
+                    :href="route('admin_dashboard')"
+                    :current="request()->routeIs('admin_dashboard')"
+                    wire:navigate>
+                    Admin Dashboard
+                </flux:navlist.item>
+                @endif
+
+
+                @if(auth()->user()->can('View CPAR Request Form'))
+                <flux:navlist.item
+                    icon="document"
+                    :href="route('cpar_request_form')"
+                    :current="request()->routeIs('cpar_request_form')"
                     wire:navigate>
                     CPAR Request Form
                 </flux:navlist.item>
+                @endif
+
+                @if(auth()->user()->can('View Result Concern Form'))
                 <flux:navlist.item
                     icon="document"
                     :href="route('user.result.result_request_form')"
@@ -33,6 +73,8 @@
                     wire:navigate>
                     Result Concern Form
                 </flux:navlist.item>
+                @endif
+
             </flux:navlist.group>
         </flux:navlist>
 

@@ -229,7 +229,7 @@ class CustomTable extends Component
 
     public function editRole($id)
     {
-         $this->dispatch('edit-role', id: $id);
+        $this->dispatch('edit-role', id: $id);
     }
 
     public function render()

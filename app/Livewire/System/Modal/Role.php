@@ -5,6 +5,7 @@ namespace App\Livewire\System\Modal;
 use Spatie\Permission\Models\Role as RoleModel;
 use Livewire\Component;
 use Spatie\Permission\Models\Permission;
+use Livewire\Attributes\On;
 
 class Role extends Component
 {
@@ -25,23 +26,20 @@ class Role extends Component
         $this->permissions = Permission::orderBy('name')->get();
     }
 
-public function createRole()
-{
-    $this->resetForm();
-    $this->modal('role-modal')->show();
-}
+    public function createRole()
+    {
+        $this->resetForm();
+        $this->modal('role-modal')->show();
+    }
 
     public function editRole($id)
     {
         $role = RoleModel::findOrFail($id);
-
         $this->role_id = $role->id;
         $this->name = $role->name;
-
         $this->selectedPermissions = $role->permissions
             ->pluck('name')
             ->toArray();
-
         $this->modal('role-modal')->show();
     }
 

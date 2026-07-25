@@ -80,24 +80,5 @@
                 </table>
             </div>
         </div>
-
-    </div>
-    <div>
-        <table>
-            <tbody>
-                <tr>
-                    <td class="px-4 py-3 text-center">
-                        <flux:button
-                            type="button"
-                            wire:click="viewResult"
-                            size="sm"
-                            variant="ghost"
-                            icon="eye">
-                            View
-                        </flux:button>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
     </div>
 </flux:modal>

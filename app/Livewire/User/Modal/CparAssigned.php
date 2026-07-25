@@ -2,12 +2,12 @@
 
 namespace App\Livewire\User\Modal;
 
-use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 use Illuminate\Support\Facades\Auth;
 use App\Models\employee;
+use Illuminate\Support\Facades\DB;
 
-class CparNotif extends Component
+class CparAssigned extends Component
 {
     public $cpar_requests = [];
     public $editingId = null;
@@ -35,10 +35,6 @@ class CparNotif extends Component
     {
         $this->cpar_requests = DB::table('cpar_request_forms as a')
             ->join('cpar_assignments as b', 'a.id', '=', 'b.cpar_id')
-            ->join('cpar_attachments as c', 'a.id', '=', 'c.cpar_id')
-            ->join('cpar_source_origins as d', 'a.source_id', '=', 'd.id')
-            ->join('cpar_complain_categories as e', 'a.complaint_category_id', '=', 'e.id')
-            ->join('cpar_concern_categories as f', 'a.concern_category_id', '=', 'f.id')
             ->join('departments as g', 'a.department_id', '=', 'g.id')
             ->join('cpar_statuses as h', 'b.status_id', '=', 'h.id')
             ->select(
@@ -48,9 +44,25 @@ class CparNotif extends Component
                 'a.date_open',
                 'g.department_name',
                 'h.status_name',
+                'b.assigned_to'
             )
-            ->whereIn('h.status_name', ['PENDING','ASSIGNED', 'RE-ASSIGNED'])
+            ->whereIn('h.status_name', ['ASSIGNED', 'RE-ASSIGNED'])
+            ->whereJsonContains('b.assigned_to', (int) $this->id)
+            ->distinct()
             ->get();
+
+        foreach ($this->cpar_requests as $request) {
+
+            $ids = json_decode($request->assigned_to, true) ?? [];
+
+            $request->assigned_names = Employee::whereIn('id', $ids)
+                ->where('id', $this->id)
+                ->get()
+                ->map(function ($employee) {
+                    return $employee->first_name . ' ' . $employee->last_name;
+                })
+                ->implode(', ');
+        }
     }
 
     public function viewDetails($id)
@@ -63,28 +75,8 @@ class CparNotif extends Component
         $this->dispatch('respond-CPAR', id: $id);
     }
 
-    public function saveRecord()
-    {
-        DB::table('cpar_request_forms')
-            ->where('id', $this->editingId)
-            ->update([
-                'reported_by' => $this->edit_reported_by,
-                'date_open'   => $this->edit_date_open,
-            ]);
-
-        $this->showEditModal = false;
-        $this->editingId     = null;
-        $this->loadRecords();
-    }
-
-    public function cancelEdit()
-    {
-        $this->showEditModal = false;
-        $this->editingId     = null;
-    }
-
     public function render()
     {
-        return view('livewire.user.modal.cpar_notif');
+        return view('livewire.user.modal.cpar_assigned');
     }
 }

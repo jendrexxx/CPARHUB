@@ -107,7 +107,7 @@
             {{-- Assigned To --}}
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <flux:select
-                    wire:model.live="assigned_to"
+                    wire:model.live="dept_head_assigned"
                     label="Assigned To">
                     <option value="">Select Employee</option>
                     @foreach ($employees as $employee)

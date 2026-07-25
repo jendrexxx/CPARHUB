@@ -26,25 +26,38 @@
                 </div>
                 <div>
                     <div class="text-xl font-bold text-gray-900">{{ $cpar_request_count }}</div>
-                    <div class="text-gray-700 text-sm">CPAR Request</div>
+                    <div class="text-gray-700 text-sm">Reported CPARs</div>
+                </div>
+            </div>
+        </flux:modal.trigger>
+        <flux:modal.trigger name="CPARAssignedModal">
+            <div class="flex items-center space-x-4 p-4 bg-white rounded-xl shadow-md border border-gray-200 hover:shadow-lg hover:scale-105 transition-transform duration-200">
+                <div class="w-12 h-12 bg-yellow-500 rounded-full flex items-center justify-center text-white">
+                    <flux:icon.calendar class="w-6 h-6" />
+                </div>
+                <div>
+                    <div class="text-xl font-bold text-gray-900">{{ $assigned_cpar }}</div>
+                    <div class="text-gray-700 text-sm">Assigned CPARs</div>
                 </div>
             </div>
         </flux:modal.trigger>
 
         <flux:modal.trigger name="RESULTModal">
-        <div class="flex items-center space-x-4 p-4 bg-white rounded-xl shadow-md border border-gray-200 hover:shadow-lg hover:scale-105 transition-transform duration-200">
-            <div class="w-12 h-12 bg-yellow-500 rounded-full flex items-center justify-center text-white">
-                <flux:icon.calendar class="w-6 h-6" />
+            <div class="flex items-center space-x-4 p-4 bg-white rounded-xl shadow-md border border-gray-200 hover:shadow-lg hover:scale-105 transition-transform duration-200">
+                <div class="w-12 h-12 bg-yellow-500 rounded-full flex items-center justify-center text-white">
+                    <flux:icon.calendar class="w-6 h-6" />
+                </div>
+                <div>
+                    <div class="text-xl font-bold text-gray-900">{{ $result_request_count }}</div>
+                    <div class="text-gray-700 text-sm">Result Request</div>
+                </div>
             </div>
-            <div>
-                <div class="text-xl font-bold text-gray-900">{{ $result_request_count }}</div>
-                <div class="text-gray-700 text-sm">Result Request</div>
-            </div>
-        </div>
         </flux:modal.trigger>
     </div>
     <!-- CPAR -->
     <livewire:user.modal.cpar_notif />
+    <livewire:user.modal.cpar_assigned />
+    <livewire:user.modal.cpar_respond_form />
     <livewire:user.modal.cpar_edit />
 
     <!-- RESULT -->

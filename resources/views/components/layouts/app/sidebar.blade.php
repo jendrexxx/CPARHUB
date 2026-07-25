@@ -3,7 +3,9 @@ $isAdminView = request()->routeIs([
     'admin_dashboard',
     'user_management',
     'employees',
-    'system_setup'
+    'system_setup',
+    'dept_head_dashboard',
+    'hr_dashboard'
 ]);
 @endphp
 

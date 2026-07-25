@@ -32,7 +32,7 @@ class CparRequestForm extends Component
     public $employee = '';
     public $complain_name_disabled = false;
     public $attachment ='';
-    public $cpar_no = '', $date_opened = '', $source_origin_id = '', $complain_category_id = '', $complain_name = '', $reported_by = '', $employeeCategoryId = '', $concern_category_id = '', $branch_id = '', $assigned_to = '', $department_name = '', $concern_description = '', $department_id = '', $attending_physician = '', $test_procedure = '', $patient_name = '';
+    public $cpar_no = '', $date_opened = '', $source_origin_id = '', $complain_category_id = '', $complain_name = '', $reported_by = '', $employeeCategoryId = '', $concern_category_id = '', $branch_id = '', $dept_head_assigned = '', $department_name = '', $concern_description = '', $department_id = '', $attending_physician = '', $test_procedure = '', $patient_name = '';
     public $resultsCategoryId = '';
     public $actual_released_date = '';
     public $employee_no ='';
@@ -82,7 +82,7 @@ class CparRequestForm extends Component
             'complain_name' => 'required',
             'concern_description' => 'required',
             'concern_category_id' => 'required',
-            'assigned_to' => 'required',
+            'dept_head_assigned' => 'required',
             'attachment' => 'nullable|file|mimes:jpg,jpeg,png,pdf,doc,docx|max:5120',
             'department_name' => 'required'
         ];
@@ -97,7 +97,7 @@ class CparRequestForm extends Component
             'concern_description',
             'attachment',
             'concern_category_id',
-            'assigned_to',
+            'dept_head_assigned',
             'department_name',
         ]);
 
@@ -125,7 +125,6 @@ class CparRequestForm extends Component
                 'complainant_name'      => $this->complain_name,
                 'concern_description'   => $this->concern_description,
                 'department_id'         => $this->department_id,
-                'status_id'             => 1,
                 'created_by'            => Auth::id(),
             ]);
 
@@ -141,9 +140,9 @@ class CparRequestForm extends Component
 
             cpar_assignments::create([
                 'cpar_id'        => $request->id,
-                'assigned_to'    => $this->assigned_to,
+                'dept_head_assigned'    => $this->dept_head_assigned,
                 'department_id'  => $this->department_id,
-                'assigned_date'  => now(),
+                'status_id'             => 1,
                 'created_by'     => Auth::id(),
             ]);
         });
@@ -169,7 +168,7 @@ class CparRequestForm extends Component
         }
     }
 
-    public function updatedAssignedTo($value = '')
+    public function updatedDeptHeadAssigned($value = '')
     {
         $employee = $this->employees->firstWhere('id', $value);
 

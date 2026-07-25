@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Livewire\User\Modal;
+namespace App\Livewire\Admin\Hr;
 
-use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 use Illuminate\Support\Facades\Auth;
 use App\Models\employee;
+use Illuminate\Support\Facades\DB;
 
-class CparNotif extends Component
+class HrNotif extends Component
 {
     public $cpar_requests = [];
     public $editingId = null;
@@ -18,14 +18,12 @@ class CparNotif extends Component
     public $edit_date_open = '';
     public $edit_department_name = '';
     public $employee_no = '';
-    public $id = '';
 
     public function mount()
     {
         $user = Auth::user();
         $info = employee::where('email', $user->email)->first();
         if ($info) {
-            $this->id = $info->id;
             $this->employee_no = $info->employee_no;
         }
         $this->loadRecords();
@@ -40,16 +38,17 @@ class CparNotif extends Component
             ->join('cpar_complain_categories as e', 'a.complaint_category_id', '=', 'e.id')
             ->join('cpar_concern_categories as f', 'a.concern_category_id', '=', 'f.id')
             ->join('departments as g', 'a.department_id', '=', 'g.id')
-            ->join('cpar_statuses as h', 'b.status_id', '=', 'h.id')
+            ->join('cpar_statuses as h', 'a.status_id', '=', 'h.id')
+            ->join('employees as i', 'b.dept_head_assigned', 'i.id')
             ->select(
                 'a.id',
                 'a.cpar_no',
                 'a.reported_by',
                 'a.date_open',
                 'g.department_name',
-                'h.status_name',
+                'h.status_name'
             )
-            ->whereIn('h.status_name', ['PENDING','ASSIGNED', 'RE-ASSIGNED'])
+            ->where('h.status_name', 'ASSIGNED')
             ->get();
     }
 
@@ -58,33 +57,13 @@ class CparNotif extends Component
         $this->dispatch('view-CPAR', id: $id);
     }
 
-    public function respondCpar($id)
+    public function UpdateAssign($id)
     {
-        $this->dispatch('respond-CPAR', id: $id);
-    }
-
-    public function saveRecord()
-    {
-        DB::table('cpar_request_forms')
-            ->where('id', $this->editingId)
-            ->update([
-                'reported_by' => $this->edit_reported_by,
-                'date_open'   => $this->edit_date_open,
-            ]);
-
-        $this->showEditModal = false;
-        $this->editingId     = null;
-        $this->loadRecords();
-    }
-
-    public function cancelEdit()
-    {
-        $this->showEditModal = false;
-        $this->editingId     = null;
+        $this->dispatch('open-reassign', id: $id);
     }
 
     public function render()
     {
-        return view('livewire.user.modal.cpar_notif');
+        return view('livewire.admin.hr.hr_notif');
     }
 }

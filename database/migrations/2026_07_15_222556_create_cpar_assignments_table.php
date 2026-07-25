@@ -14,10 +14,11 @@ return new class extends Migration
         Schema::create('cpar_assignments', function (Blueprint $table) {
             $table->id();
             $table->integer('cpar_id');
-            $table->integer('assigned_to');
+            $table->integer('dept_head_assigned');
             $table->integer('department_id');
-            $table->dateTime('assigned_date');
-            $table->integer('reassigned_to')->nullable();
+            $table->text('assigned_to')->nullable();
+            $table->dateTime('assigned_date')->nullable();
+            $table->integer('status_id');
             $table->text('remarks')->nullable();
             $table->integer('created_by');
             $table->timestamps();

@@ -1,9 +1,11 @@
 <div>
-    <flux:modal name="CPARModal" class="w-[120%] max-w-[1500px] mt-6 top-0 z-50">
+    <flux:modal name="CPARAssignedModal" class="w-[120%] max-w-[1500px] mt-6 top-0 z-50">
         <div class="space-y-6">
             <div>
-                <flux:heading size="lg">CPAR Request</flux:heading>
-                <flux:text>Below is the list of your filed CPAR requests.</flux:text>
+                <flux:heading size="lg">Assigned CPARs</flux:heading>
+                <flux:text>
+                    Below is the list of CPARs assigned to you for investigation and corrective action.
+                </flux:text>
             </div>
 
             <div class="overflow-x-auto rounded-lg border border-zinc-200 dark:border-zinc-700 text-center">
@@ -15,6 +17,7 @@
                                 <th class="px-4 py-3">Reported By</th>
                                 <th class="px-4 py-3">Date Open</th>
                                 <th class="px-4 py-3">Department Name</th>
+                                <th class="px-4 py-3">Assigned To</th>
                                 <th class="px-4 py-3">Status</th>
                                 <th class="px-4 py-3">Action</th>
                             </tr>
@@ -38,7 +41,9 @@
                                 <td class="px-4 py-3 text-zinc-700 dark:text-zinc-300">
                                     {{ $request->department_name }}
                                 </td>
-
+                                <td class="px-4 py-3">
+                                    {{ $request->assigned_names }}
+                                </td>
                                 <td class="px-4 py-3">
                                     @if($request->status_name == 'PENDING')
                                     <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">
@@ -71,6 +76,11 @@
                                                 icon="eye"
                                                 wire:click="viewDetails({{ $request->id }})">
                                                 View Details
+                                            </flux:menu.item>
+                                            <flux:menu.item
+                                                icon="document-text"
+                                                wire:click="respondCpar({{ $request->id }})">
+                                                Respond to CPAR
                                             </flux:menu.item>
                                         </flux:menu>
                                     </flux:dropdown>

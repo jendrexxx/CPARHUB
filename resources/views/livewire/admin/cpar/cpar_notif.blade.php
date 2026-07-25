@@ -58,13 +58,17 @@
                                     </span>
                                     @endif
                                 </td>
+
                                 <td class="px-4 py-3 text-center">
+
                                     <flux:dropdown align="end">
+
                                         <flux:button
                                             size="sm"
                                             variant="ghost"
                                             icon="ellipsis-vertical">
                                         </flux:button>
+
                                         <flux:menu>
                                             {{-- View Details --}}
                                             <flux:menu.item
@@ -72,8 +76,18 @@
                                                 wire:click="viewDetails({{ $request->id }})">
                                                 View Details
                                             </flux:menu.item>
+
+                                            {{-- Re-Assign --}}
+                                            @if($request->status_name == 'PENDING')
+                                            <flux:menu.item
+                                                icon="arrow-path"
+                                                wire:click="reAssign({{ $request->id }})">
+                                                Assign
+                                            </flux:menu.item>
+                                            @endif
                                         </flux:menu>
                                     </flux:dropdown>
+
                                 </td>
                             </tr>
                             @empty

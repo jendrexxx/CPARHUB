@@ -1,7 +1,9 @@
 <?php
 
 use App\Livewire\Admin\AdminDashboard;
+use App\Livewire\Admin\DeptHeadDashboard;
 use App\Livewire\Admin\Employees;
+use App\Livewire\Admin\HrHeadDashboard;
 use App\Livewire\System\Setup;
 use App\Livewire\User\UserDashboard;
 use Illuminate\Support\Facades\Route;
@@ -30,13 +32,23 @@ Route::middleware(['auth'])->group(function () {
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('user_dashboard', UserDashboard::class)->name('user_dashboard');
     Route::get('/cpar-request-form', CparRequestForm::class)
-        ->name('user.cpar_request_form');
+        ->name('cpar_request_form');
     Route::get('/result-request-form', ResultRequestForm::class)
         ->name('user.result.result_request_form');
+    Route::get('dept_head_dashboard', DeptHeadDashboard::class)
+        ->middleware('permission:View Department Dashboard')
+        ->name('dept_head_dashboard');
+    Route::get('hr-dashboard', \App\Livewire\Admin\HrHeadDashboard::class)
+        ->middleware('permission:View HR Dashboard')
+        ->name('hr_dashboard');
 });
 
 Route::middleware(['auth', 'verified', 'role:SUPER-ADMIN'])->group(function () {
     Route::get('admin_dashboard', AdminDashboard::class)->name('admin_dashboard');
+    Route::get('/dept-head-dashboard', DeptHeadDashboard::class)
+        ->name('dept_head_dashboard');
+    Route::get('/hr_dashboard', HrHeadDashboard::class)
+        ->name('hr_dashboard');
     Route::get('system_setup', Setup::class)->name('system_setup');
     Route::get('employees', Employees::class)->name('employees');
     Route::get('/users', Users::class)

@@ -1,27 +1,26 @@
 <?php
 
-namespace App\Livewire\User;
+namespace App\Livewire\Admin;
 
-use Illuminate\Support\Facades\DB;
-use Livewire\Component;
 use Livewire\Attributes\Layout;
 use Illuminate\Support\Facades\Auth;
 use App\Models\employee;
+use Illuminate\Support\Facades\DB;
+
+use Livewire\Component;
 
 #[Layout('components.layouts.app')]
-class UserDashboard extends Component
+class DeptHeadDashboard extends Component
 {
     public $cpar_request_count = '';
     public $result_request_count = '';
     public $employee_no = '';
-    public $assigned_cpar = '';
 
     public function mount()
     {
         $user = Auth::user();
         $info = employee::where('email', $user->email)->first();
         if ($info) {
-            $this->id = $info->id;
             $this->employee_no = $info->employee_no;
         }
 
@@ -33,14 +32,9 @@ class UserDashboard extends Component
             ->join('cpar_concern_categories as f', 'a.concern_category_id', '=', 'f.id')
             ->join('departments as g', 'a.department_id', '=', 'g.id')
             ->join('cpar_statuses as h', 'b.status_id', '=', 'h.id')
-            ->where('a.employee_no', $this->employee_no)
-            ->count();
-
-        $this->assigned_cpar = DB::table('cpar_request_forms as a')
-            ->join('cpar_assignments as b', 'a.id', '=', 'b.cpar_id')
-            ->join('cpar_attachments as c', 'a.id', '=', 'c.cpar_id')
-            ->join('cpar_statuses as h', 'b.status_id', '=', 'h.id')
-            ->whereIn('h.status_name', ['ASSIGNED', 'RE-ASSIGNED'])
+            ->join('employees as i', 'b.dept_head_assigned', 'i.id')
+            ->where('status_name', 'PENDING')
+            ->where('i.employee_no', $this->employee_no)
             ->count();
 
         $this->result_request_count = DB::table('result_error_forms as a')
@@ -52,6 +46,6 @@ class UserDashboard extends Component
 
     public function render()
     {
-        return view('livewire.user.user_dashboard');
+        return view('livewire.admin.dept_head_dashboard');
     }
 }
