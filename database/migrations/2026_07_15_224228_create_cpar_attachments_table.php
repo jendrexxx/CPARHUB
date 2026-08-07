@@ -14,9 +14,9 @@ return new class extends Migration
         Schema::create('cpar_attachments', function (Blueprint $table) {
             $table->id();
             $table->integer('cpar_id');
-            $table->string('file_name');
-            $table->string('file_path');
-            $table->string('file_type');
+            $table->string('file_name')->nullable();
+            $table->string('file_path')->nullable();
+            $table->string('file_type')->nullable();
             $table->integer('uploaded_by');
             $table->timestamps();
         });

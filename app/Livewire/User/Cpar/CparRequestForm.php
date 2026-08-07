@@ -13,9 +13,11 @@ use App\Models\employee;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Livewire\WithFileUploads;
+use App\Traits\CparHistoryTrait;
 
 class CparRequestForm extends Component
 {
+    use CparHistoryTrait;
     use WithFileUploads;
 
     // Parent toggles (kasabay ng "Data and Information Errors" checkbox mismo)
@@ -31,11 +33,11 @@ class CparRequestForm extends Component
     public $source_origin = [], $cpar_complain = [], $cpar_concern = [], $employees = [], $employees_data = [], $data_informations = [], $quality_accuracies = [], $technical_equipments = [];
     public $employee = '';
     public $complain_name_disabled = false;
-    public $attachment ='';
+    public $attachment = '';
     public $cpar_no = '', $date_opened = '', $source_origin_id = '', $complain_category_id = '', $complain_name = '', $reported_by = '', $employeeCategoryId = '', $concern_category_id = '', $branch_id = '', $dept_head_assigned = '', $department_name = '', $concern_description = '', $department_id = '', $attending_physician = '', $test_procedure = '', $patient_name = '';
     public $resultsCategoryId = '';
     public $actual_released_date = '';
-    public $employee_no ='';
+    public $employee_no = '';
 
     public function mount()
     {
@@ -136,6 +138,12 @@ class CparRequestForm extends Component
                     'file_type'   => $this->attachment->getMimeType(),
                     'uploaded_by' => Auth::id(),
                 ]);
+            } else {
+                // Walang attachment
+                cpar_attachments::create([
+                    'cpar_id'     => $request->id,
+                    'uploaded_by' => Auth::id(),
+                ]);
             }
 
             cpar_assignments::create([
@@ -145,7 +153,19 @@ class CparRequestForm extends Component
                 'status_id'             => 1,
                 'created_by'     => Auth::id(),
             ]);
+
+            // cpar histories
+            $this->addCparHistory([
+                'cpar_id'       => $request->id,
+                'action'        => 'CPAR Created',
+                'new_status'    => 'PENDING',
+                'old_status'    => null,
+                'reported_by'   => $this->reported_by,
+                'assigned_id'   => $this->dept_head_assigned,
+                'remarks'       => 'CPAR application submitted.',
+            ]);
         });
+
 
         $this->reset_form();
         $this->dispatch('toast', [

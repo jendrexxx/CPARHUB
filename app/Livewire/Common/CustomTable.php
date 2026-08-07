@@ -23,7 +23,7 @@ class CustomTable extends Component
     public string $search = '';
     public int $perPage = 10;
 
-    public string $refreshEvent = 'refreshUsers';
+    public ?string $refreshEvent = null;
     public ?string $addRoute = null;
     public ?string $addLabel = null;
     public ?string $refreshMethod = null;
@@ -58,6 +58,17 @@ class CustomTable extends Component
         }
     }
 
+    protected function getListeners()
+    {
+        $listeners = [];
+
+        if ($this->refreshEvent) {
+            $listeners[$this->refreshEvent] = '$refresh';
+        }
+
+        return $listeners;
+    }
+
     public function updatingSearch()
     {
         $this->resetPage();
@@ -79,8 +90,8 @@ class CustomTable extends Component
     }
 
     #[On('refresh')]
-    public function refreshUsers() 
-    {  
+    public function refreshUsers()
+    {
         $this->loading = true;
         try {
             $response = Http::timeout(5)->withHeaders([

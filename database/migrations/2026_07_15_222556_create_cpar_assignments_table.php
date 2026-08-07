@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('cpar_assignments', function (Blueprint $table) {
             $table->id();
             $table->integer('cpar_id');
+            $table->string('employee_no')->nullable();;
             $table->integer('dept_head_assigned');
             $table->integer('department_id');
             $table->text('assigned_to')->nullable();

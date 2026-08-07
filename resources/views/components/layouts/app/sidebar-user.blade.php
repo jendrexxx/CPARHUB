@@ -33,7 +33,7 @@
                     Dept Head Dashboard
                 </flux:navlist.item>
                 @endif
-                
+
                 @if(auth()->user()->can('View HR Dashboard'))
                 <flux:navlist.item
                     icon="home"
@@ -41,6 +41,16 @@
                     :current="request()->routeIs('hr_dashboard')"
                     wire:navigate>
                     HR Dashboard
+                </flux:navlist.item>
+                @endif
+
+                @if(auth()->user()->can('View Lab Supervisor'))
+                <flux:navlist.item
+                    icon="document"
+                    :href="route('lab_supervisor')"
+                    :current="request()->routeIs('lab_supervisor')"
+                    wire:navigate>
+                    Lab Supervisor
                 </flux:navlist.item>
                 @endif
 

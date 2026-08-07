@@ -2,11 +2,14 @@
 
 namespace App\Livewire\User\Modal;
 
+use App\Models\cpar_assignments;
 use App\Models\cpar_investigations;
 use App\Models\cpar_request_forms;
+use App\Models\employee;
 use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 
 class CparRespondForm extends Component
 {
@@ -19,10 +22,24 @@ class CparRespondForm extends Component
     public $tat = '';
     public $remarks = '';
     public $selectedCparId = '';
+    public $id = '';
+    public $status = '';
+    public $employee_no = '';
 
     protected $listeners = [
         'respond-CPAR' => 'respondCPAR',
+
     ];
+
+    public function mount()
+    {
+        $user = Auth::user();
+        $info = employee::where('email', $user->email)->first();
+        if ($info) {
+            $this->id = $info->id;
+            $this->employee_no = $info->employee_no;
+        }
+    }
 
     public function respondCPAR($id = '')
     {
@@ -33,33 +50,51 @@ class CparRespondForm extends Component
             ->leftJoin('cpar_complain_categories as e', 'a.complaint_category_id', '=', 'e.id')
             ->leftJoin('cpar_concern_categories as f', 'a.concern_category_id', '=', 'f.id')
             ->leftJoin('departments as g', 'a.department_id', '=', 'g.id')
-            ->leftJoin('cpar_statuses as h', 'a.status_id', '=', 'h.id')
+            ->leftJoin('cpar_statuses as h', 'b.status_id', '=', 'h.id')
             ->select(
-                'a.id',
                 'a.cpar_no',
                 'a.reported_by',
                 'a.date_open',
+                'b.id',
                 'g.department_name',
                 'h.status_name',
                 'd.source_name',
                 'e.complain_name',
                 'f.concern_name'
             )
-            ->where('a.id', $id)
+            ->where('b.id', $id)
             ->first();
         // assign data sa modal fields
+        $this->id = $cpar->id;
         $this->cpar_no = $cpar->cpar_no;
         $this->date_open = $cpar->date_open;
         $this->selectedCparId = $cpar->id;
-
-        $this->date_opened = Carbon::parse($cpar->date_open)
-            ->format('m-d-Y h:i:s A'); // display only
+        $this->date_completed = now()->format('m-d-Y');
+        $this->date_opened = Carbon::parse($cpar->date_open)->format('m-d-Y');
+        $this->calculateTat();
 
         if (!$cpar) {
             return;
         }
 
         $this->modal('respond-cpar')->show();
+    }
+
+    public function calculateTat()
+    {
+        if (!$this->date_opened || !$this->date_completed) {
+            $this->tat = '';
+            return;
+        }
+
+        $days = Carbon::createFromFormat('m-d-Y', $this->date_opened)
+            ->startOfDay()
+            ->diffInDays(
+                Carbon::createFromFormat('m-d-Y', $this->date_completed)
+                    ->startOfDay()
+            );
+
+        $this->tat = "{$days} day(s)";
     }
 
     public function saveResponse()
@@ -69,12 +104,13 @@ class CparRespondForm extends Component
             'provided_solution' => 'required',
             'recommendation' => 'required',
             'action_taken_by' => 'required',
-            'date_completed' => 'required|date',
+            'date_completed' => 'required',
             'tat'            => 'required',
+            'status'         => 'required',
         ]);
 
         cpar_investigations::create([
-            'cpar_id'            => $this->selectedCparId,
+            'assigned_id'        => $this->id,
             'identified_cause'   => $this->identified_cause,
             'provided_solution'  => $this->provided_solution,
             'recommendation'     => $this->recommendation,
@@ -84,17 +120,11 @@ class CparRespondForm extends Component
         ]);
 
         // Update CPAR status after response
-        cpar_request_forms::where('id', $this->selectedCparId)
+        cpar_assignments::where('id', $this->id)
             ->update([
-                'status_id' => 15
+                'employee_no' => $this->employee_no,
+                'status_id' => $this->status
             ]);
-
-        $this->dispatch(
-            'toast',
-            type: 'success',
-            message: 'CPAR response submitted successfully.'
-        );
-
 
         $this->reset([
             'identified_cause',
@@ -106,22 +136,17 @@ class CparRespondForm extends Component
             'remarks'
         ]);
 
+        $this->dispatch(
+            'toast',
+            type: 'success',
+            message: 'CPAR response submitted successfully.'
+        );
 
-        $this->modal('respond-cpar')->close();
-    }
-
-    public function updatedDateCompleted($value)
-    {
-        if (!$this->date_open || !$value) {
-            $this->tat = '';
-            return;
-        }
-
-        $days = Carbon::parse($this->date_open)
-            ->startOfDay()
-            ->diffInDays(Carbon::parse($value)->startOfDay());
-
-        $this->tat = "{$days} day(s)";
+        // ✅ CLOSE FLUX MODAL
+        $this->dispatch('modal-close', name: 'respond-cpar');
+        $this->dispatch('modal-close', name: 'CPARAssignedModal');
+        $this->dispatch('refreshAssignedData');
+        $this->dispatch('refreshAssignedCount');
     }
 
     public function render()

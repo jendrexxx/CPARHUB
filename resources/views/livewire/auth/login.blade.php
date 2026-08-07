@@ -62,7 +62,6 @@ new #[Layout('components.layouts.auth')] class extends Component {
             ]),
         ]);
     }
-
     /**
      * Get the authentication rate limiting throttle key.
      */
@@ -72,39 +71,57 @@ new #[Layout('components.layouts.auth')] class extends Component {
     }
 }; ?>
 
-<div class="flex flex-col gap-6">
-    <x-auth-header title="Log in to your account" description="Enter your email and password below to log in" />
+<div class="space-y-8">
 
-    <!-- Session Status -->
-    <x-auth-session-status class="text-center" :status="session('status')" />
+    <div class="text-center">
 
-    <form wire:submit="login" class="flex flex-col gap-6">
-        <!-- Email Address -->
-        <flux:input wire:model="username" label="{{ __('Username') }}" type="text" name="Username" required autofocus autocomplete="username" placeholder="Ex. JUADEL" />
+        <img
+            src="{{ asset('logo/premiere_logo.png') }}"
+            class="mx-auto w-20 mb-4">
 
-        <!-- Password -->
-        <div class="relative">
-            <flux:input
-                wire:model="password"
-                label="{{ __('Password') }}"
-                type="password"
-                name="password"
-                required
-                autocomplete="current-password"
-                placeholder="Password" />
+        <h1 class="text-3xl font-bold text-[#9F0712]">
+            Premiere Medical
+        </h1>
 
-            @if (Route::has('password.request'))
-            <x-text-link class="absolute right-0 top-0" href="{{ route('password.request') }}">
-                {{ __('Forgot your password?') }}
-            </x-text-link>
-            @endif
+        <p class="text-gray-500">
+            Corrective & Preventive Action Report System
+        </p>
+
+    </div>
+
+    <x-auth-session-status
+        :status="session('status')" />
+
+    <form
+        wire:submit.prevent="login"
+        class="space-y-5">
+
+        <flux:input
+            wire:model="username"
+            label="Username" />
+
+        <flux:input
+            wire:model="password"
+            type="password"
+            label="Password" />
+
+        <div class="flex justify-between items-center">
+
+            <flux:checkbox
+                wire:model="remember"
+                label="Remember me" />
+
+            <flux:link href="{{ route('password.request') }}">
+                Forgot password?
+            </flux:link>
+
         </div>
 
-        <!-- Remember Me -->
-        <flux:checkbox wire:model="remember" label="{{ __('Remember me') }}" />
+        <flux:button
+            class="w-full bg-[#9F0712]">
+            Log in
+        </flux:button>
 
-        <div class="flex items-center justify-end">
-            <flux:button variant="primary" type="submit" class="w-full">{{ __('Log in') }}</flux:button>
-        </div>
     </form>
+
 </div>

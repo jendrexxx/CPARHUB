@@ -6,7 +6,6 @@ use Livewire\Component;
 
 class Rolepermission extends Component
 {
-
     public function render()
     {
         return view('livewire.system.rolepermission');

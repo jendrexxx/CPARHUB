@@ -2,8 +2,8 @@
     <flux:modal name="CPARModal" class="w-[120%] max-w-[1500px] mt-6 top-0 z-50">
         <div class="space-y-6">
             <div>
-                <flux:heading size="lg">CPAR Request</flux:heading>
-                <flux:text>Below is the list of your filed CPAR requests.</flux:text>
+                <flux:heading size="lg">Reported Concern</flux:heading>
+                <flux:text>Below is the list of your filed Reported Concern.</flux:text>
             </div>
 
             <div class="overflow-x-auto rounded-lg border border-zinc-200 dark:border-zinc-700 text-center">
@@ -59,6 +59,7 @@
                                     @endif
                                 </td>
 
+
                                 <td class="px-4 py-3 text-center">
 
                                     <flux:dropdown align="end">
@@ -81,7 +82,7 @@
                                             @if($request->status_name == 'PENDING')
                                             <flux:menu.item
                                                 icon="arrow-path"
-                                                wire:click="reAssign({{ $request->id }})">
+                                                wire:click="reAssign({{ $request->assignment_id }})">
                                                 Assign
                                             </flux:menu.item>
                                             @endif

@@ -18,38 +18,44 @@ class CparNotif extends Component
     public $edit_date_open = '';
     public $edit_department_name = '';
     public $employee_no = '';
+    public $id = '';
+
+    protected $listeners = [
+        'refreshHeadRecords' => 'loadHeadRecords',
+    ];
 
     public function mount()
     {
         $user = Auth::user();
         $info = employee::where('email', $user->email)->first();
         if ($info) {
+            $this->id = $info->id;
             $this->employee_no = $info->employee_no;
         }
-        $this->loadRecords();
+        $this->loadHeadRecords();
     }
 
-    public function loadRecords()
+    public function loadHeadRecords()
     {
         $this->cpar_requests = DB::table('cpar_request_forms as a')
             ->join('cpar_assignments as b', 'a.id', '=', 'b.cpar_id')
-            ->join('cpar_attachments as c', 'a.id', '=', 'c.cpar_id')
+            ->join('employees as c', 'b.dept_head_assigned', 'c.id')
             ->join('cpar_source_origins as d', 'a.source_id', '=', 'd.id')
-            ->join('cpar_complain_categories as e', 'a.complaint_category_id', '=', 'e.id')
-            ->join('cpar_concern_categories as f', 'a.concern_category_id', '=', 'f.id')
             ->join('departments as g', 'a.department_id', '=', 'g.id')
             ->join('cpar_statuses as h', 'b.status_id', '=', 'h.id')
-            ->join('employees as i', 'b.dept_head_assigned', 'i.id')
             ->select(
                 'a.id',
                 'a.cpar_no',
                 'a.reported_by',
                 'a.date_open',
+                'b.id as assignment_id',
+                'b.assigned_to',
                 'g.department_name',
                 'h.status_name'
             )
-            ->where('i.employee_no', $this->employee_no)
+            ->where('c.id', $this->id)
             ->where('h.status_name', 'PENDING')
+            ->orderByDesc('b.id')
             ->get();
     }
 
@@ -58,9 +64,9 @@ class CparNotif extends Component
         $this->dispatch('view-CPAR', id: $id);
     }
 
-    public function reAssign($id)
+    public function reAssign($assignment_id)
     {
-        $this->dispatch('open-reassign', id: $id);
+        $this->dispatch('open-reassign', id: $assignment_id);
     }
 
     public function render()

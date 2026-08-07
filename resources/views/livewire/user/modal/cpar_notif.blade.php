@@ -13,8 +13,9 @@
                             <tr>
                                 <th class="px-4 py-3">CPAR No.</th>
                                 <th class="px-4 py-3">Reported By</th>
-                                <th class="px-4 py-3">Date Open</th>
                                 <th class="px-4 py-3">Department Name</th>
+                                <th class="px-4 py-3">Date Open</th>
+                                <th class="px-4 py-3">Assigned Employee</th>
                                 <th class="px-4 py-3">Status</th>
                                 <th class="px-4 py-3">Action</th>
                             </tr>
@@ -32,11 +33,15 @@
                                 </td>
 
                                 <td class="px-4 py-3 text-zinc-700 dark:text-zinc-300">
+                                    {{ $request->department_name }}
+                                </td>
+
+                                <td class="px-4 py-3 text-zinc-700 dark:text-zinc-300">
                                     {{ \Carbon\Carbon::parse($request->date_open)->format('M d, Y') }}
                                 </td>
 
                                 <td class="px-4 py-3 text-zinc-700 dark:text-zinc-300">
-                                    {{ $request->department_name }}
+                                    {{ $request->dept_head_name }}
                                 </td>
 
                                 <td class="px-4 py-3">

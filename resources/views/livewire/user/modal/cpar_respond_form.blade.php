@@ -13,6 +13,7 @@
 
         {{-- Basic Information --}}
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
             <flux:input
                 label="CPAR No."
                 wire:model="cpar_no"
@@ -55,12 +56,27 @@
         </div>
 
         {{-- Completion --}}
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+            <flux:select
+                label="Status"
+                wire:model="status">
+                <option value="">
+                    -- Select Status --
+                </option>
+                <option value="15">
+                    RESOLVED
+                </option>
+                <option value="20">
+                    UNRESOLVED
+                </option>
+            </flux:select>
 
             <flux:input
-                type="date"
+                type="text"
                 label="Date Completed"
-                wire:model.live="date_completed" />
+                wire:model.live="date_completed"
+                class="opacity-60 cursor-not-allowed bg-zinc-100 dark:bg-zinc-800" readonly />
 
             <flux:input
                 label="TAT (Days)"

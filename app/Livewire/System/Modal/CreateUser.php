@@ -55,7 +55,6 @@ class CreateUser extends Component
             'role' => ['required'],
             'status' => ['required'],
         ];
-
         // Password required only when creating
         if (!$this->user_id) {
             $rules['password'] = ['required', 'min:8'];
@@ -131,7 +130,6 @@ class CreateUser extends Component
         $this->department_name = $user->department_name;
         $this->branch_name = $user->branch_name;
         $this->role = $user->role_name ?? '';
-
         $this->modal('user-create')->show();
     }
 
@@ -179,9 +177,7 @@ class CreateUser extends Component
                     'password' => Hash::make($this->password)
                 ]);
             }
-
             $user->update($data);
-
             // Update employee table
             DB::table('employees')
                 ->where('email', $user->email)
@@ -203,6 +199,8 @@ class CreateUser extends Component
             ]);
             $this->dispatch('close-modal', name: 'user-create');
             $this->dispatch('refreshUsers');
+
+            dd('testing');
         }
     }
 

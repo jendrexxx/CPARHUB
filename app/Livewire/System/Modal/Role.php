@@ -65,11 +65,8 @@ class Role extends Component
 
         // Save permissions
         $role->syncPermissions($this->selectedPermissions);
-
         $this->dispatch('refreshRoles');
-
         $this->resetForm();
-
         $this->modal('role-modal')->close();
     }
 

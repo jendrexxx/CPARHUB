@@ -20,6 +20,10 @@ class CparNotif extends Component
     public $employee_no = '';
     public $id = '';
 
+    protected $listeners = [
+        'refreshCparData' => 'loadRecords',
+    ];
+
     public function mount()
     {
         $user = Auth::user();
@@ -35,10 +39,8 @@ class CparNotif extends Component
     {
         $this->cpar_requests = DB::table('cpar_request_forms as a')
             ->join('cpar_assignments as b', 'a.id', '=', 'b.cpar_id')
-            ->join('cpar_attachments as c', 'a.id', '=', 'c.cpar_id')
+            ->join('employees as c', 'b.dept_head_assigned', 'c.id')
             ->join('cpar_source_origins as d', 'a.source_id', '=', 'd.id')
-            ->join('cpar_complain_categories as e', 'a.complaint_category_id', '=', 'e.id')
-            ->join('cpar_concern_categories as f', 'a.concern_category_id', '=', 'f.id')
             ->join('departments as g', 'a.department_id', '=', 'g.id')
             ->join('cpar_statuses as h', 'b.status_id', '=', 'h.id')
             ->select(
@@ -46,10 +48,14 @@ class CparNotif extends Component
                 'a.cpar_no',
                 'a.reported_by',
                 'a.date_open',
+                'b.id as assignment_id',
+                'b.assigned_to',
                 'g.department_name',
                 'h.status_name',
+                DB::raw("CONCAT(c.first_name, ' ', c.last_name) as dept_head_name"),
             )
-            ->whereIn('h.status_name', ['PENDING','ASSIGNED', 'RE-ASSIGNED'])
+            ->where('h.status_name', 'PENDING')
+            ->where('a.employee_no', $this->employee_no)
             ->get();
     }
 
@@ -58,9 +64,9 @@ class CparNotif extends Component
         $this->dispatch('view-CPAR', id: $id);
     }
 
-    public function respondCpar($id)
+    public function respondCpar($assignment_id)
     {
-        $this->dispatch('respond-CPAR', id: $id);
+        $this->dispatch('respond-CPAR', id: $assignment_id);
     }
 
     public function saveRecord()

@@ -12,13 +12,16 @@ class CparAssigned extends Component
     public $cpar_requests = [];
     public $editingId = null;
     public $showEditModal = false;
-
     public $edit_cpar_no = '';
     public $edit_reported_by = '';
     public $edit_date_open = '';
     public $edit_department_name = '';
     public $employee_no = '';
     public $id = '';
+
+    protected $listeners = [
+        'refreshAssignedData' => 'loadAssignedRecords',
+    ];
 
     public function mount()
     {
@@ -28,10 +31,10 @@ class CparAssigned extends Component
             $this->id = $info->id;
             $this->employee_no = $info->employee_no;
         }
-        $this->loadRecords();
+        $this->loadAssignedRecords();
     }
 
-    public function loadRecords()
+    public function loadAssignedRecords()
     {
         $this->cpar_requests = DB::table('cpar_request_forms as a')
             ->join('cpar_assignments as b', 'a.id', '=', 'b.cpar_id')
@@ -42,26 +45,22 @@ class CparAssigned extends Component
                 'a.cpar_no',
                 'a.reported_by',
                 'a.date_open',
+                'b.id as assignment_id',
+                'b.assigned_to',
                 'g.department_name',
                 'h.status_name',
-                'b.assigned_to'
             )
             ->whereIn('h.status_name', ['ASSIGNED', 'RE-ASSIGNED'])
-            ->whereJsonContains('b.assigned_to', (int) $this->id)
+            ->where('b.assigned_to', $this->id)
             ->distinct()
+            ->orderByDesc('a.id')
             ->get();
 
         foreach ($this->cpar_requests as $request) {
-
-            $ids = json_decode($request->assigned_to, true) ?? [];
-
-            $request->assigned_names = Employee::whereIn('id', $ids)
-                ->where('id', $this->id)
-                ->get()
-                ->map(function ($employee) {
-                    return $employee->first_name . ' ' . $employee->last_name;
-                })
-                ->implode(', ');
+            $employee = Employee::find($request->assigned_to);
+            $request->assigned_names = $employee
+                ? $employee->first_name . ' ' . $employee->last_name
+                : 'Unknown Employee';
         }
     }
 

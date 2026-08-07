@@ -24,6 +24,7 @@ class HrReassign extends Component
     public $id = '';
     public $assigned = null;
     public $assigned_to = [];
+    public $new_assignees = [];
     public $assigned_head = '';
     public $dept_head_assigned = '';
 
@@ -49,59 +50,42 @@ class HrReassign extends Component
             });
     }
 
-
     public function addAssignee()
     {
-        if (!is_array($this->assigned_to)) {
-            $this->assigned_to = [];
-        }
-
-        $this->assigned_to[] = null;
+        $this->new_assignees[] = null;
     }
 
     public function removeAssignee($index)
     {
-        if (is_array($this->assigned_to)) {
+        unset($this->new_assignees[$index]);
 
-            unset($this->assigned_to[$index]);
-
-            $this->assigned_to = array_values($this->assigned_to);
-        }
+        $this->new_assignees = array_values($this->new_assignees);
     }
 
     public function open($id = '')
     {
         $this->cpar_id = $id;
-        $cpar = DB::table('cpar_request_forms as a')
-            ->leftJoin('cpar_assignments as b', 'a.id', '=', 'b.cpar_id')
-            ->leftJoin('cpar_attachments as c', 'a.id', '=', 'c.cpar_id')
-            ->leftJoin('cpar_source_origins as d', 'a.source_id', '=', 'd.id')
-            ->leftJoin('cpar_complain_categories as e', 'a.complaint_category_id', '=', 'e.id')
-            ->leftJoin('cpar_concern_categories as f', 'a.concern_category_id', '=', 'f.id')
-            ->leftJoin('departments as g', 'a.department_id', '=', 'g.id')
-            ->leftJoin('cpar_statuses as h', 'a.status_id', '=', 'h.id')
-            ->join('employees as i', 'b.dept_head_assigned', 'i.id')
+        $cpar = DB::table('cpar_assignments as b')
+            ->leftJoin('cpar_statuses as h', 'b.status_id', '=', 'h.id')
+            ->leftJoin('employees as i', 'b.assigned_to', '=', 'i.id')
             ->select(
-                'a.id',
-                'a.cpar_no',
-                'a.reported_by',
-                'a.date_open',
+                'b.id',
+                'b.cpar_id',
                 'b.assigned_to',
-                'b.dept_head_assigned',
                 'b.remarks',
-                'g.department_name',
+                'b.dept_head_assigned',
+                'b.department_id',
                 'h.status_name',
-                'd.source_name',
-                'e.complain_name',
-                'f.concern_name',
-                'g.department_name',
-                'i.branch_id'
+                'i.branch_id',
+                'i.department_name',
+                'i.first_name',
+                'i.last_name'
             )
-            ->where('a.id', $id)
+            ->where('b.assigned_to', $id)
             ->first();
-        $assignedList = json_decode($cpar->assigned_to, true) ?? [];
-        $this->assigned = $assignedList[0] ?? null;
-        $this->assigned_to = array_slice($assignedList, 1);
+        $this->cpar_id = $cpar->cpar_id;
+        $this->assigned = $cpar->assigned_to;
+        $this->assigned_to = $cpar->assigned_to;
         $this->branch_id = $cpar->branch_id ?? null;
         $this->assigned_head = $cpar->assigned_to;
         $this->dept_head_assigned = $cpar->dept_head_assigned;
@@ -116,67 +100,61 @@ class HrReassign extends Component
             'remarks' => 'required',
         ]);
 
-        $assignees = [];
+        DB::transaction(function () {
 
-        // Main Assign
-        if ($this->assigned) {
-            $assignees[] = (int) $this->assigned;
-        }
-
-
-        // Additional Assign
-        foreach ($this->assigned_to ?? [] as $employeeId) {
-
-            if ($employeeId) {
-                $assignees[] = (int) $employeeId;
-            }
-        }
-
-
-        // Remove duplicate
-        $assignees = array_values(array_unique($assignees));
-
-
-        DB::transaction(function () use ($assignees) {
-
-
-            // Update assigned employees
-            cpar_assignments::updateOrCreate(
-                [
-                    'cpar_id' => $this->cpar_id
-                ],
-                [
-                    'assigned_to' => $assignees,
-                    'dept_head_assigned' => $this->dept_head_assigned,
+            $mainAssignment = cpar_assignments::where('assigned_to', $this->assigned_to)->first();
+            if ($mainAssignment) {
+                $mainAssignment->update([
+                    'assigned_to'   => (int) $this->assigned,
                     'assigned_date' => now(),
-                    'remarks' => $this->remarks,
-                    'created_by' => auth()->id(),
-                ]
-            );
-
-
-            // Update CPAR Status
-            cpar_request_forms::where('id', $this->cpar_id)
-                ->update([
-                    'status_id' => 10
+                    'remarks'       => $this->remarks,
+                    'status_id'     => 10,
                 ]);
-        });
+            } else {
 
+                $mainAssignment->update([
+                    'assigned_to'   => (int) $this->assigned,
+                    'assigned_date' => now(),
+                    'remarks'       => $this->remarks,
+                    'status_id'     => 10,
+                ]);
+            }
+
+            foreach ($this->new_assignees as $employeeId) {
+
+                if (!empty($employeeId)) {
+                    cpar_assignments::create([
+                        'cpar_id'            => $this->cpar_id,
+                        'assigned_to'        => (int) $employeeId,
+                        'department_id'      => $this->department_id,
+                        'dept_head_assigned' => $this->dept_head_assigned,
+                        'assigned_date'      => now(),
+                        'remarks'            => $this->remarks,
+                        'status_id'          => 10,
+                        'created_by'         => auth()->id(),
+                    ]);
+                }
+            }
+        });
 
         $this->dispatch(
             'toast',
             type: 'success',
-            message: 'CPAR successfully reassigned.'
+            message: 'CPAR successfully re-assigned.'
         );
 
         $this->reset([
             'assigned',
             'assigned_to',
-            'remarks'
+            'new_assignees',
+            'remarks',
         ]);
 
-
-        $this->modal('reassign-cpar')->close();
+        // ✅ CLOSE FLUX MODAL
+        $this->dispatch('modal-close', name: 'reassign-cpar');
+        $this->dispatch('modal-close', name: 'CPARHRModal');
+        $this->dispatch('refreshHRData');
+        $this->dispatch('refreshHRCount');
     }
 
     public function render()

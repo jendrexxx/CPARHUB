@@ -79,7 +79,7 @@
                                             </flux:menu.item>
                                             <flux:menu.item
                                                 icon="document-text"
-                                                wire:click="respondCpar({{ $request->id }})">
+                                                wire:click="respondCpar({{ $request->assignment_id }})">
                                                 Respond to CPAR
                                             </flux:menu.item>
                                         </flux:menu>
@@ -88,7 +88,7 @@
                             </tr>
                             @empty
                             <tr>
-                                <td colspan="6" class="px-4 py-10 text-center text-zinc-500 dark:text-zinc-400">
+                                <td colspan="7" class="px-4 py-10 text-center text-zinc-500 dark:text-zinc-400">
                                     No CPAR requests found.
                                 </td>
                             </tr>
