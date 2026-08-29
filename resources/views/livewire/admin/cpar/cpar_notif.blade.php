@@ -9,11 +9,12 @@
             <div class="overflow-x-auto rounded-lg border border-zinc-200 dark:border-zinc-700 text-center">
                 <div class="w-full overflow-x-auto rounded-lg border border-zinc-200 dark:border-zinc-700">
                     <table class="w-full text-sm text-center">
-                        <thead class="bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 uppercase text-xs tracking-wider">
+                        <thead class="bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 text-xs tracking-wider">
                             <tr>
                                 <th class="px-4 py-3">CPAR No.</th>
                                 <th class="px-4 py-3">Reported By</th>
                                 <th class="px-4 py-3">Date Open</th>
+                                <th class="px-4 py-3">Reported Employee</th>
                                 <th class="px-4 py-3">Department Name</th>
                                 <th class="px-4 py-3">Status</th>
                                 <th class="px-4 py-3">Action</th>
@@ -33,6 +34,10 @@
 
                                 <td class="px-4 py-3 text-zinc-700 dark:text-zinc-300">
                                     {{ \Carbon\Carbon::parse($request->date_open)->format('M d, Y') }}
+                                </td>
+
+                                <td class="px-4 py-3 text-zinc-700 dark:text-zinc-300">
+                                    {{ $request->assigned_full_name }}
                                 </td>
 
                                 <td class="px-4 py-3 text-zinc-700 dark:text-zinc-300">
@@ -71,13 +76,6 @@
                                         </flux:button>
 
                                         <flux:menu>
-                                            {{-- View Details --}}
-                                            <flux:menu.item
-                                                icon="eye"
-                                                wire:click="viewDetails({{ $request->id }})">
-                                                View Details
-                                            </flux:menu.item>
-
                                             {{-- Re-Assign --}}
                                             @if($request->status_name == 'PENDING')
                                             <flux:menu.item
@@ -93,7 +91,7 @@
                             </tr>
                             @empty
                             <tr>
-                                <td colspan="6" class="px-4 py-10 text-center text-zinc-500 dark:text-zinc-400">
+                                <td colspan="7" class="px-4 py-10 text-center text-zinc-500 dark:text-zinc-400">
                                     No CPAR requests found.
                                 </td>
                             </tr>

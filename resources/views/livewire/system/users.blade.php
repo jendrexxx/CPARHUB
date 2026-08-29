@@ -1,4 +1,15 @@
 <div>
+    
+    <div class="mb-6">
+        <h2 class="text-xl font-semibold text-gray-900 dark:text-white">
+            User Setup
+        </h2>
+
+        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+            Manage system users, employee accounts, departments, branches, and assigned roles.
+        </p>
+    </div>
+
     <livewire:common.custom-table
         :model="'App\Models\User'"
         refreshEvent="refreshUsers"
@@ -21,7 +32,6 @@
             'department_name',
             'branch_name',
         ]" />
-
     <livewire:system.modal.create_user />
     <livewire:system.modal.permission />
 </div>

@@ -23,6 +23,7 @@ return new class extends Migration
             $table->string('complainant_name');
             $table->longText('concern_description');
             $table->integer('department_id');
+            $table->string('priority_level');
             $table->integer('created_by');
             $table->timestamps();
         });

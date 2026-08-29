@@ -2,7 +2,8 @@
 
 namespace App\Livewire\User\Result;
 
-use App\Models\cpar_complain_categories;
+use App\Models\cpar_assignments;
+use App\Models\priority_level;
 use App\Models\result_error_data_informations;
 use App\Models\result_error_form;
 use App\Models\result_error_quality_accuracies;
@@ -12,18 +13,21 @@ use Livewire\Component;
 use Illuminate\Support\Facades\Auth;
 use App\Models\employee;
 use App\Models\result_complain_categories;
+use Illuminate\Support\Facades\DB;
 
 class ResultRequestForm extends Component
 {
-    public $result_no = '', $date_reported = '', $patient_name = '', $attending_physician = '', $actual_released_date = '', $complain_category_id = '', $complain_name = '', $concern_description = '', $employee_no = '', $report_reciepient = '', $test_procedure = '', $employeeCategoryId = '';
-    public $source = [], $data = [], $quality = [], $technical = [];
+    public $result_no = '', $date_reported = '', $patient_name = '', $attending_physician = '', $actual_released_date = '', $complain_category_id = '', $complain_name = '', $concern_description = '', $employee_no = '', $reported_by = '', $test_procedure = '', $employeeCategoryId = '';
+    public $source = [], $data = [], $quality = [], $technical = [], $data_information = [];
     public array $selectedData = [];
     public array $selectedTechnical = [];
     public array $selectedQuality = [];
     public $result_complain = [];
     public $complain_name_disabled = false;
-    public $source_of_information = '';
-    public $data_information = [];
+    public $source_of_information = '', $branch_id = '', $id = '', $department_name = '', $department_id = '', $dept_head_assigned = '';
+    public $employees = [];
+    public $priority_level = [];
+    public $priority = '';
 
     public function mount()
     {
@@ -31,19 +35,39 @@ class ResultRequestForm extends Component
         $info = employee::where('email', $user->email)->first();
         if ($info) {
             $this->employee_no = $info->employee_no;
-            $this->report_reciepient = $info->first_name . ' ' . $info->last_name;
+            $this->reported_by = $info->first_name . ' ' . $info->last_name;
+            $this->branch_id = $info->branch_id;
+            $this->id = $info->id;
         }
         $this->date_reported = now()->format('M d, Y');
         $this->result_no = $this->generateResultNo();
-        $this->source = result_error_source_of_info::select('id', 'source_name')->get();
+        $this->source = result_error_source_of_info::select('id', 'source_name')
+            ->orderBy('source_name')
+            ->get();
         $this->data = result_error_data_informations::all();
         $this->quality = result_error_quality_accuracies::all();
         $this->technical = result_error_technical_equipments::all();
         $this->result_complain = result_complain_categories::select('id', 'complain_name')->get();
-
-         // Get Employee category ID
+        $this->priority_level = priority_level::select('id', 'priority_name')->get();
+        // Get Employee category ID
         $employeeCategory = result_complain_categories::where('complain_name', 'Employee')->first();
         $this->employeeCategoryId = $employeeCategory?->id;
+
+        // Get employees except logged-in employee
+        $this->employees = DB::table('employees as e')
+            ->join('employees as h', 'e.dept_head', '=', 'h.employee_no')
+            ->where('e.branch_id', $this->branch_id)
+            ->where('e.email', '!=', $info->email)
+            ->select(
+                'h.id',
+                'h.employee_no',
+                'h.first_name',
+                'h.last_name',
+                'h.department_name',
+                'h.department_id'
+            )
+            ->distinct()
+            ->get();
     }
 
     protected function generateResultNo()
@@ -62,12 +86,23 @@ class ResultRequestForm extends Component
     public function updatedComplainCategoryId($value = '')
     {
         if ($value == $this->employeeCategoryId) {
-
-            $this->complain_name = $this->report_reciepient;
+            $this->complain_name = $this->reported_by;
             $this->complain_name_disabled = true;
         } else {
             $this->complain_name = '';
             $this->complain_name_disabled = false;
+        }
+    }
+
+    public function updatedDeptHeadAssigned($value = '')
+    {
+        $employee = $this->employees->firstWhere('id', $value);
+
+        if ($employee) {
+            $this->department_name = $employee->department_name;
+            $this->department_id = $employee->department_id;
+        } else {
+            $this->department_name = '';
         }
     }
 
@@ -86,7 +121,7 @@ class ResultRequestForm extends Component
         $result = result_error_form::create([
             'result_no' => $this->result_no,
             'employee_no' => $this->employee_no,
-            'report_reciepient' => $this->report_reciepient,
+            'reported_by' => $this->reported_by,
             'date_reported' => now(),
             'patient_name' => $this->patient_name,
             'attending_physician' => $this->attending_physician,
@@ -99,12 +134,20 @@ class ResultRequestForm extends Component
             'complainant_category' => $this->complain_category_id,
             'complain_name' => $this->complain_name,
             'concern_description' => $this->concern_description,
-            'status_id' => 1
+            'department_id'       => $this->department_id,
+            'priority_level'      => $this->priority
         ]);
-        session()->flash(
-            'success',
-            'Result Concern submitted successfully.'
-        );
+        cpar_assignments::create([
+            'cpar_id'               => $result->id,
+            'dept_head_assigned'    => $this->dept_head_assigned,
+            'department_id'         => $this->department_id,
+            'status_id'             => 1,
+            'record_type'           => 10,
+            'created_by'            => Auth::id(),
+        ]);
+
+        session()->flash('success', 'Result Concern submitted successfully.');
+
         return redirect()->route('user_dashboard');
     }
 

@@ -3,16 +3,14 @@
 
         <div class="mb-6">
             <flux:heading size="xl" class="text-red-600">
-                CPAR Request Form
+                Reported Concern
             </flux:heading>
 
             <flux:text class="mt-1">
                 Corrective and Preventive Action Request
             </flux:text>
         </div>
-
         <form wire:submit.prevent="save" class="space-y-6">
-
             {{-- CPAR No & Date --}}
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 
@@ -30,8 +28,8 @@
             </div>
 
             {{-- Source Origin --}}
-            <flux:select wire:model="source_origin_id" label="Source Origin">
-                <option>Select Source</option>
+            <flux:select wire:model="source_origin_id" label="Source Origin"
+                placeholder="Select Source">
                 @foreach ($source_origin as $origin)
                 <option value="{{ $origin->id }}">
                     {{ $origin->source_name }}
@@ -51,8 +49,8 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <flux:select
                     wire:model.live="complain_category_id"
-                    label="Complainant Category">
-                    <option value="">Select</option>
+                    label="Complainant Category"
+                    placeholder="Select Complainant">
                     @foreach ($cpar_complain as $category)
                     <option value="{{ $category->id }}">
                         {{ $category->complain_name }}
@@ -72,7 +70,7 @@
                 rows="5" />
 
             {{-- Attachment --}}
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div>
                     <flux:field>
                         <flux:label>Attachment</flux:label>
@@ -94,14 +92,26 @@
                 {{-- Concern Category --}}
                 <flux:select
                     wire:model.live="concern_category_id"
-                    label="Concern Category">
-                    <option value="">Select</option>
+                    label="Concern Category"
+                    placeholder="Select Category">
                     @foreach ($cpar_concern as $concern)
                     <option value="{{ $concern->id }}">
                         {{ $concern->concern_name }}
                     </option>
                     @endforeach
                 </flux:select>
+                <div>
+                    <flux:select
+                        wire:model="priority"
+                        label="Priority"
+                        placeholder="Select Priority">
+                        @foreach ($priority_level as $priority)
+                        <flux:select.option value="{{ $priority->id }}">
+                             {{ $priority->priority_name }}
+                        </flux:select.option>
+                        @endforeach
+                    </flux:select>
+                </div>
             </div>
 
             {{-- Assigned To --}}

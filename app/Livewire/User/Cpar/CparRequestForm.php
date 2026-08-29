@@ -2,6 +2,7 @@
 
 namespace App\Livewire\User\Cpar;
 
+use App\Models\audit_logs;
 use App\Models\cpar_assignments;
 use App\Models\cpar_attachments;
 use App\Models\cpar_complain_categories;
@@ -10,14 +11,13 @@ use Livewire\Component;
 use App\Models\cpar_request_forms;
 use App\Models\cpar_source_origins;
 use App\Models\employee;
+use App\Models\priority_level;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Livewire\WithFileUploads;
-use App\Traits\CparHistoryTrait;
 
 class CparRequestForm extends Component
 {
-    use CparHistoryTrait;
     use WithFileUploads;
 
     // Parent toggles (kasabay ng "Data and Information Errors" checkbox mismo)
@@ -29,7 +29,6 @@ class CparRequestForm extends Component
     public array $data_information = [];
     public array $technical_information = [];
     public array $quality_information = [];
-
     public $source_origin = [], $cpar_complain = [], $cpar_concern = [], $employees = [], $employees_data = [], $data_informations = [], $quality_accuracies = [], $technical_equipments = [];
     public $employee = '';
     public $complain_name_disabled = false;
@@ -38,6 +37,8 @@ class CparRequestForm extends Component
     public $resultsCategoryId = '';
     public $actual_released_date = '';
     public $employee_no = '';
+    public $id = '', $priority = '';
+    public $priority_level = [];
 
     public function mount()
     {
@@ -47,18 +48,19 @@ class CparRequestForm extends Component
             $this->reported_by = $info->first_name . ' ' . $info->last_name;
             $this->branch_id = $info->branch_id;
             $this->employee_no = $info->employee_no;
+            $this->id = $info->id;
         }
         $this->date_opened = now()->format('M d, Y');
         $this->cpar_no = $this->generateCparNo();
         $this->source_origin = cpar_source_origins::select('id', 'source_name')->get();
         $this->cpar_complain = cpar_complain_categories::select('id', 'complain_name')->get();
         $this->cpar_concern = cpar_concern_categories::select('id', 'concern_name')->get();
+        $this->priority_level = priority_level::select('id', 'priority_name')->get();
         $resultsCategory = cpar_concern_categories::where('concern_name', 'Results')->first();
         $this->resultsCategoryId = $resultsCategory?->id;
         // Get Employee category ID
         $employeeCategory = cpar_complain_categories::where('complain_name', 'Employee')->first();
         $this->employeeCategoryId = $employeeCategory?->id;
-
         // Get employees except logged-in employee
         $this->employees = DB::table('employees as e')
             ->join('employees as h', 'e.dept_head', '=', 'h.employee_no')
@@ -86,7 +88,8 @@ class CparRequestForm extends Component
             'concern_category_id' => 'required',
             'dept_head_assigned' => 'required',
             'attachment' => 'nullable|file|mimes:jpg,jpeg,png,pdf,doc,docx|max:5120',
-            'department_name' => 'required'
+            'department_name' => 'required',
+            'priority' => 'required'
         ];
     }
 
@@ -127,6 +130,7 @@ class CparRequestForm extends Component
                 'complainant_name'      => $this->complain_name,
                 'concern_description'   => $this->concern_description,
                 'department_id'         => $this->department_id,
+                'priority_level'        => $this->priority,
                 'created_by'            => Auth::id(),
             ]);
 
@@ -150,29 +154,41 @@ class CparRequestForm extends Component
                 'cpar_id'        => $request->id,
                 'dept_head_assigned'    => $this->dept_head_assigned,
                 'department_id'  => $this->department_id,
-                'status_id'             => 1,
+                'status_id'      => 1,
+                'record_type'    => 5,
                 'created_by'     => Auth::id(),
             ]);
 
-            // cpar histories
-            $this->addCparHistory([
-                'cpar_id'       => $request->id,
-                'action'        => 'CPAR Created',
-                'new_status'    => 'PENDING',
-                'old_status'    => null,
-                'reported_by'   => $this->reported_by,
-                'assigned_id'   => $this->dept_head_assigned,
-                'remarks'       => 'CPAR application submitted.',
+            $newValue = [
+                'cpar_no'               => $this->cpar_no,
+                'date_opened'           => $this->date_opened,
+                'source_origin_id'      => $this->source_origin_id,
+                'reported_by'           => $this->reported_by,
+                'complain_category_id'  => $this->complain_category_id,
+                'complain_name'         => $this->complain_name,
+                'concern_description'   => $this->concern_description,
+                'attachment'            => $attachmentPath ?? null,
+                'concern_category_id'   => $this->concern_category_id,
+                'dept_head_assigned'    => $this->dept_head_assigned,
+                'department_name'       => $this->department_name,
+                'priority_level'        => $this->priority,
+            ];
+
+            audit_logs::create([
+                'user_reported_by'    => $this->reported_by,
+                'user_reported'       => $this->dept_head_assigned,
+                'action'     => 'CREATED',
+                'old_value'  => null,
+                'new_value'  => json_encode($newValue),
+                'status_changed_by' => $this->id,
+                'date'       => now(),
             ]);
         });
 
-
         $this->reset_form();
-        $this->dispatch('toast', [
-            'type' => 'success',
-            'message' => 'CPAR application submitted successfully!',
-        ]);
-        return redirect()->route('user_dashboard');
+        return redirect()
+            ->route('user_dashboard')
+            ->with('toast', ['type' => 'success', 'message' => 'CPAR application submitted successfully!',]);
     }
 
     public function updatedComplainCategoryId($value = '')

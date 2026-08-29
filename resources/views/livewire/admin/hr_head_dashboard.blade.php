@@ -12,7 +12,6 @@
             </p>
         </div>
 
-
         {{-- Right: Branch Filter --}}
         <div class="w-64">
 
@@ -35,7 +34,7 @@
     </div>
     @include('toast')
 
-    <div class="p-3 grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
+    <div class="p-3 grid grid-cols-1 sm:grid-cols-4 gap-4 sm:gap-6">
 
         {{-- Reported Concern --}}
         <flux:modal.trigger name="CPARHRModal">
@@ -107,7 +106,6 @@
                shadow-sm cursor-pointer
                transition-all duration-200
                hover:-translate-y-1 hover:shadow-lg">
-
                 {{-- Icon --}}
                 <div
                     class="flex h-12 w-12 shrink-0 items-center justify-center
@@ -127,6 +125,42 @@
 
                     <div class="text-sm font-medium text-gray-500 dark:text-zinc-400">
                         Pending HR Decision
+                    </div>
+                </div>
+
+            </div>
+        </flux:modal.trigger>
+
+        {{-- Pending HR Decision --}}
+        <flux:modal.trigger name="HRMemoModal">
+            <div
+                class="group flex h-full w-full items-center gap-4 p-5
+        bg-white dark:bg-zinc-900
+        rounded-2xl border border-gray-200 dark:border-zinc-700
+        shadow-sm cursor-pointer
+        transition-all duration-200
+        hover:-translate-y-1 hover:shadow-lg">
+
+                {{-- Icon --}}
+                <div
+                    class="flex h-12 w-12 shrink-0 items-center justify-center
+            rounded-xl bg-blue-100 text-blue-600
+            transition-all duration-200
+            group-hover:bg-blue-500 group-hover:text-white
+            group-hover:scale-105">
+
+                    <flux:icon.document-text class="h-6 w-6" />
+
+                </div>
+
+                {{-- Content --}}
+                <div class="min-w-0">
+                    <div class="text-2xl font-bold text-gray-900 dark:text-white">
+                        {{ $memo_count }}
+                    </div>
+
+                    <div class="text-sm font-medium text-gray-500 dark:text-zinc-400">
+                        Employees Subject to Memo
                     </div>
                 </div>
 
@@ -165,18 +199,21 @@
         </flux:modal.trigger>
 
     </div>
+    <livewire:admin.tabs.hr_tabs :branch_id="$branch_id" :key="'hr-tabs-'.$branch_id" />
 
     <!-- CPAR -->
-    <livewire:admin.hr.hr_notif />
-    <livewire:admin.hr.hr_reassign />
-    <livewire:admin.hr.hr_acknowledge_notif />
+    <livewire:admin.hr.hr_notif :branch_id="$branch_id" :key="'hr-notif-'.$branch_id" />
+    <livewire:admin.hr.hr_reassign :branch_id="$branch_id" :key="'hr-assign-'.$branch_id" />
+    <livewire:admin.hr.hr_acknowledge_notif :branch_id="$branch_id" :key="'hr-acknowledge-notif-'.$branch_id" />
     <livewire:admin.hr.hr_acknowledge_modal />
     <livewire:admin.hr.hr_notice_explain_modal />
-    <livewire:admin.hr.hr_decision_notif />
+    <livewire:admin.hr.hr_decision_notif :branch_id="$branch_id" :key="'hr-decision-notif-'.$branch_id" />
     <livewire:admin.hr.hr_decision_modal />
+    <livewire:admin.hr.hr_memo_notif :branch_id="$branch_id" :key="'hr-memo-notif-'.$branch_id" />
+    <livewire:admin.hr.hr_memo_modal />
     <livewire:admin.hr.hr_ir_request />
     <livewire:user.modal.cpar_edit />
-
     <!-- RESULT -->
-    <livewire:user.modal.result_notif />
+    <livewire:admin.result.hr_result_notif :branch_id="$branch_id" :key="'hr-notif-'.$branch_id" />
+    <livewire:admin.result.hr_re-assign />
 </div>

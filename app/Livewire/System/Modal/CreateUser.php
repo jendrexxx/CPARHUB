@@ -57,11 +57,11 @@ class CreateUser extends Component
         ];
         // Password required only when creating
         if (!$this->user_id) {
-            $rules['password'] = ['required', 'min:8'];
+            $rules['password'] = ['required', 'min:7'];
             $rules['confirm_password'] = ['required', 'same:password'];
         } else {
             // Optional when editing
-            $rules['password'] = ['nullable', 'min:8'];
+            $rules['password'] = ['nullable', 'min:7'];
             $rules['confirm_password'] = ['nullable', 'same:password'];
         }
 
@@ -160,9 +160,17 @@ class CreateUser extends Component
     public function save()
     {
         $this->validate();
+
         if ($this->user_id) {
+
+            // ==========================================
             // UPDATE USER
+            // ==========================================
+
             $user = User::findOrFail($this->user_id);
+
+            // Keep old email before updating user
+            $oldEmail = $user->email;
 
             $data = [
                 'name'     => $this->name,
@@ -171,36 +179,100 @@ class CreateUser extends Component
                 'status'   => $this->status,
             ];
 
-            // update password only if entered
+            // Update password only if entered
             if (!empty($this->password)) {
-                $user->update([
-                    'password' => Hash::make($this->password)
-                ]);
+                $data['password'] = Hash::make($this->password);
             }
+
             $user->update($data);
-            // Update employee table
+
+
+            // ==========================================
+            // UPDATE EMPLOYEE
+            // ==========================================
+
             DB::table('employees')
-                ->where('email', $user->email)
+                ->where('email', $oldEmail)
                 ->update([
-                    'employee_no'    => $this->employee_no,
+                    'email'            => $this->email,
+                    'employee_no'      => $this->employee_no,
                     'department_name' => $this->department_name,
-                    'branch_name'    => $this->branch_name,
+                    'branch_name'      => $this->branch_name,
                 ]);
 
-            // Update role
-            $user->syncRoles([$this->role]);
-        } else {
-            // Create User
-            User::create([
-                'name' => $this->name,
-                'email' => $this->email,
-                'username' => $this->username,
-                'password' => bcrypt($this->password),
-            ]);
-            $this->dispatch('close-modal', name: 'user-create');
+
+            // ==========================================
+            // UPDATE ROLE
+            // ==========================================
+
+            if ($this->role) {
+                $user->syncRoles([$this->role]);
+            }
+
+
+            // ==========================================
+            // CLOSE + REFRESH
+            // ==========================================
+
+            $this->dispatch('modal-close', name: 'user-create');
+
             $this->dispatch('refreshUsers');
 
-            dd('testing');
+            $this->dispatch(
+                'toast',
+                type: 'success',
+                message: 'User successfully updated.'
+            );
+        } else {
+
+            // ==========================================
+            // CREATE USER
+            // ==========================================
+
+            $user = User::create([
+                'name'     => $this->name,
+                'email'    => $this->email,
+                'username' => $this->username,
+                'password' => Hash::make($this->password),
+                'status'   => $this->status,
+            ]);
+
+
+            // ==========================================
+            // CREATE EMPLOYEE
+            // ==========================================
+
+            DB::table('employees')->insert([
+                'employee_no'      => $this->employee_no,
+                'name'             => $this->name,
+                'email'            => $this->email,
+                'department_name'  => $this->department_name,
+                'branch_name'      => $this->branch_name,
+            ]);
+
+
+            // ==========================================
+            // ASSIGN ROLE
+            // ==========================================
+
+            if ($this->role) {
+                $user->assignRole($this->role);
+            }
+
+
+            // ==========================================
+            // CLOSE + REFRESH
+            // ==========================================
+
+            $this->dispatch('modal-close', name: 'user-create');
+
+            $this->dispatch('refreshUsers');
+
+            $this->dispatch(
+                'toast',
+                type: 'success',
+                message: 'User successfully created.'
+            );
         }
     }
 

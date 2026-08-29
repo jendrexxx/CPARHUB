@@ -14,9 +14,9 @@ return new class extends Migration
         Schema::create('cpar_investigations', function (Blueprint $table) {
             $table->id();
             $table->integer('assigned_id');
-            $table->longText('identified_cause');
-            $table->longText('provided_solution');
-            $table->longText('recommendation');
+            $table->longText('identified_cause')->nullable();
+            $table->longText('provided_solution')->nullable();
+            $table->longText('recommendation')->nullable();
             $table->longText('action_taken_by');
             $table->string('date_completed');
             $table->string('tat');

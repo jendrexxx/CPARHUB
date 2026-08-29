@@ -74,7 +74,7 @@
             </div>
         </flux:modal.trigger>
 
-        <flux:modal.trigger name="RESULTModal">
+        <flux:modal.trigger name="ResultModal">
             <div
                 class="group flex h-full w-full items-center gap-4 p-5
                    bg-white dark:bg-zinc-900
@@ -100,11 +100,14 @@
             </div>
         </flux:modal.trigger>
     </div>
-
     <!-- CPAR -->
     <livewire:admin.cpar.cpar_notif />
     <livewire:admin.cpar.cpar_edit />
     <livewire:admin.cpar.cpar_re-assigned />
     <livewire:admin.cpar.cpar_submission_form />
     <livewire:admin.cpar.cpar_submission_modal />
+
+    <!-- RESULT -->
+    <livewire:admin.result.result_notif />
+    <livewire:admin.result.result_assign />
 </div>

@@ -26,7 +26,8 @@ class HrIrRequest extends Component
     public $date_completed = '';
     public $tat = '';
     public $remarks = '';
-
+    public $attachment = '';
+    public $date_open = '', $reported_by = '', $department_name = '', $status_name = '', $source_name = '', $complain_name = '', $concern_name = '', $concern_description = '', $complainant_name = '';
 
     protected $listeners = [
         'ir-request-cpar' => 'open_ir'
@@ -51,38 +52,55 @@ class HrIrRequest extends Component
 
     public function open_ir($id = null)
     {
-        $request = DB::table('cpar_assignments as b')
-            ->join('cpar_request_forms as a', 'a.id', '=', 'b.cpar_id')
-            ->join('employees as e', 'e.id', '=', 'b.assigned_to')
-            ->join('cpar_investigations as j', 'b.id', '=', 'j.assigned_id')
+        $request = DB::table('cpar_request_forms as a')
+            ->leftJoin('cpar_assignments as b', 'a.id', '=', 'b.cpar_id')
+            ->leftJoin('cpar_attachments as c', 'a.id', '=', 'c.cpar_id')
+            ->leftJoin('cpar_source_origins as d', 'a.source_id', '=', 'd.id')
+            ->leftJoin('cpar_complain_categories as e', 'a.complaint_category_id', '=', 'e.id')
+            ->leftJoin('cpar_concern_categories as f', 'a.concern_category_id', '=', 'f.id')
+            ->leftJoin('departments as g', 'a.department_id', '=', 'g.id')
+            ->leftJoin('cpar_statuses as h', 'b.status_id', '=', 'h.id')
+            ->leftJoin('employees as i', 'b.assigned_to', 'i.id')
+            ->leftJoin('cpar_investigations as j', 'b.id', '=', 'j.assigned_id')
             ->where('b.id', $id)
             ->select(
                 'a.cpar_no',
-                'b.status_id',
-                'b.cpar_id',
-                'b.dept_head_assigned',
+                'a.reported_by',
+                'a.date_open',
+                'a.concern_description',
+                'a.complainant_name',
                 'b.id as assignment_id',
+                'b.cpar_id',
                 'b.assigned_to',
+                'b.remarks',
+                'b.status_id',
+                'b.dept_head_assigned',
                 'b.department_id',
+                'd.source_name',
+                'e.complain_name',
+                'f.concern_name',
+                'g.department_name',
+                'c.file_path',
+                'h.status_name',
+                'i.branch_id',
+                'i.first_name',
+                'i.last_name',
+                DB::raw("CONCAT(i.first_name, ' ', i.last_name) as employee_name"),
+                'i.employee_no',
                 'j.assigned_id',
                 'j.identified_cause',
                 'j.provided_solution',
                 'j.recommendation',
                 'j.action_taken_by',
                 'j.date_completed',
-                'j.tat',
-                'j.remarks',
-                DB::raw("CONCAT(e.first_name, ' ', e.last_name) as employee_name"),
-                'e.employee_no'
+                'j.tat'
             )->first();
         if (!$request) {
             return;
         }
-
         $ir_request = DB::table('cpar_ir_requests')
             ->where('assignment_ir_id', $id)
             ->first();
-
         $this->hasIrRequest = !is_null($ir_request);
         $this->assignment_id = $request->assignment_id;
         $this->employee_name = $request->employee_name;
@@ -93,7 +111,6 @@ class HrIrRequest extends Component
         $this->department_id = $request->department_id;
         $this->cpar_id = $request->cpar_id;
         $this->assigned_to = $request->assigned_to;
-        // cpar_investigations
         $this->assigned_id = $request->assigned_id;
         $this->identified_cause = $request->identified_cause;
         $this->provided_solution = $request->provided_solution;
@@ -102,6 +119,16 @@ class HrIrRequest extends Component
         $this->date_completed = $request->date_completed;
         $this->tat = $request->tat;
         $this->remarks = $request->remarks;
+        $this->date_open = $request->date_open;
+        $this->department_name = $request->department_name;
+        $this->status_name = $request->status_name;
+        $this->source_name = $request->source_name;
+        $this->complain_name = $request->complain_name;
+        $this->concern_name = $request->concern_name;
+        $this->concern_description = $request->concern_description;
+        $this->complainant_name = $request->complainant_name;
+        $this->attachment = $request->file_path;
+        $this->reported_by = $request->reported_by;
         $this->modal('incident-report-request')->show();
     }
 
@@ -125,7 +152,6 @@ class HrIrRequest extends Component
                 'created_at'   => now(),
                 'updated_at'   => now(),
             ]);
-
             // Update CPAR Assignment
             DB::table('cpar_assignments')
                 ->where('id', $this->assignment_id)
@@ -183,6 +209,7 @@ class HrIrRequest extends Component
 
         $this->dispatch('modal-close', name: 'acknowledge-cpar');
         $this->dispatch('modal-close', name: 'CPARAcknowledgeModal');
+        $this->dispatch('modal-close', name: 'incident-report-request');
         $this->dispatch('refreshAcknowledgeRecords');
         $this->dispatch('refreshAcknowledgeCount');
         // Toast
@@ -190,13 +217,6 @@ class HrIrRequest extends Component
             'toast',
             type: 'success',
             message: 'Incident Report request successfully created.'
-        );
-
-
-        // Close modal
-        $this->dispatch(
-            'close-modal',
-            name: 'incident-report-request'
         );
     }
 

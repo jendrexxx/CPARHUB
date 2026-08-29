@@ -21,6 +21,7 @@ return new class extends Migration
             $table->dateTime('assigned_date')->nullable();
             $table->integer('status_id');
             $table->text('remarks')->nullable();
+            $table->integer('record_type')->nullable();
             $table->integer('created_by');
             $table->timestamps();
         });

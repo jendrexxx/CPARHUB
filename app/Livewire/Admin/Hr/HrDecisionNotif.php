@@ -12,13 +12,15 @@ class HrDecisionNotif extends Component
 
     public $search = '';
     public $hrDecisionList = '';
+    public $branch_id = '';
 
     protected $listeners = [
         'refreshDecisionRecords' => 'loadDecisionRecords',
     ];
 
-    public function mount()
+    public function mount($branch_id)
     {
+        $this->branch_id = $branch_id;
         $this->loadDecisionRecords();
     }
 
@@ -32,12 +34,12 @@ class HrDecisionNotif extends Component
         $this->hrDecisionList = DB::table('cpar_request_forms as a')
             ->join('cpar_assignments as b', 'a.id', '=', 'b.cpar_id')
             ->join('cpar_investigations as c', 'b.id', '=', 'c.assigned_id')
-            ->leftJoin('cpar_notice_to_explains as d', 'b.id', '=', 'd.assignment_id')
             ->join('departments as g', 'a.department_id', '=', 'g.id')
             ->join('cpar_statuses as h', 'b.status_id', '=', 'h.id')
             // Employee
             ->join('employees as i', 'b.assigned_to', '=', 'i.id')
             ->leftJoin('cpar_ir_requests as j', 'b.id', '=', 'j.assignment_ir_id')
+            ->leftJoin('cpar_notice_to_explains as d', 'j.id', '=', 'd.assignment_id')
             ->select(
                 'a.id',
                 'a.cpar_no',
@@ -75,7 +77,7 @@ class HrDecisionNotif extends Component
                 ) as offense_count
                 ")
             )
-            ->whereIn('b.status_id', [35, 40])
+            ->whereIn('b.status_id', [20, 25, 30])
             ->when(
                 !empty($this->search),
                 function ($query) {
@@ -123,7 +125,14 @@ class HrDecisionNotif extends Component
                 }
             )
             ->orderByDesc('b.id')
+            ->where('i.branch_id', $this->branch_id)
             ->get();
+    }
+
+    public function updatedBranchId($value = '')
+    {
+        $this->branch_id = $value;
+        $this->loadDecisionRecords();
     }
 
     public function viewCpar($id)

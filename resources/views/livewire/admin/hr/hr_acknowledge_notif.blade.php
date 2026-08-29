@@ -19,15 +19,15 @@
             {{-- Table --}}
             <div class="overflow-x-auto rounded-lg border border-zinc-200 dark:border-zinc-700">
                 <table class="w-full text-sm text-center">
-                    <thead class="bg-zinc-100 dark:bg-zinc-800
-                                  text-zinc-600 dark:text-zinc-300
-                                  uppercase text-xs tracking-wider">
+                    <thead class="bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 text-xs tracking-wider">
                         <tr>
                             <th class="px-4 py-3">CPAR No.</th>
                             <th class="px-4 py-3">Reported By</th>
                             <th class="px-4 py-3">Date Open</th>
                             <th class="px-4 py-3">Department</th>
                             <th class="px-4 py-3">Assigned To</th>
+                            <th class="px-4 py-3">Priority Status</th>
+                            <th class="px-4 py-3">Documents</th>
                             <th class="px-4 py-3">Status</th>
                             <th class="px-4 py-3">Action</th>
                         </tr>
@@ -58,6 +58,54 @@
                                 {{ $request->first_name }}
                                 {{ $request->last_name }}
                             </td>
+                            <td class="px-4 py-3">
+                                @php
+                                $priorityColor = match (strtolower($request->priority_name)) {
+                                'normal' => 'bg-green-100 text-green-700 ring-green-600/20',
+                                'high' => 'bg-orange-100 text-orange-700 ring-orange-600/20',
+                                'urgent' => 'bg-red-100 text-red-700 ring-red-600/20',
+                                default => 'bg-zinc-100 text-zinc-700 ring-zinc-600/20',
+                                };
+                                @endphp
+                                <span class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold ring-1 ring-inset {{ $priorityColor }}">
+                                    {{ $request->priority_name }}
+                                </span>
+                            </td>
+                            {{-- DOCUMENTS --}}
+                            <td class="px-4 py-4">
+                                <div class="flex justify-center gap-2">
+                                    @if (!empty($request->ir_id))
+                                    <span
+                                        class="inline-flex items-center
+                                           rounded-full
+                                           px-2.5 py-1
+                                           text-xs font-medium
+                                           bg-red-100 text-red-700
+                                           dark:bg-red-950
+                                           dark:text-red-400">
+                                        submitted IR
+                                    </span>
+                                    @endif
+                                    @if (!empty($request->nte_no))
+                                    <span
+                                        class="inline-flex items-center
+                                           rounded-full
+                                           px-2.5 py-1
+                                           text-xs font-medium
+                                           bg-blue-100 text-blue-700
+                                           dark:bg-blue-950
+                                           dark:text-blue-400">
+                                        submitted NTE
+                                    </span>
+                                    @endif
+                                    @if (empty($request->ir_id) && empty($request->nte_no))
+                                    <span class="text-zinc-400">
+                                        —
+                                    </span>
+                                    @endif
+                                </div>
+                            </td>
+
                             {{-- Status --}}
                             <td class="px-4 py-3">
                                 @if ($request->status_name === 'PENDING')
@@ -119,27 +167,11 @@
                                     </flux:button>
 
                                     <flux:menu>
-
-                                        {{-- View Details --}}
-                                        <flux:menu.item
-                                            icon="eye"
-                                            wire:click="viewDetails({{ $request->assignment_id }})">
-                                            View Details
-                                        </flux:menu.item>
-
-                                        {{-- Notice to Explain --}}
                                         <flux:menu.item
                                             icon="document-text"
-                                            wire:click="createRequestIR({{ $request->assignment_id }})">
-                                            Request IR
-                                        </flux:menu.item>
-
-                                        <flux:menu.item
-                                            icon="document-text"
-                                            wire:click="createNoticeToExplain({{ $request->assignment_id }})">
+                                            wire:click="createNoticeToExplain({{ $request->ir_request_id }})">
                                             Request NTE
                                         </flux:menu.item>
-
                                     </flux:menu>
 
                                 </flux:dropdown>
@@ -152,7 +184,7 @@
 
                         <tr>
                             <td
-                                colspan="7"
+                                colspan="9"
                                 class="px-4 py-10 text-center text-zinc-500 dark:text-zinc-400">
 
                                 No CPAR requests found.

@@ -30,8 +30,11 @@ class Permission extends Component
     {
         $this->userId = $id;
         $user = User::findOrFail($id);
-        $this->role = optional($user->roles->first())->name;
-        $this->selectedPermissions = $user->permissions
+        // Existing role
+        $this->role = $user->roles->first()?->name;
+        // Existing permissions of this user
+        $this->selectedPermissions = $user
+            ->getAllPermissions()
             ->pluck('name')
             ->toArray();
         $this->modal('user-permission')->show();
@@ -59,7 +62,6 @@ class Permission extends Component
             message: 'Permission updated successfully.'
         );
         $this->dispatch('refreshUsers');
-
     }
 
     public function render()

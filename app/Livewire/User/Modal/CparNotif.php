@@ -43,6 +43,7 @@ class CparNotif extends Component
             ->join('cpar_source_origins as d', 'a.source_id', '=', 'd.id')
             ->join('departments as g', 'a.department_id', '=', 'g.id')
             ->join('cpar_statuses as h', 'b.status_id', '=', 'h.id')
+            ->join('priority_levels as i', 'a.priority_level', '=', 'i.id')
             ->select(
                 'a.id',
                 'a.cpar_no',
@@ -53,8 +54,10 @@ class CparNotif extends Component
                 'g.department_name',
                 'h.status_name',
                 DB::raw("CONCAT(c.first_name, ' ', c.last_name) as dept_head_name"),
+                'i.priority_name'
             )
-            ->where('h.status_name', 'PENDING')
+            ->where('b.status_id', 1)
+            ->where('b.record_type', 5)
             ->where('a.employee_no', $this->employee_no)
             ->get();
     }

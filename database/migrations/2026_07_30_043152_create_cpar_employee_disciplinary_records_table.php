@@ -23,6 +23,7 @@ return new class extends Migration
             $table->date('incident_date');
             $table->date('valid_until');
             $table->text('remarks')->nullable();
+            $table->text('management_remarks')->nullable();
             $table->unsignedBigInteger('created_by')->nullable();
             $table->string('status')->default('DRAFT');
             $table->timestamps();

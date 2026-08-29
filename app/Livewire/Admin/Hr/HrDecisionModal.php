@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use Illuminate\Support\Carbon;
+use App\Models\employee;
+use Illuminate\Support\Facades\Auth;
 
 class HrDecisionModal extends Component
 {
@@ -31,17 +33,20 @@ class HrDecisionModal extends Component
     public $decisionCategories = [];
     public $disciplinaryCategories = [];
     public $offenseLevels = [];
-    public $offense_level_id = null;
+    public $offense_level_id = '';
     public $categoryOffense = [];
     public $categoryDecision = [];
     public $selectedCategories = [null];
     public $selectedOffenseLevels = [''];
     public $selectedHRDecisions = [''];
-    public $nte_attachment = null;
-    public $current_nte_attachment;
+    public $nte_attachment = '';
+    public $current_nte_attachment = '';
     public $ir_attachment = '';
-    public $ir_id = '';
-    public $current_ir_attachment;
+    public $ir_id = '', $head_remarks = '', $assigned_to ='';
+    public $isNoDisciplinaryAction = false;
+    public $current_ir_attachment = '', $management_remarks = '', $emp_reported = '', $employeeName = '', $user_id = '';
+    public $reported_by = '', $action_taken_by = '', $date_completed = '', $tat = '';
+    public $status_name = '', $source_name = '', $complain_name = '', $concern_name = '', $concern_description = '', $complainant_name = '', $attachment = '';
 
     protected $listeners = [
         'open-decision-cpar' => 'open_decision'
@@ -49,18 +54,21 @@ class HrDecisionModal extends Component
 
     public function mount()
     {
+        $user = Auth::user();
+        $info = employee::where('email', $user->email)->first();
+        if ($info) {
+            $this->user_id = $info->id;
+        }
         $this->decisionCategories = DB::table('cpar_decision_categories')
-            ->orderBy('decision_name', 'asc')
             ->orderBy('id', 'asc')
             ->get();
 
         $this->disciplinaryCategories = DB::table('cpar_disciplinary_categories')
-            ->orderBy('category_name', 'asc')
-            ->orderBy('id', 'asc')
+            ->orderBy('id', 'desc')
             ->get();
 
         $this->offenseLevels = DB::table('cpar_offense_levels')
-            ->orderBy('id')
+            ->orderBy('id', 'desc')
             ->get();
     }
 
@@ -73,7 +81,11 @@ class HrDecisionModal extends Component
             empty($this->selectedOffenseLevels[$last]) ||
             empty($this->selectedHRDecisions[$last])
         ) {
-            $this->addError('rows', 'Please complete the current row before adding another.');
+            $this->addError(
+                'rows',
+                'Please complete the current row before adding another.'
+            );
+
             return;
         }
 
@@ -90,74 +102,54 @@ class HrDecisionModal extends Component
         unset($this->selectedOffenseLevels[$index]);
         unset($this->selectedHRDecisions[$index]);
 
-        $this->selectedCategories = array_values($this->selectedCategories);
-        $this->selectedOffenseLevels = array_values($this->selectedOffenseLevels);
-        $this->selectedHRDecisions = array_values($this->selectedHRDecisions);
+        $this->selectedCategories = array_values(
+            $this->selectedCategories
+        );
+
+        $this->selectedOffenseLevels = array_values(
+            $this->selectedOffenseLevels
+        );
+
+        $this->selectedHRDecisions = array_values(
+            $this->selectedHRDecisions
+        );
     }
 
     public function open_decision($id = null)
     {
         $cpar = DB::table('cpar_request_forms as a')
-            ->join(
-                'cpar_assignments as b',
-                'a.id',
-                '=',
-                'b.cpar_id'
-            )
-            ->join(
-                'departments as g',
-                'a.department_id',
-                '=',
-                'g.id'
-            )
-            ->join(
-                'cpar_statuses as h',
-                'b.status_id',
-                '=',
-                'h.id'
-            )
-            ->leftJoin(
-                'employees as i',
-                'b.assigned_to',
-                '=',
-                'i.id'
-            )
-            ->leftJoin(
-                'cpar_investigations as j',
-                'b.id',
-                '=',
-                'j.assigned_id'
-            )
-            ->leftJoin(
-                'cpar_notice_to_explains as d',
-                'b.id',
-                '=',
-                'd.assignment_id'
-            )
-            ->leftJoin(
-                'cpar_ir_requests as e',
-                'b.id',
-                '=',
-                'e.assignment_ir_id'
-            )
-            ->leftJoin(
-                'cpar_employee_disciplinary_records as f',
-                'b.id',
-                '=',
-                'f.assignment_id'
-            )
+            ->leftJoin('cpar_assignments as b', 'a.id', '=', 'b.cpar_id')
+            ->leftJoin('cpar_attachments as c', 'a.id', '=', 'c.cpar_id')
+            ->leftJoin('cpar_source_origins as d', 'a.source_id', '=', 'd.id')
+            ->leftJoin('cpar_complain_categories as e', 'a.complaint_category_id', '=', 'e.id')
+            ->leftJoin('cpar_concern_categories as f', 'a.concern_category_id', '=', 'f.id')
+            ->leftJoin('departments as g', 'a.department_id', '=', 'g.id')
+            ->leftJoin('cpar_statuses as h', 'b.status_id', '=', 'h.id')
+            ->leftJoin('employees as i', 'b.assigned_to', 'i.id')
+            ->leftJoin('cpar_investigations as j', 'b.id', '=', 'j.assigned_id')
+            ->leftJoin('cpar_employee_disciplinary_records as k', 'b.id', '=', 'k.assignment_id')
+            ->leftJoin('cpar_ir_requests as m', 'b.id', '=', 'm.assignment_ir_id')
+            ->leftJoin('cpar_notice_to_explains as l', 'm.id', '=', 'l.assignment_id')
+            ->leftJoin('cpar_nte_responses as n', 'l.id', '=', 'n.nte_id')
             ->select(
                 // CPAR
                 'a.id as cpar_id',
                 'a.cpar_no',
                 'a.reported_by',
                 'a.date_open',
+                'a.concern_description',
+                'a.complainant_name',
+                'a.employee_no as emp_reported',
                 // Assignment
                 'b.id as assignment_id',
                 'b.assigned_to',
                 'b.remarks',
                 'b.dept_head_assigned',
                 'b.department_id',
+                'c.file_path',
+                'd.source_name',
+                'e.complain_name',
+                'f.concern_name',
                 // Employee
                 'i.employee_no',
                 'i.first_name',
@@ -173,24 +165,41 @@ class HrDecisionModal extends Component
                 'j.action_taken_by',
                 'j.date_completed',
                 'j.tat',
-                // NTE
-                'd.id as nte_id',
-                'd.nte_no',
-                'd.nte_attachment',
-                // IR
-                'e.id as ir_ids',
-                'e.ir_id',
-                'e.ir_attachment',
+                'j.remarks as head_remarks',
                 // HR Decision
-                'f.id as disciplinary_id',
-                'f.discipline_ids',
-                'f.offense_ids',
-                'f.decision_ids',
-                'f.status as decision_status',
-                'f.remarks as decision_remarks'
+                'k.id as disciplinary_id',
+                'k.discipline_ids',
+                'k.offense_ids',
+                'k.decision_ids',
+                'k.status as decision_status',
+                'k.remarks as decision_remarks',
+                'k.management_remarks',
+                // NTE
+                'l.id as nte_id',
+                'l.nte_no',
+                'l.nte_attachment',
+                // IR
+                'm.id as ir_ids',
+                'm.ir_id',
+                'm.ir_attachment',
+                'n.response_attachment'
             )
             ->where('b.id', $id)
             ->first();
+
+        $this->emp_reported = $cpar->emp_reported;
+        $cpar_info = DB::table('employees as a')
+            ->join('cpar_request_forms as b', 'a.employee_no', '=', 'b.employee_no')
+            ->where('b.employee_no', $this->emp_reported)
+            ->select(
+                'a.employee_no',
+                'a.first_name',
+                'a.last_name'
+            )
+            ->first();
+        if ($cpar_info) {
+            $this->employeeName = trim($cpar_info->first_name . ' ' . $cpar_info->last_name);
+        }
 
         if (!$cpar) {
             return;
@@ -218,21 +227,31 @@ class HrDecisionModal extends Component
         $this->cpar_no = $cpar->cpar_no;
         $this->nte_id = $cpar->nte_id;
         $this->ir_id = $cpar->ir_id;
-        $this->employee_name =
-            trim($cpar->first_name . ' ' . $cpar->last_name);
-
+        $this->employee_name = trim($cpar->first_name . ' ' . $cpar->last_name);
         $this->department_name = $cpar->department_name;
         $this->date_open = $cpar->date_open;
-        $this->nte_attachment = $cpar->nte_attachment ?? '';
-
         // Investigation
         $this->identified_cause = $cpar->identified_cause ?? '';
         $this->provided_solution = $cpar->provided_solution ?? '';
         $this->recommendation = $cpar->recommendation ?? '';
-        $this->ir_attachment = $cpar->ir_attachment ?? '';
-
+        $this->reported_by = $cpar->reported_by;
+        $this->status_name = $cpar->status_name;
+        $this->source_name = $cpar->source_name;
+        $this->complain_name = $cpar->complain_name;
+        $this->concern_name = $cpar->concern_name;
+        $this->concern_description = $cpar->concern_description;
+        $this->complainant_name = $cpar->complainant_name;
+        $this->attachment = $cpar->file_path;
+        $this->action_taken_by = $cpar->action_taken_by;
+        $this->date_completed = $cpar->date_completed;
+        $this->tat = $cpar->tat;
+        $this->head_remarks = $cpar->head_remarks;
+        $this->assigned_to = $cpar->assigned_to;
+        $this->management_remarks = $cpar->management_remarks;
+        // IR Response 
+        $this->current_ir_attachment = $cpar->ir_attachment ?? '';
         // NTE Response
-        $this->nte_response = $cpar->response_attachment ?? '';
+        $this->current_nte_attachment = $cpar->response_attachment ?? '';
         // Clear HR decision fields
         $this->hr_decision = '';
         // Open modal
@@ -283,7 +302,6 @@ class HrDecisionModal extends Component
             'selectedHRDecisions.*.required'
             => 'Please select HR decision.',
 
-
             'hr_decision_remarks.required'
             => 'HR remarks is required.',
 
@@ -295,28 +313,44 @@ class HrDecisionModal extends Component
         $rules = [];
         $messages = [];
         if (!empty($this->nte_id)) {
+
             $rules['nte_attachment'] = [
-                'required',
+                empty($this->current_nte_attachment)
+                    ? 'required'
+                    : 'nullable',
                 'file',
                 'mimes:pdf',
                 'max:10240',
             ];
+
             $messages['nte_attachment.required'] =
                 'Please upload NTE document.';
+
             $messages['nte_attachment.mimes'] =
                 'NTE document must be PDF only.';
+
+            $messages['nte_attachment.max'] =
+                'NTE document must not exceed 10MB.';
         }
         if (!empty($this->ir_id)) {
+
             $rules['ir_attachment'] = [
-                'required',
+                empty($this->current_ir_attachment)
+                    ? 'required'
+                    : 'nullable',
                 'file',
                 'mimes:pdf',
                 'max:10240',
             ];
+
             $messages['ir_attachment.required'] =
                 'Please upload IR document.';
+
             $messages['ir_attachment.mimes'] =
                 'IR document must be PDF only.';
+
+            $messages['ir_attachment.max'] =
+                'IR document must not exceed 10MB.';
         }
         $this->validate($rules, $messages);
     }
@@ -329,7 +363,7 @@ class HrDecisionModal extends Component
             $this->saveDisciplinaryRecord('FINAL');
             cpar_assignments::where('id', $this->id)
                 ->update([
-                    'status_id' => 43
+                    'status_id' => 35
                 ]);
         });
         $this->dispatch(
@@ -342,6 +376,9 @@ class HrDecisionModal extends Component
         $this->dispatch('modal-close', name: 'HRDecisionModal');
         $this->dispatch('refreshDecisionRecords');
         $this->dispatch('refreshDecisionCount');
+        $this->dispatch('refreshPreviousOffense');
+        $this->dispatch('refreshAcknowledgeRecords');
+        $this->dispatch('refreshAcknowledgeCount');
     }
 
     public function saveDraft()
@@ -356,72 +393,209 @@ class HrDecisionModal extends Component
             type: 'success',
             message: 'HR Decision draft saved.'
         );
+
         // ✅ CLOSE FLUX MODAL
         $this->dispatch('modal-close', name: 'hr-decision-cpar');
         $this->dispatch('modal-close', name: 'HRDecisionModal');
         $this->dispatch('refreshDecisionRecords');
         $this->dispatch('refreshDecisionCount');
+        $this->dispatch('refreshPreviousOffense');
     }
 
     protected function saveDisciplinaryRecord($status)
     {
+        $oldRecord = cpar_employee_disciplinary_records::where(
+            'assignment_id',
+            $this->id
+        )->first();
+
+        $oldNteResponse = null;
+
+        if ($this->nte_id) {
+            $oldNteResponse = DB::table('cpar_nte_responses')
+                ->where('nte_id', $this->nte_id)
+                ->first();
+        }
+
+        $oldIr = null;
+
+        if ($this->ir_id) {
+            $oldIr = DB::table('cpar_ir_requests')
+                ->where('assignment_ir_id', $this->id)
+                ->first();
+        }
+
         $nteAttachment = $this->current_nte_attachment;
         $irAttachment  = $this->current_ir_attachment;
 
-
-        // New NTE upload
-        if ($this->nte_attachment instanceof \Livewire\Features\SupportFileUploads\TemporaryUploadedFile) {
-
-            $nteAttachment = $this->nte_attachment->store('cpar/nte', 'public');
+        if (
+            $this->nte_attachment instanceof
+            \Livewire\Features\SupportFileUploads\TemporaryUploadedFile
+        ) {
+            $nteAttachment = $this->nte_attachment->store(
+                'cpar/nte',
+                'public'
+            );
         }
 
-
-        // New IR upload
-        if ($this->ir_attachment instanceof \Livewire\Features\SupportFileUploads\TemporaryUploadedFile) {
-
-            $irAttachment = $this->ir_attachment->store('cpar/ir', 'public');
+        if (
+            $this->ir_attachment instanceof
+            \Livewire\Features\SupportFileUploads\TemporaryUploadedFile
+        ) {
+            $irAttachment = $this->ir_attachment->store(
+                'cpar/ir',
+                'public'
+            );
         }
 
+        $incidentDate = Carbon::parse($this->date_open);
+
+        $validUntil = $incidentDate->month <= 6
+            ? $incidentDate->copy()->month(6)->endOfMonth()
+            : $incidentDate->copy()->month(12)->endOfMonth();
+
+        $oldValue = [
+            'cpar_no'           => $this->cpar_no,
+            'discipline_ids' => json_decode(
+                $oldRecord?->discipline_ids ?? '[]',
+                true
+            ),
+
+            'offense_ids' => json_decode(
+                $oldRecord?->offense_ids ?? '[]',
+                true
+            ),
+
+            'decision_ids' => json_decode(
+                $oldRecord?->decision_ids ?? '[]',
+                true
+            ),
+            'hr_decision_remarks' => $oldRecord?->remarks,
+            'decision_status'     => $oldRecord?->status,
+            'nte_attachment' =>
+            $oldNteResponse?->response_attachment
+                ?? $this->current_nte_attachment,
+            'ir_attachment' =>
+            $oldIr?->ir_attachment
+                ?? $this->current_ir_attachment,
+            'status' => $oldRecord?->status ?? 'FOR REVIEW',
+        ];
 
         cpar_employee_disciplinary_records::updateOrCreate(
             [
                 'assignment_id' => $this->id,
             ],
             [
-                'discipline_ids' => json_encode($this->selectedCategories),
-                'offense_ids'    => json_encode($this->selectedOffenseLevels),
-                'decision_ids'   => json_encode($this->selectedHRDecisions),
-                'incident_date'  => Carbon::parse($this->date_open)->format('Y-m-d'),
-                'valid_until'    => Carbon::parse($this->date_open)
-                    ->addMonths(6)
-                    ->format('Y-m-d'),
-                'remarks'        => $this->hr_decision_remarks,
-                'status'         => $status,
-                'created_by'     => auth()->id(),
+                'discipline_ids' => json_encode(
+                    $this->selectedCategories
+                ),
+
+                'offense_ids' => json_encode(
+                    $this->selectedOffenseLevels
+                ),
+
+                'decision_ids' => json_encode(
+                    $this->selectedHRDecisions
+                ),
+
+                'incident_date' => $incidentDate->format('Y-m-d'),
+
+                'valid_until' => $validUntil->format('Y-m-d'),
+
+                'remarks' => $this->hr_decision_remarks,
+
+                'status' => $status,
+
+                'created_by' => auth()->id(),
             ]
         );
 
-        // Update NTE Attachment
         if ($this->nte_id && $nteAttachment) {
-
-            DB::table('cpar_notice_to_explains')
-                ->where('id', $this->nte_id)
+            DB::table('cpar_nte_responses')
+                ->where('nte_id', $this->nte_id)
                 ->update([
-                    'nte_attachment' => $nteAttachment,
-                    'updated_at'     => now(),
+                    'response_attachment' => $nteAttachment,
+                    'updated_at' => now(),
                 ]);
         }
 
-
-        // Update IR Attachment
         if ($this->ir_id && $irAttachment) {
-
             DB::table('cpar_ir_requests')
                 ->where('assignment_ir_id', $this->id)
                 ->update([
                     'ir_attachment' => $irAttachment,
-                    'updated_at'    => now(),
+                    'updated_at' => now(),
                 ]);
+        }
+
+        DB::table('audit_logs')->insert([
+            'user_reported_by'       => $this->employeeName,
+            'user_reported'     => $this->assigned_to,
+            'action' => 'HR DECISION',
+            'old_value' => json_encode(
+                $oldValue,
+                JSON_UNESCAPED_UNICODE
+            ),
+            'new_value' => json_encode([
+                'cpar_no'           => $this->cpar_no,
+                'assigned_id'    => $this->id,
+                'discipline_ids' => $this->selectedCategories,
+                'offense_ids'    => $this->selectedOffenseLevels,
+                'decision_ids'   => $this->selectedHRDecisions,
+                'incident_date' => $incidentDate->format('Y-m-d'),
+                'valid_until'   => $validUntil->format('Y-m-d'),
+                'hr_decision_remarks' => $this->hr_decision_remarks,
+                'decision_status'     => $status,
+                'nte_attachment' => $nteAttachment,
+                'ir_attachment' => $irAttachment,
+                'status' => 'HR DECISION',
+            ], JSON_UNESCAPED_UNICODE),
+            'status_changed_by' => $this->user_id,
+            'date'       => now(),
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+    }
+
+    public function updatedSelectedHRDecisions($value, $key)
+    {
+        $decision = collect($this->decisionCategories)->firstWhere('id', $value);
+        if (!$decision) {
+            return;
+        }
+
+        $decisionName = strtoupper(trim($decision->decision_name));
+
+        if ($decisionName === 'NO DISCIPLINARY ACTION') {
+
+            $this->isNoDisciplinaryAction = true;
+
+            // Get N/A Category
+            $naCategory = collect($this->disciplinaryCategories)
+                ->first(function ($item) {
+                    return strtoupper(trim($item->category_name)) === 'N/A';
+                });
+
+            // Get N/A Offense
+            $naOffense = collect($this->offenseLevels)
+                ->first(function ($item) {
+                    return strtoupper(trim($item->offense_name)) === 'N/A';
+                });
+
+            // Set the IDs
+            $this->selectedCategories = [
+                $naCategory?->id ?? ''
+            ];
+
+            $this->selectedOffenseLevels = [
+                $naOffense?->id ?? ''
+            ];
+        } else {
+
+            $this->isNoDisciplinaryAction = false;
+
+            $this->selectedCategories = [''];
+            $this->selectedOffenseLevels = [''];
         }
     }
 

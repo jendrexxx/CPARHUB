@@ -40,6 +40,7 @@ class CparSubmissionForm extends Component
                 'a.date_open',
                 'b.id as assignment_id',
                 'b.assigned_to',
+                'b.status_id',
                 'i.employee_no',
                 'i.first_name',
                 'i.last_name',
@@ -47,7 +48,7 @@ class CparSubmissionForm extends Component
                 'g.department_name',
                 'h.status_name'
             )
-            ->whereIn('h.status_name', ['RESOLVED', 'UNRESOLVED'])
+            ->where('b.status_id', 15)
             ->where('i.dept_head', $this->employee_no)
             ->orderByDesc('a.id')
             ->get();

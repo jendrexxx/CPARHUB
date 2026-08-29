@@ -49,19 +49,17 @@ class CparNotif extends Component
                 'a.reported_by',
                 'a.date_open',
                 'b.id as assignment_id',
+                'b.status_id',
                 'b.assigned_to',
                 'g.department_name',
-                'h.status_name'
+                'h.status_name',
+                DB::raw("CONCAT(c.first_name, ' ', c.last_name) as assigned_full_name")
             )
             ->where('c.id', $this->id)
-            ->where('h.status_name', 'PENDING')
+            ->where('b.status_id', 1)
+            ->where('b.record_type', 5)
             ->orderByDesc('b.id')
             ->get();
-    }
-
-    public function viewDetails($id)
-    {
-        $this->dispatch('view-CPAR', id: $id);
     }
 
     public function reAssign($assignment_id)

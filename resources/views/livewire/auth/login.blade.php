@@ -77,51 +77,67 @@ new #[Layout('components.layouts.auth')] class extends Component {
 
         <img
             src="{{ asset('logo/premiere_logo.png') }}"
-            class="mx-auto w-20 mb-4">
+            class="mx-auto w-20 mb-4"
+            alt="Premiere Logo">
 
-        <h1 class="text-3xl font-bold text-[#9F0712]">
-            Premiere Medical
+        <h1 class="text-1xl font-bold text-[#9F0712] leading-tight">
+            Premiere Medical & Cardiovascular Laboratory, Inc.
         </h1>
-
-        <p class="text-gray-500">
-            Corrective & Preventive Action Report System
-        </p>
 
     </div>
 
     <x-auth-session-status
         :status="session('status')" />
 
-    <form
-        wire:submit.prevent="login"
-        class="space-y-5">
+    <form wire:submit.prevent="login" class="space-y-5">
 
         <flux:input
             wire:model="username"
-            label="Username" />
+            label="Username"
+            class="
+        !bg-white dark:!bg-zinc-900
+        !text-zinc-900 dark:!text-white
+        !border-zinc-300 dark:!border-zinc-700
+        placeholder:!text-zinc-400 dark:placeholder:!text-zinc-500
+        focus:!border-[#9F0712]
+        focus:!ring-[#9F0712]/20
+        " />
 
         <flux:input
             wire:model="password"
             type="password"
-            label="Password" />
+            label="Password"
+            class="
+        !bg-white dark:!bg-zinc-900
+        !text-zinc-900 dark:!text-white
+        !border-zinc-300 dark:!border-zinc-700
+        placeholder:!text-zinc-400 dark:placeholder:!text-zinc-500
+        focus:!border-[#9F0712]
+        focus:!ring-[#9F0712]/20
+        " />
 
-        <div class="flex justify-between items-center">
+        <div class="flex items-center justify-between">
 
             <flux:checkbox
                 wire:model="remember"
-                label="Remember me" />
+                label="Remember me"
+                class="text-sm" />
 
-            <flux:link href="{{ route('password.request') }}">
+            <flux:link
+                href="{{ route('password.request') }}"
+                class="text-sm">
                 Forgot password?
             </flux:link>
 
         </div>
 
         <flux:button
-            class="w-full bg-[#9F0712]">
+            class="w-full bg-[#9F0712] hover:bg-[#7F0510] text-white"
+            type="submit">
             Log in
         </flux:button>
-
+        <p class="text-center text-xs text-zinc-400">
+            Corrective Preventive Action Report System © 2026
+        </p>
     </form>
-
 </div>

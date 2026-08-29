@@ -9,13 +9,14 @@
             <div class="overflow-x-auto rounded-lg border border-zinc-200 dark:border-zinc-700 text-center">
                 <div class="w-full overflow-x-auto rounded-lg border border-zinc-200 dark:border-zinc-700">
                     <table class="w-full text-sm text-center">
-                        <thead class="bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 uppercase text-xs tracking-wider">
+                        <thead class="bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 text-xs tracking-wider">
                             <tr>
                                 <th class="px-4 py-3">CPAR No.</th>
                                 <th class="px-4 py-3">Reported By</th>
                                 <th class="px-4 py-3">Department Name</th>
                                 <th class="px-4 py-3">Date Open</th>
                                 <th class="px-4 py-3">Assigned Employee</th>
+                                <th class="px-4 py-3">Priority Level</th>
                                 <th class="px-4 py-3">Status</th>
                                 <th class="px-4 py-3">Action</th>
                             </tr>
@@ -45,6 +46,20 @@
                                 </td>
 
                                 <td class="px-4 py-3">
+                                    @php
+                                    $priorityColor = match (strtolower($request->priority_name)) {
+                                    'normal' => 'bg-green-100 text-green-700 ring-green-600/20',
+                                    'high' => 'bg-orange-100 text-orange-700 ring-orange-600/20',
+                                    'urgent' => 'bg-red-100 text-red-700 ring-red-600/20',
+                                    default => 'bg-zinc-100 text-zinc-700 ring-zinc-600/20',
+                                    };
+                                    @endphp
+                                    <span class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold ring-1 ring-inset {{ $priorityColor }}">
+                                        {{ $request->priority_name }}
+                                    </span>
+                                </td>
+                                
+                                <td class="px-4 py-3">
                                     @if($request->status_name == 'PENDING')
                                     <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">
                                         {{ $request->status_name }}
@@ -68,10 +83,8 @@
                                         <flux:button
                                             size="sm"
                                             variant="ghost"
-                                            icon="ellipsis-vertical">
-                                        </flux:button>
+                                            icon="ellipsis-vertical" />
                                         <flux:menu>
-                                            {{-- View Details --}}
                                             <flux:menu.item
                                                 icon="eye"
                                                 wire:click="viewDetails({{ $request->id }})">

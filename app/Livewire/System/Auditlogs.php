@@ -3,6 +3,8 @@
 namespace App\Livewire\System;
 
 use Livewire\Component;
+use Livewire\WithPagination;
+use Illuminate\Support\Facades\DB;
 
 class Auditlogs extends Component
 {

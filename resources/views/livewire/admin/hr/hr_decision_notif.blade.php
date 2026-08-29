@@ -42,48 +42,83 @@
             </div>
 
             {{-- Records --}}
-            <div class="space-y-4">
+            <div class="overflow-x-auto rounded-xl border border-zinc-200 dark:border-zinc-700">
 
-                @forelse ($hrDecisionList as $cpar)
+                <table class="w-full text-sm">
 
-                <div
-                    class="rounded-xl border border-zinc-200 dark:border-zinc-700 p-5
-                               hover:bg-zinc-50 dark:hover:bg-zinc-800 transition">
+                    {{-- Table Header --}}
+                    <thead class="bg-zinc-50 dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-700">
 
-                    <div class="flex justify-between items-start gap-8">
+                        <tr>
 
-                        {{-- LEFT --}}
-                        <div class="flex-1 space-y-2">
+                            <th class="px-4 py-3 text-center font-semibold">
+                                CPAR No.
+                            </th>
 
-                            <div class="text-lg font-semibold text-zinc-900 dark:text-white">
-                                {{ $cpar->cpar_no }}
-                            </div>
+                            <th class="px-4 py-3 text-center font-semibold">
+                                Reported Employee
+                            </th>
 
-                            <div class="text-sm text-zinc-500">
-                                <strong>Reported by:</strong>
-                                {{ $cpar->reported_by }}
-                            </div>
+                            <th class="px-4 py-3 text-center font-semibold">
+                                Department
+                            </th>
 
-                            <div class="text-sm text-zinc-500">
-                                <strong>Assigned to:</strong>
-                                {{ $cpar->employee_name }}
-                            </div>
+                            <th class="px-4 py-3 text-center font-semibold">
+                                Disciplinary History
+                            </th>
 
-                            <div class="text-sm text-zinc-500">
-                                <strong>Employee No.:</strong>
-                                {{ $cpar->employee_no }}
-                            </div>
+                            <th class="px-4 py-3 text-center font-semibold">
+                                Documents
+                            </th>
 
-                            <div class="text-sm text-zinc-500">
-                                <strong>Department:</strong>
-                                {{ $cpar->department_name }}
-                            </div>
+                            <th class="px-4 py-3 text-center font-semibold">
+                                Status
+                            </th>
 
-                            <div class="flex items-center gap-2 pt-2">
+                            <th class="px-4 py-3 text-center font-semibold">
+                                Action
+                            </th>
 
-                                <span class="text-sm text-zinc-500">
-                                    Disciplinary History:
+                        </tr>
+
+                    </thead>
+
+                    {{-- Table Body --}}
+                    <tbody class="divide-y divide-zinc-200 dark:divide-zinc-700">
+
+                        @forelse ($hrDecisionList as $cpar)
+
+                        <tr class="hover:bg-zinc-50 dark:hover:bg-zinc-800 transition text-center">
+
+                            {{-- CPAR --}}
+                            <td class="px-4 py-4 whitespace-nowrap">
+
+                                <div class="font-semibold text-zinc-900 dark:text-white">
+                                    {{ $cpar->cpar_no }}
+                                </div>
+
+                            </td>
+
+                            {{-- Employee --}}
+                            <td class="px-4 py-4">
+
+                                <div class="font-medium text-zinc-900 dark:text-white">
+                                    {{ $cpar->employee_name }}
+                                </div>
+
+                            </td>
+
+                            {{-- Department --}}
+                            <td class="px-4 py-4">
+
+                                <span class="text-zinc-600 dark:text-zinc-400">
+                                    {{ $cpar->department_name }}
                                 </span>
+
+                            </td>
+
+                            {{-- Disciplinary History --}}
+                            <td class="px-4 py-4 text-center">
 
                                 @if ($cpar->offense_count == 0)
 
@@ -98,7 +133,7 @@
                                 <flux:badge
                                     color="yellow"
                                     icon="exclamation-triangle">
-                                    1 Previous Offense
+                                    1 Previous
                                 </flux:badge>
 
                                 @elseif ($cpar->offense_count == 2)
@@ -106,7 +141,7 @@
                                 <flux:badge
                                     color="orange"
                                     icon="exclamation-triangle">
-                                    2 Previous Offenses
+                                    2 Previous
                                 </flux:badge>
 
                                 @else
@@ -114,110 +149,128 @@
                                 <flux:badge
                                     color="red"
                                     icon="exclamation-triangle">
-                                    {{ $cpar->offense_count }} Previous Offenses
+                                    {{ $cpar->offense_count }} Previous
                                 </flux:badge>
 
                                 @endif
 
-                            </div>
+                            </td>
 
-                        </div>
+                            {{-- Documents --}}
+                            <td class="px-4 py-4">
 
-                        {{-- RIGHT --}}
-                        <div class="w-64 flex flex-col items-end gap-3">
+                                <div class="flex justify-center gap-2">
 
-                            <flux:badge color="yellow">
-                                PENDING HR DECISION
-                            </flux:badge>
+                                    @if (!empty($cpar->ir_id))
 
-                            @if($cpar->nte_no || $cpar->ir_id)
+                                    <flux:badge
+                                        color="red">
+                                        submitted IR
+                                    </flux:badge>
 
-                            <div class="w-full rounded-lg border border-zinc-200 dark:border-zinc-700 p-3 bg-zinc-50 dark:bg-zinc-900">
+                                    @endif
 
-                                @if(!empty($cpar->nte_no))
-                                <div class="flex justify-between text-sm">
-                                    <span class="text-zinc-500">
-                                        NTE No.
+                                    @if (!empty($cpar->nte_no))
+
+                                    <flux:badge
+                                        color="blue">
+                                        submitted NTE
+                                    </flux:badge>
+
+                                    @endif
+
+                                    @if (empty($cpar->ir_id) && empty($cpar->nte_no))
+
+                                    <span class="text-zinc-400">
+                                        —
                                     </span>
 
-                                    <span class="font-semibold">
-                                        {{ $cpar->nte_no }}
-                                    </span>
+                                    @endif
+
                                 </div>
-                                @endif
 
-                                @if(!empty($cpar->ir_id))
-                                <div class="flex justify-between text-sm @if(!empty($cpar->nte_no)) mt-3 @endif">
-                                    <span class="text-zinc-500">
-                                        IR No.
-                                    </span>
+                            </td>
 
-                                    <span class="font-semibold">
-                                        {{ $cpar->ir_id }}
-                                    </span>
-                                </div>
-                                @endif
+                            {{-- Status --}}
+                            <td class="px-4 py-4 text-center">
 
-                            </div>
+                                <flux:badge color="yellow">
+                                    {{ $cpar->status_name }}
+                                </flux:badge>
 
-                            @endif
+                            </td>
 
-                        </div>
+                            <td class="px-4 py-3 text-center">
 
-                    </div>
+                                <flux:dropdown align="end">
 
-                    {{-- Footer --}}
-                    <div class="mt-5 flex justify-end">
+                                    <flux:button
+                                        size="sm"
+                                        variant="ghost"
+                                        icon="ellipsis-vertical">
+                                    </flux:button>
 
-                        <flux:button
-                            variant="primary"
-                            icon="eye"
-                            wire:click="viewCpar({{ $cpar->assignment_id }})">
-                            View
-                        </flux:button>
+                                    <flux:menu>
+                                        {{-- View Details --}}
+                                        <flux:menu.item
+                                            icon="eye"
+                                            wire:click="viewCpar({{ $cpar->assignment_id }})">
+                                            View
+                                        </flux:menu.item>
 
-                    </div>
+                                    </flux:menu>
+                                </flux:dropdown>
 
-                </div>
+                            </td>
 
-                @empty
+                        </tr>
 
-                <div class="py-10 text-center">
+                        @empty
 
-                    <flux:icon
-                        name="check-circle"
-                        class="mx-auto size-10 text-green-500" />
+                        <tr>
 
-                    <flux:heading
-                        size="sm"
-                        class="mt-3">
+                            <td colspan="9" class="px-4 py-12 text-center">
 
-                        @if ($search)
-                        No CPAR Found
-                        @else
-                        No CPAR Pending for HR Decision
-                        @endif
+                                <flux:icon
+                                    name="check-circle"
+                                    class="mx-auto size-10 text-green-500" />
 
-                    </flux:heading>
+                                <flux:heading
+                                    size="sm"
+                                    class="mt-3">
 
-                    <flux:text class="mt-1 text-zinc-500">
+                                    @if ($search)
+                                    No CPAR Found
+                                    @else
+                                    No CPAR Pending for HR Decision
+                                    @endif
 
-                        @if ($search)
+                                </flux:heading>
 
-                        No results found for
-                        <strong>"{{ $search }}"</strong>.
+                                <flux:text class="mt-1 text-zinc-500">
 
-                        @else
+                                    @if ($search)
 
-                        All CPAR requests have been reviewed.
+                                    No results found for
+                                    <strong>"{{ $search }}"</strong>.
 
-                        @endif
+                                    @else
 
-                    </flux:text>
+                                    All CPAR requests have been reviewed.
 
-                </div>
+                                    @endif
 
-                @endforelse
+                                </flux:text>
+
+                            </td>
+
+                        </tr>
+
+                        @endforelse
+
+                    </tbody>
+
+                </table>
 
             </div>
 

@@ -9,13 +9,13 @@
             {{-- Header --}}
             <div>
                 <flux:heading size="lg">
-                    CPAR Submission
+                    View Acknowledge Concern
                 </flux:heading>
+
                 <flux:text>
-                    Please review the CPAR submission requests assigned to you.
+                    Please review the reported concern details and acknowledge the request.
                 </flux:text>
             </div>
-
 
             {{-- Main Content --}}
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -67,6 +67,35 @@
                             label="Status"
                             wire:model="status_name"
                             readonly />
+
+                        @if($ir_attachment)
+                        <div class="mt-3">
+                            <label class="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+                                IR Attachment
+                            </label>
+
+                            <div class="flex items-center gap-2">
+
+                                {{-- View --}}
+                                <a
+                                    href="{{ asset('storage/' . $ir_attachment) }}"
+                                    target="_blank"
+                                    class="inline-flex items-center rounded-lg bg-blue-600 px-3 py-2 text-sm font-medium text-white hover:bg-blue-700">
+                                    View
+                                </a>
+
+                                {{-- Download --}}
+                                <a
+                                    href="{{ asset('storage/' . $ir_attachment) }}"
+                                    download
+                                    class="inline-flex items-center rounded-lg bg-zinc-700 px-3 py-2 text-sm font-medium text-white hover:bg-zinc-800">
+                                    Download
+                                </a>
+
+                            </div>
+                        </div>
+                        @endif
+
                         <flux:textarea
                             label="Remarks"
                             wire:model="remarks" />

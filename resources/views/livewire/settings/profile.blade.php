@@ -5,8 +5,9 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Validation\Rule;
 use Livewire\Volt\Component;
+use Livewire\Attributes\Layout;
 
-new class extends Component {
+new #[Layout('components.layouts.app')] class extends Component {
     public string $name = '';
     public string $email = '';
 
@@ -66,7 +67,8 @@ new class extends Component {
 
         Session::flash('status', 'verification-link-sent');
     }
-}; ?>
+}; 
+?>
 <section class="w-full">
     @include('partials.settings-heading')
     <x-settings.layout heading="Profile" subheading="Update your name and email address">

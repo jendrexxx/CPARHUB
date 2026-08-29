@@ -1,5 +1,4 @@
 <div class="space-y-2">
-
     <button
         wire:click="setTab('users')"
         @class([

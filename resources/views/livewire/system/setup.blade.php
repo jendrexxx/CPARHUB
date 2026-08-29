@@ -7,9 +7,9 @@
             Manage My User System settings
         </flux:subheading>
 
-        <flux:separator class="mt-4"/>
+        <flux:separator class="mt-4" />
     </div>
-
+    @include('toast')
     <div class="grid grid-cols-12 gap-6">
 
         <div class="col-span-2">
@@ -18,15 +18,15 @@
 
         <div class="col-span-10">
             @if($tab == 'users')
-                @include('livewire.system.users')
+            @include('livewire.system.users')
             @elseif($tab == 'permissions')
-                @include('livewire.system.rolepermission')
+            @include('livewire.system.rolepermission')
             @elseif($tab == 'departments')
-                @include('livewire.system.departments')
+            @include('livewire.system.departments')
             @elseif($tab == 'branches')
-                @include('livewire.system.branches')
+            @include('livewire.system.branches')
             @elseif($tab == 'auditlogs')
-                @include('livewire.system.auditlogs')
+            @include('livewire.system.auditlogs')
             @endif
 
         </div>

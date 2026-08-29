@@ -68,7 +68,7 @@
                                     <flux:menu.item
                                         icon="eye"
                                         wire:click="viewNTE({{ $nte->id }})">
-                                        Request IR
+                                        Request NTE
                                     </flux:menu.item>
                                 </flux:menu>
                             </flux:dropdown>

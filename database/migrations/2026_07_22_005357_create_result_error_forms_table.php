@@ -15,7 +15,7 @@ return new class extends Migration
             $table->increments('id');
             $table->string('result_no')->unique();
             $table->string('employee_no');
-            $table->string('report_reciepient');
+            $table->string('reported_by');
             $table->string('date_reported');
             $table->text('patient_name');
             $table->text('attending_physician');
@@ -28,7 +28,8 @@ return new class extends Migration
             $table->string('complainant_category');
             $table->text('complain_name');
             $table->text('concern_description');
-            $table->integer('status_id');
+            $table->integer('department_id');
+            $table->string('priority_level');
             $table->timestamps();
         });
     }

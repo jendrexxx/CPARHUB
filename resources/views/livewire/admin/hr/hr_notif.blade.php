@@ -15,7 +15,7 @@
                                 <th class="px-4 py-3">Reported By</th>
                                 <th class="px-4 py-3">Department Name</th>
                                 <th class="px-4 py-3">Date Open</th>
-                                <th class="px-4 py-3">Assigned Employee</th>
+                                <th class="px-4 py-3">Reported Employee</th>
                                 <th class="px-4 py-3">Status</th>
                                 <th class="px-4 py-3">Action</th>
                             </tr>
@@ -75,18 +75,11 @@
                                         </flux:button>
 
                                         <flux:menu>
-                                            {{-- View Details --}}
-                                            <flux:menu.item
-                                                icon="eye"
-                                                wire:click="viewDetails({{ $request->id }})">
-                                                View Details
-                                            </flux:menu.item>
-
                                             {{-- Re-Assign --}}
                                             @if($request->status_name == 'ASSIGNED')
                                             <flux:menu.item
                                                 icon="arrow-path"
-                                                wire:click="UpdateAssign({{ $request->assigned_to }})">
+                                                wire:click="UpdateAssign({{ $request->cpar_id }})">
                                                 Re-Assign
                                             </flux:menu.item>
                                             @endif
@@ -94,10 +87,11 @@
                                     </flux:dropdown>
 
                                 </td>
+                                
                             </tr>
                             @empty
                             <tr>
-                                <td colspan="6" class="px-4 py-10 text-center text-zinc-500 dark:text-zinc-400">
+                                <td colspan="7" class="px-4 py-10 text-center text-zinc-500 dark:text-zinc-400">
                                     No CPAR requests found.
                                 </td>
                             </tr>

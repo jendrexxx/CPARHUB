@@ -9,7 +9,10 @@ class CparEdit extends Component
 {
     public $cparRecord = null;
     public $cpar_request = [];
-    public $cpar_no = '', $reported_by = '', $date_open = '', $department_name = '', $status_name = '', $source_name = '', $complain_name = '', $concern_name = '';
+    public $complainant_name = '';
+    public $attachment = '';
+    public $priority = '', $assignment_id = '';
+    public $cpar_no = '', $reported_by = '', $date_open = '', $department_name = '', $status_name = '', $source_name = '', $complain_name = '', $concern_name = '', $concern_description = '';
     protected $listeners = [
         'view-CPAR' => 'viewCPAR',
     ];
@@ -24,22 +27,29 @@ class CparEdit extends Component
             ->leftJoin('cpar_concern_categories as f', 'a.concern_category_id', '=', 'f.id')
             ->leftJoin('departments as g', 'a.department_id', '=', 'g.id')
             ->leftJoin('cpar_statuses as h', 'b.status_id', '=', 'h.id')
+            ->join('priority_levels as m', 'a.priority_level', '=', 'm.id')
             ->select(
                 'a.id',
                 'a.cpar_no',
                 'a.reported_by',
                 'a.date_open',
+                'a.complainant_name',
+                'a.concern_description',
+                'b.id as assignment_id',
                 'g.department_name',
                 'h.status_name',
                 'd.source_name',
                 'e.complain_name',
-                'f.concern_name'
+                'f.concern_name',
+                'c.file_path',
+                'm.priority_name'
             )
             ->where('a.id', $id)
             ->first();
 
         // assign data sa modal fields
         $this->cpar_no = $cpar_request->cpar_no;
+        $this->assignment_id   = $cpar_request->assignment_id;
         $this->reported_by = $cpar_request->reported_by;
         $this->date_open = $cpar_request->date_open;
         $this->department_name = $cpar_request->department_name;
@@ -47,12 +57,19 @@ class CparEdit extends Component
         $this->source_name = $cpar_request->source_name;
         $this->complain_name = $cpar_request->complain_name;
         $this->concern_name = $cpar_request->concern_name;
-
+        $this->concern_description = $cpar_request->concern_description;
+        $this->complainant_name = $cpar_request->complainant_name;
+        $this->attachment = $cpar_request->file_path;
+        $this->priority = $cpar_request->priority_name;
         if (!$cpar_request) {
             return;
         }
-
         $this->modal('EditCPARModal')->show();
+    }
+
+    public function cancelRequest($id)
+    {
+        $this->dispatch('view-Cancel', id: $id);
     }
 
     public function render()

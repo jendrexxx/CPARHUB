@@ -3,7 +3,7 @@
 
         <div class="mb-6">
             <flux:heading size="xl" class="text-red-600">
-                Result Concern Form
+                Result Concern
             </flux:heading>
 
             <flux:text class="mt-1">
@@ -15,7 +15,6 @@
 
             {{-- CPAR No & Date --}}
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-
                 <flux:input
                     label="Result No."
                     wire:model="result_no"
@@ -30,8 +29,8 @@
             </div>
             <div class="grid grid-cols-1 md:grid-cols-5 gap-6">
                 <flux:input
-                    label="Report Reciepient"
-                    wire:model="report_reciepient"
+                    label="Reported By"
+                    wire:model="reported_by"
                     class="opacity-60 cursor-not-allowed" readonly />
                 <flux:input
                     label="Patient Name"
@@ -47,7 +46,7 @@
                 <flux:select
                     wire:model="source_of_information"
                     label="Source of Information">
-                    <option>Select Source</option>
+                    <option selected>Select Source</option>
                     @foreach ($source as $item)
                     <flux:select.option
                         :value="$item->id"
@@ -72,7 +71,7 @@
                         <flux:checkbox.group wire:model="selectedData">
                             @foreach($data as $item)
                             <flux:checkbox
-                                value="{{ $item->data_name }}"
+                                value="{{ $item->id }}"
                                 label="{{ $item->data_name }}" />
                             @endforeach
                         </flux:checkbox.group>
@@ -91,7 +90,7 @@
                             wire:model.live="selectedTechnical">
                             @foreach($technical as $item)
                             <flux:checkbox
-                                :value="$item->technical_name"
+                                :value="$item->id"
                                 :label="$item->technical_name" />
                             @endforeach
                         </flux:checkbox.group>
@@ -109,7 +108,7 @@
                             wire:model.live="selectedQuality">
                             @foreach($quality as $item)
                             <flux:checkbox
-                                :value="$item->quality_name"
+                                :value="$item->id"
                                 :label="$item->quality_name" />
                             @endforeach
                         </flux:checkbox.group>
@@ -118,7 +117,7 @@
             </div>
 
             {{-- Complainant --}}
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <flux:select
                     wire:model.live="complain_category_id"
                     label="Complainant Category">
@@ -133,12 +132,44 @@
                 <flux:input
                     wire:model="complain_name" value="{{ $complain_name }}"
                     label="Complainant Name" :readonly="$complain_name_disabled" />
+                <div>
+                    <flux:select
+                        wire:model="priority"
+                        label="Priority"
+                        placeholder="Select Priority">
+                        @foreach ($priority_level as $priority)
+                        <flux:select.option value="{{ $priority->id }}">
+                            {{ $priority->priority_name }}
+                        </flux:select.option>
+                        @endforeach
+                    </flux:select>
+                </div>
+
             </div>
             {{-- Concern Description --}}
             <flux:textarea
                 label="Concern Description"
                 wire:model="concern_description"
                 rows="5" />
+
+            {{-- Assigned To --}}
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <flux:select
+                    wire:model.live="dept_head_assigned"
+                    label="Assigned To">
+                    <option value="">Select Employee</option>
+                    @foreach ($employees as $employee)
+                    <option value="{{ $employee->id }}">
+                        {{ strtoupper($employee->first_name . ' ' . $employee->last_name) }}
+                    </option>
+                    @endforeach
+                </flux:select>
+
+                <flux:input
+                    wire:model="department_name"
+                    label="Department Name" value="{{ $department_name }}"
+                    readonly />
+            </div>
 
             <div class="flex justify-end gap-3">
                 <flux:button

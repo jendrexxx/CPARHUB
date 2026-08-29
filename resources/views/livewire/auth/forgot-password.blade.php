@@ -39,6 +39,6 @@ new #[Layout('components.layouts.auth')] class extends Component {
 
     <div class="space-x-1 text-center text-sm text-zinc-400">
         Or, return to
-        <x-text-link href="{{ route('login') }}">log in</x-text-link>
+        <x-text-link href="{{ route('auth.login') }}">log in</x-text-link>
     </div>
 </div>

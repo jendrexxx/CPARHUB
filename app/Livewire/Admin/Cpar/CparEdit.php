@@ -9,7 +9,9 @@ class CparEdit extends Component
 {
     public $cparRecord = null;
     public $cpar_request = [];
-    public $cpar_no = '', $reported_by = '', $date_open = '', $department_name = '', $status_name = '', $source_name = '', $complain_name = '', $concern_name = '';
+    public $complainant_name = '';
+    public $attachment = '';
+    public $cpar_no = '', $reported_by = '', $date_open = '', $department_name = '', $status_name = '', $source_name = '', $complain_name = '', $concern_name = '', $concern_description = '';
     protected $listeners = [
         'view-CPAR' => 'viewCPAR',
     ];
@@ -30,11 +32,14 @@ class CparEdit extends Component
                 'a.cpar_no',
                 'a.reported_by',
                 'a.date_open',
+                'a.concern_description',
+                'a.complainant_name',
                 'g.department_name',
                 'h.status_name',
                 'd.source_name',
                 'e.complain_name',
-                'f.concern_name'
+                'f.concern_name',
+                'c.file_path'
             )
             ->where('a.id', $id)
             ->first();
@@ -48,6 +53,9 @@ class CparEdit extends Component
         $this->source_name = $cpar_request->source_name;
         $this->complain_name = $cpar_request->complain_name;
         $this->concern_name = $cpar_request->concern_name;
+        $this->concern_description = $cpar_request->concern_description;
+        $this->complainant_name = $cpar_request->complainant_name;
+        $this->attachment = $cpar_request->file_path;
 
         if (!$cpar_request) {
             return;
