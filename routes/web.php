@@ -18,6 +18,9 @@ use App\Livewire\User\Result\ResultRequestForm;
 
 Route::view('dashboard', 'dashboard')->middleware(['auth', 'verified'])->name('dashboard');
 
+Volt::route('login', 'auth.login')
+    ->name('auth.login');
+
 Route::middleware(['auth'])->group(function () {
     Route::redirect('settings', 'settings/profile');
     Volt::route('settings/profile', 'settings.profile')->name('settings.profile');

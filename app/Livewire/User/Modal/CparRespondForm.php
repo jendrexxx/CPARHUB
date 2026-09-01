@@ -56,6 +56,7 @@ class CparRespondForm extends Component
             $lastNumber = (int) substr($lastNte, -5);
             $nextNumber = $lastNumber + 1;
         }
+        $this->action_taken_by = $this->employee_name;
         $this->ir_id = 'IR-' . $year . '-' . str_pad($nextNumber, 5, '0', STR_PAD_LEFT);
     }
 
@@ -99,6 +100,7 @@ class CparRespondForm extends Component
                 'k.identified_cause',
                 'k.provided_solution',
                 'k.recommendation',
+                'k.action_taken_by',
                 'm.priority_name',
                 'n.ir_attachment'
             )
@@ -148,7 +150,6 @@ class CparRespondForm extends Component
         $this->recommendation = $cpar->recommendation;
         $this->cpar_id = $cpar->cpar_id;
         $this->assigned_to = $cpar->assigned_to;
-        $this->action_taken_by = $cpar->action_taken_by;
         $this->calculateTat();
         if (!$cpar) {
             return;

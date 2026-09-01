@@ -12,37 +12,18 @@
     </div>
 
     {{-- FILTER CARD --}}
-    <div
-        class="
-        rounded-xl
-        border border-zinc-200
-        bg-white
-        p-4 sm:p-5
-        dark:border-zinc-700
-        dark:bg-zinc-900
-    ">
+    <div class="rounded-xl border border-zinc-200 bg-white p-4 sm:p-5 dark:border-zinc-700 dark:bg-zinc-900">
 
         {{-- FILTER GRID --}}
-        <div
-            class="
-            grid
-            grid-cols-1
-            gap-4
-            sm:grid-cols-2
-            lg:grid-cols-4
-        ">
-
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {{-- SEARCH --}}
             <div class="sm:col-span-2 lg:col-span-2">
-
                 <flux:input
                     wire:model.live.debounce.300ms="search"
                     icon="magnifying-glass"
                     label="Search"
                     placeholder="CPAR No., employee, reported by..." />
-
             </div>
-
 
             {{-- BRANCH --}}
             <div class="sm:col-span-1">
@@ -165,31 +146,8 @@
 
 
         {{-- ACTIONS --}}
-        @if (
-        $search ||
-        $branchFilter !== 'ALL' ||
-        $departmentFilter !== 'ALL' ||
-        $statusFilter !== 'ALL' ||
-        $categoryFilter !== 'ALL' ||
-        $dateFrom ||
-        $dateTo
-        )
-
-        <div
-            class="
-                mt-5
-                flex
-                flex-col
-                gap-3
-                border-t
-                border-zinc-200
-                pt-4
-                dark:border-zinc-700
-
-                sm:flex-row
-                sm:items-center
-                sm:justify-between
-            ">
+        @if ($search || $branchFilter !== 'ALL' || $departmentFilter !== 'ALL' || $statusFilter !== 'ALL' || $categoryFilter !== 'ALL' || $dateFrom || $dateTo)
+        <div class="mt-5 flex flex-col gap-3 border-t border-zinc-200 pt-4 dark:border-zinc-700 sm:flex-row sm:items-center sm:justify-between">
 
             {{-- ACTIVE FILTER MESSAGE --}}
             <span
@@ -267,7 +225,7 @@
                border border-zinc-200
                dark:border-zinc-700">
 
-        <table class="w-full text-sm">
+        <table class="w-full text-left text-sm">
 
             {{-- HEADER --}}
             <thead

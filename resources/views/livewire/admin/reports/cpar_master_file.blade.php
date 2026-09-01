@@ -22,21 +22,21 @@
     </div>
 
     {{-- CPAR MASTER FILE TABLE --}}
-    <div class="overflow-x-auto">
-        <table class="w-full text-left text-sm">
+    <div class="overflow-x-auto rounded-xl border border-zinc-200 dark:border-zinc-700">
 
+        <table class="w-full text-left text-sm">
             <thead class="bg-gray-50 text-xs uppercase text-gray-600 dark:bg-gray-800 dark:text-gray-300">
                 <tr>
 
-                    <th class="whitespace-nowrap px-6 py-3">
+                    <th class="px-4 py-3 font-semibold">
                         CPAR No.
                     </th>
 
-                    <th class="whitespace-nowrap px-6 py-3">
+                    <th class="px-4 py-3 font-semibold">
                         Reported By
                     </th>
 
-                    <th class="whitespace-nowrap px-6 py-3">
+                    <th class="px-4 py-3 font-semibold">
                         Reported Employee
                     </th>
 
@@ -58,7 +58,6 @@
 
                 </tr>
             </thead>
-
             <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
 
                 @forelse ($cpars as $cpar)
@@ -68,18 +67,24 @@
                     class="hover:bg-gray-50 dark:hover:bg-gray-800">
 
                     {{-- CPAR NO --}}
-                    <td class="whitespace-nowrap px-6 py-4 font-medium text-gray-900 dark:text-white">
-                        {{ $cpar->cpar_no ?? '-' }}
+                    <td class="whitespace-nowrap px-4 py-4">
+                        <span class="font-semibold text-zinc-900 dark:text-white">
+                            {{ $cpar->cpar_no }}
+                        </span>
                     </td>
 
                     {{-- REPORTED BY --}}
-                    <td class="whitespace-nowrap px-6 py-4 text-gray-700 dark:text-gray-300">
-                        {{ $cpar->reported_by ?? '-' }}
+                    <td class="whitespace-nowrap px-4 py-4">
+                        <span class="font-semibold text-zinc-900 dark:text-white">
+                            {{ $cpar->reported_by ?? '-' }}
+                        </span>
                     </td>
 
                     {{-- REPORTED EMPLOYEE --}}
-                    <td class="whitespace-nowrap px-6 py-4 text-gray-700 dark:text-gray-300">
-                        {{ $cpar->reported_employee ?? '-' }}
+                    <td class="whitespace-nowrap px-4 py-4">
+                        <span class="font-semibold text-zinc-900 dark:text-white">
+                            {{ $cpar->reported_employee ?? '-' }}
+                        </span>
                     </td>
 
                     {{-- BRANCH --}}

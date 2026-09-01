@@ -146,7 +146,6 @@ class HrHeadDashboard extends Component
         $this->loadAcknowledgeCount();
         $this->loadDecisionCount();
         $this->loadMemoCount();
-        
     }
 
     public function render()

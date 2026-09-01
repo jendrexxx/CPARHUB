@@ -202,18 +202,18 @@
     <livewire:admin.tabs.hr_tabs :branch_id="$branch_id" :key="'hr-tabs-'.$branch_id" />
 
     <!-- CPAR -->
-    <livewire:admin.hr.hr_notif :branch_id="$branch_id" :key="'hr-notif-'.$branch_id" />
-    <livewire:admin.hr.hr_reassign :branch_id="$branch_id" :key="'hr-assign-'.$branch_id" />
-    <livewire:admin.hr.hr_acknowledge_notif :branch_id="$branch_id" :key="'hr-acknowledge-notif-'.$branch_id" />
     <livewire:admin.hr.hr_acknowledge_modal />
     <livewire:admin.hr.hr_notice_explain_modal />
-    <livewire:admin.hr.hr_decision_notif :branch_id="$branch_id" :key="'hr-decision-notif-'.$branch_id" />
     <livewire:admin.hr.hr_decision_modal />
-    <livewire:admin.hr.hr_memo_notif :branch_id="$branch_id" :key="'hr-memo-notif-'.$branch_id" />
     <livewire:admin.hr.hr_memo_modal />
     <livewire:admin.hr.hr_ir_request />
     <livewire:user.modal.cpar_edit />
+    <livewire:admin.hr.hr_notif :branch_id="$branch_id" :key="'hr-notif-'.$branch_id" />
+    <livewire:admin.hr.hr_reassign :branch_id="$branch_id" :key="'hr-assign-'.$branch_id" />
+    <livewire:admin.hr.hr_acknowledge_notif :branch_id="$branch_id" :key="'hr-acknowledge-notif-'.$branch_id" />
+    <livewire:admin.hr.hr_decision_notif :branch_id="$branch_id" :key="'hr-decision-notif-'.$branch_id" />
+    <livewire:admin.hr.hr_memo_notif :branch_id="$branch_id" :key="'hr-memo-notif-'.$branch_id" />
     <!-- RESULT -->
-    <livewire:admin.result.hr_result_notif :branch_id="$branch_id" :key="'hr-notif-'.$branch_id" />
+    <livewire:admin.result.hr_result_notif :branch_id="$branch_id" :key="'hr-result-'.$branch_id" />
     <livewire:admin.result.hr_re-assign />
 </div>
