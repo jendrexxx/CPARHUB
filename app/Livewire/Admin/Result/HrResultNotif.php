@@ -35,24 +35,63 @@ class HrResultNotif extends Component
         $this->resultRequests = DB::table('result_error_forms as a')
             ->join('result_error_source_of_infos as b', 'a.source_of_information', '=', 'b.id')
             ->join('result_complain_categories as c', 'a.complainant_category', '=', 'c.id')
-            ->join('employees as d', 'a.employee_no', '=', 'd.employee_no')
-            ->join('cpar_assignments as e', 'a.id', '=', 'e.cpar_id')
-            ->join('cpar_statuses as f', 'e.status_id', '=', 'f.id')
+            ->join('cpar_assignments as d', 'a.id', '=', 'd.result_id')
+            ->join('employees as e', 'd.assigned_to', '=', 'e.id')
+            ->join('cpar_statuses as f', 'd.status_id', '=', 'f.id')
             ->select(
                 'a.id',
+                'a.reported_by',
                 'a.result_no',
                 'a.patient_name',
                 'a.date_reported',
                 'b.source_name',
                 'c.complain_name',
-                'd.department_name',
+                'e.branch_id',
                 'f.status_name',
                 'f.badge_color',
-                'e.id as assigned_id'
+                DB::raw("
+                    GROUP_CONCAT(
+                        DISTINCT d.id
+                        ORDER BY d.id
+                        SEPARATOR ','
+                    ) as assigned_id
+                "),
+                DB::raw("
+                    GROUP_CONCAT(
+                        DISTINCT d.assigned_to
+                        ORDER BY d.id
+                        SEPARATOR ','
+                    ) as assigned_to
+                "),
+                DB::raw("
+                    GROUP_CONCAT(
+                        DISTINCT CONCAT(
+                            e.first_name,
+                            ' ',
+                            e.last_name
+                        )
+                        ORDER BY d.id
+                        SEPARATOR ', '
+                    ) as dept_head_name
+                ")
             )
-            ->where('d.branch_id', $this->branch_id)
-            ->where('e.status_id', 5)
-            ->where('e.record_type', 10)
+            ->where('e.branch_id', $this->branch_id)
+            ->where('d.status_id', 5)
+            ->where('d.record_type', 10)
+            ->groupBy(
+                'a.id',
+                'a.reported_by',
+                'a.result_no',
+                'a.patient_name',
+                'a.date_reported',
+                'b.source_name',
+                'c.complain_name',
+                'e.branch_id',
+                'f.status_name',
+                'f.badge_color'
+            )
+
+            ->orderByDesc('a.id')
             ->get();
     }
 

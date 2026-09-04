@@ -535,6 +535,15 @@ class HrMemoModal extends Component
         $this->dispatch('refreshMemoCount');
     }
 
+    public function printMemo()
+    {
+        if (empty(trim($this->memo_content))) {
+            return;
+        }
+
+        $this->dispatch('print-memo');
+    }
+
     public function render()
     {
         return view('livewire.admin.hr.hr_memo_modal');

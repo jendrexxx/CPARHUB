@@ -24,6 +24,11 @@ class ResultRespondForm extends Component
     public $data_information = [];
     public $technical_information = [];
     public $quality_information = [];
+    public $ir_attachment = '', $existing_ir_attachment = '', $employee_assigned_to = '';
+
+    protected $listeners = [
+        'respond-Result' => 'open_modal',
+    ];
 
     public function mount()
     {
@@ -55,10 +60,11 @@ class ResultRespondForm extends Component
         $result_assigned = DB::table('result_error_forms as a')
             ->join('result_error_source_of_infos as b', 'a.source_of_information', '=', 'b.id')
             ->join('result_complain_categories as c', 'a.complainant_category', '=', 'c.id')
-            ->join('cpar_assignments as d', 'a.id', '=', 'd.cpar_id')
-            ->join('cpar_statuses as h', 'd.status_id', '=', 'h.id')
-            ->leftJoin('employees as i', 'd.dept_head_assigned', '=', 'i.id')
-            ->join('priority_levels as m', 'a.priority_level', '=', 'm.id')
+            ->join('cpar_assignments as d', 'a.id', '=', 'd.result_id')
+            ->join('cpar_statuses as e', 'd.status_id', '=', 'e.id')
+            ->leftJoin('employees as f', 'd.dept_head_assigned', '=', 'f.id')
+            ->join('priority_levels as g', 'a.priority_level', '=', 'g.id')
+            ->leftjoin('employees as h', 'd.assigned_to', '=', 'h.id')
             ->select(
                 'a.result_no',
                 'a.reported_by',
@@ -81,18 +87,20 @@ class ResultRespondForm extends Component
                 'd.remarks',
                 'd.dept_head_assigned',
                 'd.department_id',
-                'h.status_name',
-                'i.branch_id',
-                'i.department_name',
-                'i.first_name',
-                'i.last_name',
-                'm.priority_name'
+                'e.status_name',
+                'f.branch_id',
+                'f.department_name',
+                'f.first_name',
+                'f.last_name',
+                'g.priority_name',
+                DB::raw("CONCAT(h.first_name, ' ', h.last_name) AS employee_assigned_to"),
             )
             ->where('d.id', $id)
             ->first();
         if (!$result_assigned) {
             return;
         }
+        $this->employee_assigned_to = $result_assigned->employee_assigned_to;
         $this->assignment_id = $result_assigned->assignment_id;
         $this->cpar_id   = $result_assigned->cpar_id;
         $this->result_no = $result_assigned->result_no;
@@ -122,7 +130,7 @@ class ResultRespondForm extends Component
         $this->assignment_remarks = $result_assigned->remarks;
         $this->status = $result_assigned->status_name;
         $this->dept_head_assigned = $result_assigned->dept_head_assigned;
-        $this->modal('hr-reassign-result')->show();
+        $this->modal('respond-result')->show();
     }
 
     public function render()

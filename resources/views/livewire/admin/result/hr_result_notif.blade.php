@@ -18,10 +18,9 @@
                     <thead class="bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 uppercase text-xs tracking-wider">
                         <tr>
                             <th class="px-4 py-3 text-center">Result No.</th>
-                            <th class="px-4 py-3 text-center">Patient Name</th>
-                            <th class="px-4 py-3 text-center">Source Name</th>
-                            <th class="px-4 py-3 text-center">Complainant</th>
+                            <th class="px-4 py-3 text-center">Reported By</th>
                             <th class="px-4 py-3 text-center">Date Reported</th>
+                            <th class="px-4 py-3 text-center">Reported Employee</th>
                             <th class="px-4 py-3 text-center">Action</th>
                         </tr>
                     </thead>
@@ -31,25 +30,20 @@
                         @forelse($resultRequests as $request)
 
                         <tr>
-
                             <td class="px-4 py-3 font-medium text-zinc-900 dark:text-zinc-100">
                                 {{ $request->result_no }}
                             </td>
 
                             <td class="px-4 py-3 font-medium text-zinc-900 dark:text-zinc-100">
-                                {{ $request->patient_name }}
-                            </td>
-
-                            <td class="px-4 py-3 font-medium text-zinc-900 dark:text-zinc-100">
-                                {{ $request->source_name }}
-                            </td>
-
-                            <td class="px-4 py-3 font-medium text-zinc-900 dark:text-zinc-100">
-                                {{ $request->complain_name }}
+                                {{ $request->reported_by }}
                             </td>
 
                             <td class="px-4 py-3 font-medium text-zinc-900 dark:text-zinc-100">
                                 {{ \Carbon\Carbon::parse($request->date_reported)->format('M d, Y') }}
+                            </td>
+
+                            <td class="px-4 py-3 font-medium text-zinc-900 dark:text-zinc-100">
+                                {{ $request->dept_head_name }}
                             </td>
 
                             <td class="px-4 py-3 text-center">

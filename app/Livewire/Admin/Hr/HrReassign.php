@@ -108,11 +108,9 @@ class HrReassign extends Component
             )
             ->where('a.id', $this->cpar_id)
             ->first();
-
         if (!$cpar) {
             return;
         }
-
         $assignments = DB::table('cpar_assignments as b')
             ->leftJoin('cpar_statuses as h', 'b.status_id', '=', 'h.id')
             ->select(
@@ -133,7 +131,6 @@ class HrReassign extends Component
             ->where('b.employee_no', $this->emp_reported)
             ->select('a.employee_no', 'a.first_name', 'a.last_name')
             ->first();
-
         if ($cpar_info) {
             $this->emp_reported = trim($cpar_info->first_name . ' ' . $cpar_info->last_name);
         }

@@ -437,12 +437,27 @@
                     placeholder="Enter memo subject..." />
 
                 {{-- MEMO CONTENT --}}
-                <flux:textarea
-                    label="Content"
-                    wire:model="memo_content"
-                    rows="8"
-                    placeholder="Enter memo content..." />
+                <div class="flex items-end gap-3">
+                    {{-- Memo Content --}}
+                    <div class="flex-1">
+                        <flux:textarea
+                            id="memo_content"
+                            label="Content"
+                            wire:model.live="memo_content"
+                            rows="8"
+                            placeholder="Enter memo content..." />
+                    </div>
 
+                    {{-- Print Button --}}
+                    <div class="shrink-0">
+                        <flux:button
+                            type="button"
+                            variant="primary"
+                            wire:click="printMemo">
+                            Print
+                        </flux:button>
+                    </div>
+                </div>
                 {{-- MEMO ATTACHMENT --}}
                 <div class="space-y-3">
 
@@ -569,4 +584,60 @@
             </div>
         </div>
     </flux:modal>
+    @script
+    <script>
+        $wire.on('print-memo', () => {
+            const textarea = document.getElementById('memo_content');
+
+            if (!textarea) {
+                return;
+            }
+
+            const content = textarea.value;
+
+            const printWindow = window.open('', '_blank', 'width=800,height=600');
+
+            printWindow.document.write(`
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>Memo Content</title>
+                <style>
+                    @page {
+                        size: A4;
+                        margin: 20mm;
+                    }
+
+                    body {
+                        font-family: Arial, sans-serif;
+                        font-size: 14px;
+                        line-height: 1.6;
+                        white-space: pre-wrap;
+                        word-wrap: break-word;
+                    }
+                </style>
+            </head>
+            <body>
+                ${content
+                    .replace(/&/g, '&amp;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;')
+                    .replace(/"/g, '&quot;')
+                    .replace(/'/g, '&#039;')
+                }
+            </body>
+            </html>
+        `);
+
+            printWindow.document.close();
+
+            printWindow.focus();
+
+            setTimeout(() => {
+                printWindow.print();
+                printWindow.close();
+            }, 300);
+        });
+    </script>
+    @endscript
 </div>

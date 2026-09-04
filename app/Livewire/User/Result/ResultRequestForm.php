@@ -138,7 +138,7 @@ class ResultRequestForm extends Component
             'priority_level'      => $this->priority
         ]);
         cpar_assignments::create([
-            'cpar_id'               => $result->id,
+            'result_id'               => $result->id,
             'dept_head_assigned'    => $this->dept_head_assigned,
             'department_id'         => $this->department_id,
             'status_id'             => 1,

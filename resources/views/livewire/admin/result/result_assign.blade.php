@@ -17,9 +17,6 @@
         {{-- MAIN CONTENT --}}
         <div class="grid grid-cols-1 gap-8 lg:grid-cols-2">
 
-            {{-- ========================================= --}}
-            {{-- LEFT : RESULT DETAILS --}}
-            {{-- ========================================= --}}
             <div>
 
                 <div class="mb-5 border-b border-zinc-200 pb-3 dark:border-zinc-700">
@@ -184,30 +181,24 @@
 
                 <div class="mt-5 space-y-5">
 
-                    {{-- MAIN ASSIGN --}}
+                    {{-- MAIN ASSIGNEE --}}
                     <div class="flex items-end gap-2">
 
                         <div class="flex-1 min-w-0">
-
                             <flux:select
                                 label="Assign To"
-                                wire:model="assigned_to">
-
+                                wire:model.live="assigned_to">
                                 <flux:select.option value="">
                                     -- Select Employee --
                                 </flux:select.option>
 
                                 @foreach($employees as $employee)
-
                                 <flux:select.option value="{{ $employee->id }}">
-                                    {{ $employee->first_name }}
-                                    {{ $employee->last_name }}
+                                    {{ $employee->first_name }} {{ $employee->last_name }}
                                 </flux:select.option>
-
                                 @endforeach
 
                             </flux:select>
-
                         </div>
 
                         <flux:button
@@ -218,18 +209,17 @@
                         </flux:button>
 
                     </div>
-
-
                     {{-- ADDITIONAL ASSIGNEES --}}
                     @foreach(($new_assignees ?? []) as $index => $value)
-
-                    <div class="flex items-end gap-2">
+                    <div
+                        class="flex items-end gap-2"
+                        wire:key="additional-assignee-{{ $index }}">
 
                         <div class="flex-1 min-w-0">
 
                             <flux:select
                                 label="Additional Assignee"
-                                wire:model="new_assignees.{{ $index }}">
+                                wire:model.live="new_assignees.{{ $index }}">
 
                                 <flux:select.option value="">
                                     -- Select Employee --
@@ -238,8 +228,7 @@
                                 @foreach($employees as $employee)
 
                                 <flux:select.option value="{{ $employee->id }}">
-                                    {{ $employee->first_name }}
-                                    {{ $employee->last_name }}
+                                    {{ $employee->first_name }} {{ $employee->last_name }}
                                 </flux:select.option>
 
                                 @endforeach
@@ -256,7 +245,6 @@
                         </flux:button>
 
                     </div>
-
                     @endforeach
 
                     {{-- REMARKS --}}

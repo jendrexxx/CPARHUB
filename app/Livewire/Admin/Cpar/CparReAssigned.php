@@ -179,7 +179,6 @@ class CparReAssigned extends Component
                 'assigned',
                 'The same employee cannot be assigned more than once.'
             );
-
             return;
         }
 

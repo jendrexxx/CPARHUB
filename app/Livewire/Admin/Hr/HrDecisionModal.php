@@ -68,7 +68,7 @@ class HrDecisionModal extends Component
             ->get();
 
         $this->offenseLevels = DB::table('cpar_offense_levels')
-            ->orderBy('id', 'desc')
+            ->orderBy('id', 'asc')
             ->get();
     }
 

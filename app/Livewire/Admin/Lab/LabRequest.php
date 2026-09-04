@@ -333,15 +333,13 @@ class LabRequest extends Component
 
             // AUDIT LOG
             DB::table('audit_logs')->insert([
-                'user' => auth()->id(),
-
+                'user_reported_by'       => $this->employeeName,
+                'user_reported'     => $this->assigned_to,
                 'action' => 'BACK TO HR',
-
                 'old_value' => json_encode([
                     'management_remarks' => $oldRecord?->management_remarks,
                     'status_id'           => $oldAssignment?->status_id,
                 ], JSON_UNESCAPED_UNICODE),
-
                 'new_value' => json_encode([
                     'management_remarks' => $this->management_remarks,
                     'status_id'           => 30,

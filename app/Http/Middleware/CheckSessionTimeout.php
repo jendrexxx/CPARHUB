@@ -25,7 +25,7 @@ class CheckSessionTimeout
                 $request->session()->invalidate();
                 $request->session()->regenerateToken();
                 return redirect()
-                    ->route('/')
+                    ->route('auth.login')
                     ->with(
                         'status',
                         'You have been logged out due to inactivity.'

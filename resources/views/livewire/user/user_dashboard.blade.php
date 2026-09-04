@@ -37,10 +37,9 @@
     </div>
     <div
         class="grid w-full grid-cols-1 gap-3
-               p-3
-               sm:grid-cols-2 sm:gap-4 sm:p-4
-               lg:grid-cols-3 lg:gap-5 lg:p-6
-               xl:grid-cols-4">
+           p-3
+           sm:grid-cols-2 sm:gap-4 sm:p-4
+           lg:grid-cols-3 lg:gap-5 lg:p-6">
 
         <flux:modal.trigger name="CPARModal">
             <div
@@ -268,6 +267,7 @@
         <livewire:user.tabs />
     </div>
 
+    <!-- cpar -->
     <livewire:user.modal.cpar_notif />
     <livewire:user.modal.cpar_assigned />
     <livewire:user.modal.cpar_respond_form />
@@ -277,5 +277,9 @@
     <livewire:user.modal.cpar_nte_explanation />
     <livewire:user.modal.cpar_ir_table />
     <livewire:user.modal.cpar_ir_explanation />
+
+    <!-- result -->
     <livewire:user.modal.result_notif />
+    <livewire:user.modal.result_assigned />
+    <livewire:user.modal.result_respond_form />
 </div>

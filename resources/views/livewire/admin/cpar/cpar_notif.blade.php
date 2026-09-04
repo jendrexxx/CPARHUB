@@ -92,7 +92,7 @@
                             @empty
                             <tr>
                                 <td colspan="7" class="px-4 py-10 text-center text-zinc-500 dark:text-zinc-400">
-                                    No CPAR requests found.
+                                    No requests found.
                                 </td>
                             </tr>
                             @endforelse

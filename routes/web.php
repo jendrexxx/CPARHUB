@@ -1,8 +1,10 @@
 <?php
 
+use App\Http\Controllers\MemoPdfController;
 use App\Livewire\Admin\AdminDashboard;
 use App\Livewire\Admin\DeptHeadDashboard;
 use App\Livewire\Admin\Employees;
+use App\Livewire\Admin\Hr\Print\Memo;
 use App\Livewire\Admin\HrHeadDashboard;
 use App\Livewire\Admin\LabSupervisorDashboard;
 use App\Livewire\Admin\Reports\CparMasterFile;
@@ -17,9 +19,6 @@ use App\Livewire\User\Cpar\CparRequestForm;
 use App\Livewire\User\Result\ResultRequestForm;
 
 Route::view('dashboard', 'dashboard')->middleware(['auth', 'verified'])->name('dashboard');
-
-Volt::route('login', 'auth.login')
-    ->name('auth.login');
 
 Route::middleware(['auth'])->group(function () {
     Route::redirect('settings', 'settings/profile');

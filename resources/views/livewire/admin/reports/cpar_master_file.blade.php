@@ -1,5 +1,5 @@
 <div class="p-6">
-
+    @include('toast')
     {{-- PAGE HEADER --}}
     <div class="mb-6">
         <h2 class="text-xl font-semibold text-gray-900 dark:text-white">
@@ -83,7 +83,13 @@
                     {{-- REPORTED EMPLOYEE --}}
                     <td class="whitespace-nowrap px-4 py-4">
                         <span class="font-semibold text-zinc-900 dark:text-white">
-                            {{ $cpar->reported_employee ?? '-' }}
+                            @if (!empty($cpar->assigned_employee))
+                            {{ $cpar->assigned_employee }}
+                            @elseif (!empty($cpar->dept_head))
+                            {{ $cpar->dept_head }}
+                            @else
+                            -
+                            @endif
                         </span>
                     </td>
 

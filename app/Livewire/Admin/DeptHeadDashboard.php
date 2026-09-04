@@ -21,6 +21,7 @@ class DeptHeadDashboard extends Component
     protected $listeners = [
         'refreshHeadCount' => 'loadHeadCount',
         'refreshSubmissionCount' => 'loadHeadSubmissionCount',
+        'refreshResultCount' => 'loadResultCount',
     ];
 
     public function mount()
@@ -41,7 +42,7 @@ class DeptHeadDashboard extends Component
         $this->result_request_count = DB::table('result_error_forms as a')
             ->join('result_error_source_of_infos as b', 'a.source_of_information', '=', 'b.id')
             ->join('result_complain_categories as c', 'a.complainant_category', '=', 'c.id')
-            ->join('cpar_assignments as d', 'a.id', '=', 'd.cpar_id')
+            ->join('cpar_assignments as d', 'a.id', '=', 'd.result_id')
             ->where('d.dept_head_assigned', $this->id)
             ->where('d.record_type', 10)
             ->where('d.status_id', 1)

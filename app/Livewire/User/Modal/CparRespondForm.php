@@ -44,6 +44,7 @@ class CparRespondForm extends Component
             $this->employee_no = $info->employee_no;
             $this->employee_name = trim($info->first_name . ' ' . $info->last_name);
         }
+        $this->action_taken_by = $this->employee_name;
         $year = now()->year;
         $lastNte = DB::table('cpar_ir_requests')
             ->whereYear('created_at', $year)
@@ -56,7 +57,6 @@ class CparRespondForm extends Component
             $lastNumber = (int) substr($lastNte, -5);
             $nextNumber = $lastNumber + 1;
         }
-        $this->action_taken_by = $this->employee_name;
         $this->ir_id = 'IR-' . $year . '-' . str_pad($nextNumber, 5, '0', STR_PAD_LEFT);
     }
 

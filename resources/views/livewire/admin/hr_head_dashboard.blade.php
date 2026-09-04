@@ -135,22 +135,19 @@
         <flux:modal.trigger name="HRMemoModal">
             <div
                 class="group flex h-full w-full items-center gap-4 p-5
-        bg-white dark:bg-zinc-900
-        rounded-2xl border border-gray-200 dark:border-zinc-700
-        shadow-sm cursor-pointer
-        transition-all duration-200
-        hover:-translate-y-1 hover:shadow-lg">
+                bg-white dark:bg-zinc-900
+                rounded-2xl border border-gray-200 dark:border-zinc-700
+                shadow-sm cursor-pointer
+                transition-all duration-200
+                hover:-translate-y-1 hover:shadow-lg">
 
                 {{-- Icon --}}
-                <div
-                    class="flex h-12 w-12 shrink-0 items-center justify-center
-            rounded-xl bg-blue-100 text-blue-600
-            transition-all duration-200
-            group-hover:bg-blue-500 group-hover:text-white
-            group-hover:scale-105">
-
+                <div class="flex h-12 w-12 shrink-0 items-center justify-center
+                    rounded-xl bg-blue-100 text-blue-600
+                    transition-all duration-200
+                    group-hover:bg-blue-500 group-hover:text-white
+                    group-hover:scale-105">
                     <flux:icon.document-text class="h-6 w-6" />
-
                 </div>
 
                 {{-- Content --}}
@@ -197,6 +194,8 @@
                 </div>
             </div>
         </flux:modal.trigger>
+
+        
 
     </div>
     <livewire:admin.tabs.hr_tabs :branch_id="$branch_id" :key="'hr-tabs-'.$branch_id" />

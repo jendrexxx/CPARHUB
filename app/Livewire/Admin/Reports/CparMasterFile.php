@@ -14,6 +14,10 @@ class CparMasterFile extends Component
     protected $paginationTheme = 'tailwind';
     public $perPage = 10;
 
+    protected $listeners = [
+        'refresh' => '$refresh',
+    ];
+
     public function updatingSearch()
     {
         $this->resetPage();
@@ -32,6 +36,7 @@ class CparMasterFile extends Component
             ->leftJoin('departments as d', 'a.department_id', '=', 'd.id')
             ->leftJoin('branches as e', 'c.branch_id', '=', 'e.id')
             ->leftJoin('cpar_statuses as f', 'b.status_id', '=', 'f.id')
+            ->leftJoin('employees as g', 'b.dept_head_assigned', '=', 'g.id')
             ->when($this->search, function ($query) {
                 $search = '%' . $this->search . '%';
                 $query->where(function ($q) use ($search) {
@@ -52,21 +57,19 @@ class CparMasterFile extends Component
                 'b.id as assignment_id',
                 'c.first_name',
                 'c.last_name',
+                'c.branch_name',
                 'd.department_name',
-                'e.branch_name',
                 'f.status_name',
             ])
             ->selectRaw("
                 CONCAT_WS(' ', c.first_name, c.last_name) AS assigned_employee
             ")
+            ->selectRaw("
+                CONCAT_WS(' ', g.first_name, g.last_name) AS dept_head
+            ")
             ->orderBy('a.id', 'desc')
             ->paginate($this->perPage);
 
-        return view(
-            'livewire.admin.reports.cpar_master_file',
-            [
-                'cpars' => $cpars,
-            ]
-        )->layout('layouts.app');
+        return view('livewire.admin.reports.cpar_master_file',['cpars' => $cpars])->layout('layouts.app');
     }
 }

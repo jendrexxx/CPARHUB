@@ -2,8 +2,8 @@
     <flux:modal name="CPARModal" class="w-[120%] max-w-[1500px] mt-6 top-0 z-50">
         <div class="space-y-6">
             <div>
-                <flux:heading size="lg">CPAR Request</flux:heading>
-                <flux:text>Below is the list of your filed CPAR requests.</flux:text>
+                <flux:heading size="lg">Reported Concern</flux:heading>
+                <flux:text>Below is the list of your filed Reported Concern.</flux:text>
             </div>
 
             <div class="overflow-x-auto rounded-lg border border-zinc-200 dark:border-zinc-700 text-center">
@@ -15,7 +15,7 @@
                                 <th class="px-4 py-3">Reported By</th>
                                 <th class="px-4 py-3">Department Name</th>
                                 <th class="px-4 py-3">Date Open</th>
-                                <th class="px-4 py-3">Assigned Employee</th>
+                                <th class="px-4 py-3">Assigned to</th>
                                 <th class="px-4 py-3">Priority Level</th>
                                 <th class="px-4 py-3">Status</th>
                                 <th class="px-4 py-3">Action</th>
@@ -96,8 +96,8 @@
                             </tr>
                             @empty
                             <tr>
-                                <td colspan="6" class="px-4 py-10 text-center text-zinc-500 dark:text-zinc-400">
-                                    No CPAR requests found.
+                                <td colspan="8" class="px-4 py-10 text-center text-zinc-500 dark:text-zinc-400">
+                                    No requests found.
                                 </td>
                             </tr>
                             @endforelse

@@ -14,7 +14,7 @@ class ResultNotif extends Component
     public $id = '';
 
     protected $listeners = [
-        'refreshHeadData' => 'loadHeadRecords',
+        'refreshResultData' => 'loadHeadRecords',
     ];
 
     public function mount()
@@ -33,7 +33,7 @@ class ResultNotif extends Component
         $this->result_requests = DB::table('result_error_forms as a')
             ->join('result_error_source_of_infos as b', 'a.source_of_information', '=', 'b.id')
             ->join('result_complain_categories as c', 'a.complainant_category', '=', 'c.id')
-            ->join('cpar_assignments as d', 'a.id', '=', 'd.cpar_id')
+            ->join('cpar_assignments as d', 'a.id', '=', 'd.result_id')
             ->join('departments as g', 'a.department_id', '=', 'g.id')
             ->join('cpar_statuses as h', 'd.status_id', '=', 'h.id')
             ->leftJoin('employees as i', 'd.dept_head_assigned', '=', 'i.id')

@@ -51,15 +51,19 @@ class UserDashboard extends Component
         $this->result_request_count = DB::table('result_error_forms as a')
             ->join('result_error_source_of_infos as b', 'a.source_of_information', '=', 'b.id')
             ->join('result_complain_categories as c', 'a.complainant_category', '=', 'c.id')
-            ->where('employee_no', $this->employee_no)
+            ->join('cpar_assignments as d', 'a.id', '=', 'd.result_id')
+            ->where('d.status_id', 1)
+            ->where('d.record_type', 10)
+            ->where('a.employee_no', $this->employee_no)
             ->count();
     }
+    
     public function loadResultAssignCount()
     {
         $this->result_assign_count = DB::table('result_error_forms as a')
             ->join('result_error_source_of_infos as b', 'a.source_of_information', '=', 'b.id')
             ->join('result_complain_categories as c', 'a.complainant_category', '=', 'c.id')
-            ->join('cpar_assignments as d', 'a.id', '=', 'd.cpar_id')
+            ->join('cpar_assignments as d', 'a.id', '=', 'd.result_id')
             ->where('d.status_id', 10)
             ->where('d.record_type', 10)
             ->where('d.assigned_to', (int) $this->id)
