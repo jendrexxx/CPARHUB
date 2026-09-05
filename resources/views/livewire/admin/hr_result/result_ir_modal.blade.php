@@ -1,5 +1,5 @@
 <flux:modal
-    name="respond-result"
+    name="nte-result"
     class="w-full max-w-7xl">
 
     <div class="space-y-6">
@@ -11,18 +11,13 @@
             </flux:heading>
 
             <flux:text class="mt-1">
-                Review the result concern and provide the necessary findings and actions.
+                Review the result concern and provide the NTE request Attachment.
             </flux:text>
         </div>
-
 
         {{-- MAIN GRID --}}
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
-
-            {{-- ====================================================== --}}
-            {{-- LEFT : RESULT DETAILS --}}
-            {{-- ====================================================== --}}
             <div class="min-w-0 rounded-lg border-zinc-200 dark:border-zinc-700 p-5">
 
                 <div class="border-b border-zinc-200 dark:border-zinc-700 pb-4">
@@ -101,96 +96,96 @@
                         class="opacity-60 cursor-not-allowed bg-zinc-100 dark:bg-zinc-800" />
 
 
-                    {{-- ERROR CATEGORIES --}}
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-
-                        {{-- DATA AND INFORMATION --}}
-                        <div class="rounded-lg border border-zinc-200 dark:border-zinc-700 p-4">
-
+                    <div class="mt-6">
+                        <div class="mt-6">
                             <flux:label>
-                                Data and Information Errors
+                                Result Error / Concern
                             </flux:label>
-
-                            <div class="space-y-3">
-                                @foreach ($data as $item)
-                                <label class="flex items-center gap-3 cursor-not-allowed">
-                                    <input
-                                        type="checkbox"
-                                        value="{{ $item->id }}"
-                                        wire:model="data_information"
-                                        disabled
-                                        class="h-4 w-4 rounded border-zinc-300
+                            <div class="mt-3 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-2 gap-4">
+                                {{-- Data and Information Errors --}}
+                                <div class="rounded-lg border border-zinc-200 p-4 dark:border-zinc-700">
+                                    <div class="mb-4 border-b border-zinc-200 pb-2 dark:border-zinc-700">
+                                        <flux:text class="font-medium">
+                                            Data and Information Errors
+                                        </flux:text>
+                                    </div>
+                                    <div class="space-y-3">
+                                        @foreach ($data as $item)
+                                        <label class="flex items-center gap-3 cursor-not-allowed">
+                                            <input
+                                                type="checkbox"
+                                                value="{{ $item->id }}"
+                                                wire:model="data_information"
+                                                disabled
+                                                class="h-4 w-4 rounded border-zinc-300
                                             text-primary-600
                                             disabled:cursor-not-allowed
                                             disabled:opacity-70
                                             dark:border-zinc-600">
-                                    <span class="text-sm text-zinc-700 dark:text-zinc-300">
-                                        {{ $item->data_name }}
-                                    </span>
-                                </label>
-                                @endforeach
-                            </div>
+                                            <span class="text-sm text-zinc-700 dark:text-zinc-300">
+                                                {{ $item->data_name }}
+                                            </span>
+                                        </label>
+                                        @endforeach
+                                    </div>
+                                </div>
 
-                        </div>
-
-
-                        {{-- TECHNICAL --}}
-                        <div class="rounded-lg border border-zinc-200 p-4 dark:border-zinc-700">
-                            <div class="mb-4 border-b border-zinc-200 pb-2 dark:border-zinc-700">
-                                <flux:text class="font-medium">
-                                    Technical and Equipment Issues
-                                </flux:text>
-                            </div>
-                            <div class="space-y-3">
-                                @foreach ($technical as $item)
-                                <label class="flex items-center gap-3 cursor-not-allowed">
-                                    <input
-                                        type="checkbox"
-                                        value="{{ $item->id }}"
-                                        wire:model="technical_information"
-                                        disabled
-                                        class="h-4 w-4 rounded border-zinc-300
+                                {{-- Technical and Equipment Issues --}}
+                                <div class="rounded-lg border border-zinc-200 p-4 dark:border-zinc-700">
+                                    <div class="mb-4 border-b border-zinc-200 pb-2 dark:border-zinc-700">
+                                        <flux:text class="font-medium">
+                                            Technical and Equipment Issues
+                                        </flux:text>
+                                    </div>
+                                    <div class="space-y-3">
+                                        @foreach ($technical as $item)
+                                        <label class="flex items-center gap-3 cursor-not-allowed">
+                                            <input
+                                                type="checkbox"
+                                                value="{{ $item->id }}"
+                                                wire:model="technical_information"
+                                                disabled
+                                                class="h-4 w-4 rounded border-zinc-300
                                             text-primary-600
                                             disabled:cursor-not-allowed
                                             disabled:opacity-70
                                             dark:border-zinc-600">
 
-                                    <span class="text-sm text-zinc-700 dark:text-zinc-300">
-                                        {{ $item->technical_name }}
-                                    </span>
-                                </label>
-                                @endforeach
+                                            <span class="text-sm text-zinc-700 dark:text-zinc-300">
+                                                {{ $item->technical_name }}
+                                            </span>
+                                        </label>
+                                        @endforeach
+                                    </div>
+                                </div>
                             </div>
-                        </div>
+                            <div class="rounded-lg border border-zinc-200 p-4 dark:border-zinc-700 mt-2">
+                                <div class="mb-4 border-b border-zinc-200 pb-2 dark:border-zinc-700">
+                                    <flux:text class="font-medium">
+                                        Quality and Accuracy Issues
+                                    </flux:text>
+                                </div>
+                                <div class="space-y-3">
+                                    @foreach ($quality as $item)
+                                    <label class="flex items-center gap-3 cursor-not-allowed">
 
-                    </div>
-
-                    {{-- QUALITY --}}
-                    <div class="rounded-lg border border-zinc-200 p-4 dark:border-zinc-700 mt-2">
-                        <div class="mb-4 border-b border-zinc-200 pb-2 dark:border-zinc-700">
-                            <flux:text class="font-medium">
-                                Quality and Accuracy Issues
-                            </flux:text>
-                        </div>
-                        <div class="space-y-3">
-                            @foreach ($quality as $item)
-                            <label class="flex items-center gap-3 cursor-not-allowed">
-
-                                <input
-                                    type="checkbox"
-                                    value="{{ $item->id }}"
-                                    wire:model="quality_information"
-                                    disabled
-                                    class="h-4 w-4 rounded border-zinc-300
+                                        <input
+                                            type="checkbox"
+                                            value="{{ $item->id }}"
+                                            wire:model="quality_information"
+                                            disabled
+                                            class="h-4 w-4 rounded border-zinc-300
                                     text-primary-600
                                     disabled:cursor-not-allowed
                                     disabled:opacity-70
                                     dark:border-zinc-600">
-                                <span class="text-sm text-zinc-700 dark:text-zinc-300">
-                                    {{ $item->quality_name }}
-                                </span>
-                            </label>
-                            @endforeach
+                                        <span class="text-sm text-zinc-700 dark:text-zinc-300">
+                                            {{ $item->quality_name }}
+                                        </span>
+                                    </label>
+                                    @endforeach
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -216,7 +211,6 @@
                             class="opacity-60 cursor-not-allowed bg-zinc-100 dark:bg-zinc-800" />
 
                     </div>
-
                 </div>
 
             </div>
@@ -243,7 +237,8 @@
                         label="Identified Cause"
                         wire:model="identified_cause"
                         rows="5"
-                        placeholder="Enter the identified cause..." />
+                        placeholder="Enter the identified cause..."
+                        class="opacity-60 cursor-not-allowed bg-zinc-100 dark:bg-zinc-800" />
 
 
                     {{-- PROVIDED SOLUTION --}}
@@ -251,7 +246,8 @@
                         label="Provided Solution"
                         wire:model="provided_solution"
                         rows="5"
-                        placeholder="Enter the provided solution..." />
+                        placeholder="Enter the provided solution..."
+                        class="opacity-60 cursor-not-allowed bg-zinc-100 dark:bg-zinc-800" />
 
 
                     {{-- RECOMMENDATION --}}
@@ -259,38 +255,40 @@
                         label="Recommendation"
                         wire:model="recommendation"
                         rows="5"
-                        placeholder="Enter recommendation..." />
+                        placeholder="Enter recommendation..."
+                        class="opacity-60 cursor-not-allowed bg-zinc-100 dark:bg-zinc-800" />
 
 
                     {{-- IR ATTACHMENT --}}
-                    <div>
+                    @if($existing_ir_attachment)
+                    <div class="mt-4">
+                        <flux:text class="mb-2 font-semibold">
+                            Incident Report (IR)
+                        </flux:text>
+                        <div class="flex items-center justify-between rounded-lg border border-zinc-200 bg-zinc-50 px-4 py-3 dark:border-zinc-700 dark:bg-zinc-800">
+                            <div class="flex items-center gap-3">
+                                <flux:icon.document-text class="size-5 text-red-600" />
+                                <div>
+                                    <flux:text class="font-medium">
+                                        IR Attachment
+                                    </flux:text>
+                                    <flux:text size="sm" class="text-zinc-500">
+                                        Incident Report PDF is already uploaded.
+                                    </flux:text>
+                                </div>
+                            </div>
 
-                        <flux:input
-                            type="file"
-                            label="IR Attachment"
-                            wire:model="ir_attachment"
-                            accept=".pdf" />
-
-                        @if ($existing_ir_attachment)
-
-                        <div class="mt-2 flex items-center gap-2">
                             <flux:button
-                                type="button"
-                                icon="eye"
-                                variant="primary"
                                 size="sm"
-                                href="{{ Storage::url($existing_ir_attachment) }}"
+                                variant="ghost"
+                                icon="eye"
+                                href="{{ Storage::url($ir_attachment) }}"
                                 target="_blank">
-                                View Existing IR
+                                View PDF
                             </flux:button>
-                            <flux:text class="text-sm text-zinc-500">
-                                Existing attachment
-                            </flux:text>
                         </div>
-
-                        @endif
-
                     </div>
+                    @endif
 
                     {{-- COMPLETION DETAILS --}}
                     <div class="border-t border-zinc-200 dark:border-zinc-700 pt-5">
@@ -344,67 +342,42 @@
 
                         {{-- REMARKS --}}
                         <div class="mt-4">
-                            <flux:textarea
-                                label="Dept Head/HR Remarks"
-                                wire:model="assignment_remarks"
-                                rows="4"
+                            <flux:textarea label="Dept Head Remarks" wire:model="dept_head_remarks" rows="4"
                                 readonly
                                 class="opacity-60 cursor-not-allowed bg-zinc-100 dark:bg-zinc-800" />
                         </div>
-                    </div>
 
+                    </div>
+                    <flux:input type="file" label="NTE Attachment" wire:model="nte_attachment" accept=".pdf" />
                 </div>
 
             </div>
 
         </div>
 
-
-        {{-- ====================================================== --}}
-        {{-- FOOTER --}}
-        {{-- ====================================================== --}}
-        <div class="flex flex-col-reverse sm:flex-row sm:justify-end gap-3 border-t border-zinc-200 dark:border-zinc-700 pt-5">
-
+        {{-- Footer --}}
+        <div class="flex justify-end gap-2">
+            <flux:modal.close>
+                <flux:button variant="ghost">
+                    Close
+                </flux:button>
+            </flux:modal.close>
             <flux:button
-                type="button"
                 variant="primary"
-                icon="lock-open"
-                wire:click="saveDraft"
+                icon="paper-airplane"
+                wire:click="sendNTE"
                 wire:loading.attr="disabled"
-                wire:target="saveDraft"
-                class="bg-orange-500 hover:bg-orange-600 text-white">
+                :disabled="$hasNTERequest">
 
-                <span wire:loading.remove wire:target="saveDraft">
-                    Save Draft
+                <span wire:loading.remove wire:target="sendNTE">
+                    {{ $hasNTERequest ? 'NTE Request Already Sent' : 'Send NTE' }}
                 </span>
 
-                <span wire:loading wire:target="saveDraft">
-                    Saving...
+                <span wire:loading wire:target="sendNoticeToExplain">
+                    Sending...
                 </span>
 
             </flux:button>
-
-
-            <flux:button
-                type="button"
-                variant="primary"
-                icon="check"
-                wire:click="saveResponse"
-                wire:loading.attr="disabled"
-                wire:target="saveResponse">
-
-                <span wire:loading.remove wire:target="saveResponse">
-                    Submit Response
-                </span>
-
-                <span wire:loading wire:target="saveResponse">
-                    Submitting...
-                </span>
-
-            </flux:button>
-
         </div>
-
     </div>
-
 </flux:modal>

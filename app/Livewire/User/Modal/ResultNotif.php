@@ -13,6 +13,10 @@ class ResultNotif extends Component
     public $employee_no = '';
     public $id = '';
 
+    protected $listeners = [
+        'refreshData' => 'ResultloadRecords',
+    ];
+
     public function mount()
     {
         $user = Auth::user();
@@ -42,6 +46,11 @@ class ResultNotif extends Component
                 'b.source_name',
                 'c.complain_name',
                 'd.department_name',
+                'e.id as assignment_id',
+                'e.assigned_to',
+                'e.status_id',
+                'e.remarks',
+                'e.dept_head_assigned',
                 'f.status_name',
                 'f.badge_color',
 

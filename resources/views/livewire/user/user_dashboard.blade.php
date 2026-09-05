@@ -1,6 +1,7 @@
 <div class="w-full min-w-0">
     {{-- Toast Message --}}
     @include('user_toast')
+    @include('toast')
     {{-- Dashboard Header --}}
     <div
         class="flex flex-col gap-3 px-3 pt-4

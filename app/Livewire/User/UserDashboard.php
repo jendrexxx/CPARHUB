@@ -27,6 +27,7 @@ class UserDashboard extends Component
         'refreshAssignedCount' => 'loadAssignedCount',
         'refreshNTECount' => 'loadNTECount',
         'refreshIRCount' => 'loadIRCount',
+        'refreshResultCount'  => 'loadResultAssignCount'
     ];
 
     public function mount()

@@ -48,6 +48,7 @@ class CparSubmissionForm extends Component
                 'g.department_name',
                 'h.status_name'
             )
+            ->where('b.record_type', 5)
             ->where('b.status_id', 15)
             ->where('i.dept_head', $this->employee_no)
             ->orderByDesc('a.id')

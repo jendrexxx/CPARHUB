@@ -4,7 +4,6 @@ namespace App\Livewire\User\Modal;
 
 use App\Models\cpar_assignments;
 use App\Models\cpar_investigations;
-use App\Models\cpar_request_forms;
 use App\Models\employee;
 use Illuminate\Support\Facades\DB;
 use Livewire\Component;
@@ -441,7 +440,6 @@ class CparRespondForm extends Component
             if ($oldIR) {
 
                 $updateData = [
-                    'ir_id'       => $this->ir_id,
                     'employee_no' => $this->employee_no,
                     'updated_at'  => now(),
                 ];
@@ -556,20 +554,18 @@ class CparRespondForm extends Component
             if (!empty($changedNewValue)) {
 
                 DB::table('audit_logs')->insert([
-                    'user' => auth()->id(),
-
+                    'user_reported_by' => $this->employeeName,
+                    'user_reported' => $this->assigned_to,
                     'action' => 'CPAR RESPONSE DRAFT',
-
                     'old_value' => json_encode(
                         $changedOldValue,
                         JSON_UNESCAPED_UNICODE
                     ),
-
                     'new_value' => json_encode(
                         $changedNewValue,
                         JSON_UNESCAPED_UNICODE
                     ),
-
+                    'status_changed_by' => $this->assigned_to,
                     'date'       => now(),
                     'created_at' => now(),
                     'updated_at' => now(),

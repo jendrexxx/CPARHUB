@@ -30,6 +30,7 @@ class HrHeadDashboard extends Component
     public $validityFilter = 'ALL';
     public $disciplinaryCategories = [];
     public $memo_count = '';
+    public $result_ir_cpar_count = '', $decision_result_count = '';
 
     protected $listeners = [
         'refreshHRCount' => 'loadHRCount',
@@ -54,40 +55,30 @@ class HrHeadDashboard extends Component
         $this->disciplinaryCategories = DB::table('cpar_disciplinary_categories')
             ->orderBy('id')
             ->get();
-        $this->loadHRCount();
-        $this->loadAcknowledgeCount();
-        $this->loadDecisionCount();
-        $this->loadHRResultCount();
-        $this->loadMemoCount();
         $this->branches = DB::table('branches')
             ->orderBy('branch_name')
             ->get();
-    }
-
-    public function loadHRResultCount()
-    {
-        $this->result_request_count = DB::table('result_error_forms as a')
-            ->join('result_error_source_of_infos as b', 'a.source_of_information', '=', 'b.id')
-            ->join('result_complain_categories as c', 'a.complainant_category', '=', 'c.id')
-            ->join('cpar_assignments as d', 'a.id', '=', 'd.result_id')
-            ->join('employees as i', 'd.assigned_to', '=', 'i.id')
-            ->where('d.status_id', 5)
-            ->where('d.record_type', 10)
-            ->where('i.branch_id', $this->branch_id)
-            ->count(DB::raw('DISTINCT a.id'));
+        $this->loadHRCount();
+        $this->loadAcknowledgeCount();
+        $this->loadDecisionCount();
+        $this->loadMemoCount();
+        // result count
+        $this->loadHRResultCount();
+        $this->loadHRIRResultCount();
+        $this->loadDecisionResultCount();
     }
 
     public function loadHRCount()
     {
         $this->cpar_request_count = DB::table('cpar_request_forms as a')
-            ->join('cpar_assignments as b','a.id','=','b.cpar_id')
-            ->join('cpar_attachments as c','a.id','=','c.cpar_id')
-            ->join('cpar_source_origins as d','a.source_id','=','d.id')
-            ->join('cpar_complain_categories as e','a.complaint_category_id','=','e.id')
-            ->join('cpar_concern_categories as f','a.concern_category_id','=','f.id')
-            ->join('departments as g','a.department_id','=','g.id')
-            ->join('cpar_statuses as h','b.status_id','=','h.id')
-            ->join('employees as i','b.assigned_to','=','i.id')
+            ->join('cpar_assignments as b', 'a.id', '=', 'b.cpar_id')
+            ->join('cpar_attachments as c', 'a.id', '=', 'c.cpar_id')
+            ->join('cpar_source_origins as d', 'a.source_id', '=', 'd.id')
+            ->join('cpar_complain_categories as e', 'a.complaint_category_id', '=', 'e.id')
+            ->join('cpar_concern_categories as f', 'a.concern_category_id', '=', 'f.id')
+            ->join('departments as g', 'a.department_id', '=', 'g.id')
+            ->join('cpar_statuses as h', 'b.status_id', '=', 'h.id')
+            ->join('employees as i', 'b.assigned_to', '=', 'i.id')
             ->where('b.status_id', 5)
             ->where('b.record_type', 5)
             ->where('i.branch_id', $this->branch_id)
@@ -136,6 +127,46 @@ class HrHeadDashboard extends Component
             ->join('cpar_statuses as h', 'b.status_id', '=', 'h.id')
             ->leftJoin('employees as i', 'b.assigned_to', '=', 'i.id')
             ->where('b.status_id', 40)
+            ->where('branch_id', $this->branch_id)
+            ->count();
+    }
+
+    // RESULT COUNT
+    public function loadHRResultCount()
+    {
+        $this->result_request_count = DB::table('result_error_forms as a')
+            ->join('result_error_source_of_infos as b', 'a.source_of_information', '=', 'b.id')
+            ->join('result_complain_categories as c', 'a.complainant_category', '=', 'c.id')
+            ->join('cpar_assignments as d', 'a.id', '=', 'd.result_id')
+            ->join('employees as i', 'd.assigned_to', '=', 'i.id')
+            ->where('d.status_id', 5)
+            ->where('d.record_type', 10)
+            ->where('i.branch_id', $this->branch_id)
+            ->count(DB::raw('DISTINCT a.id'));
+    }
+
+    public function loadHRIRResultCount()
+    {
+        $this->result_ir_cpar_count = DB::table('result_error_forms as a')
+            ->join('result_error_source_of_infos as b', 'a.source_of_information', '=', 'b.id')
+            ->join('result_complain_categories as c', 'a.complainant_category', '=', 'c.id')
+            ->join('cpar_assignments as d', 'a.id', '=', 'd.result_id')
+            ->join('employees as i', 'd.assigned_to', '=', 'i.id')
+            ->where('d.status_id', 20)
+            ->where('d.record_type', 10)
+            ->where('i.branch_id', $this->branch_id)
+            ->count(DB::raw('DISTINCT a.id'));
+    }
+
+    public function loadDecisionResultCount()
+    {
+        $this->decision_result_count = DB::table('result_error_forms as a')
+            ->join('result_error_source_of_infos as b', 'a.source_of_information', '=', 'b.id')
+            ->join('result_complain_categories as c', 'a.complainant_category', '=', 'c.id')
+            ->join('cpar_assignments as d', 'a.id', '=', 'd.result_id')
+            ->join('employees as i', 'd.assigned_to', '=', 'i.id')
+            ->whereIn('d.status_id', [20, 25, 30])
+            ->where('d.record_type', 10)
             ->where('branch_id', $this->branch_id)
             ->count();
     }

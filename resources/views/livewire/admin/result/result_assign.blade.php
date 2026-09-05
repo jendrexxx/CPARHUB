@@ -356,10 +356,6 @@
 
         </div>
 
-
-        {{-- ========================================= --}}
-        {{-- FOOTER --}}
-        {{-- ========================================= --}}
         <div class="mt-6 flex justify-end gap-2 border-t border-zinc-200 pt-4 dark:border-zinc-700">
 
             <flux:button

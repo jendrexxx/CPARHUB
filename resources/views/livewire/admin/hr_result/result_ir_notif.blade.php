@@ -1,0 +1,99 @@
+<flux:modal name="ResultIRModal" class="w-[120%] max-w-[1500px] mt-6 top-0 z-50">
+
+    <div class="space-y-6">
+
+        <div>
+            <flux:heading size="lg">
+                NTE Request
+            </flux:heading>
+
+            <flux:text class="mt-1">
+                Review the Result Concern details and process the corresponding NTE request.
+            </flux:text>
+        </div>
+
+        <div class="overflow-x-auto rounded-lg border border-zinc-200 dark:border-zinc-700 text-center">
+            <div class="w-full overflow-x-auto rounded-lg border border-zinc-200 dark:border-zinc-700">
+                <table class="w-full text-sm text-center">
+                    <thead class="bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 text-xs tracking-wider">
+                        <tr>
+                            <th class="px-4 py-3 text-center">Result No.</th>
+                            <th class="px-4 py-3 text-center">Reported By</th>
+                            <th class="px-4 py-3 text-center">Date Reported</th>
+                            <th class="px-4 py-3 text-center">Assigned to</th>
+                            <th class="px-4 py-3 text-center">Priority Level</th>
+                            <th class="px-4 py-3 text-center">Status</th>
+                            <th class="px-4 py-3 text-center">Action</th>
+                        </tr>
+                    </thead>
+
+                    <tbody class="divide-y divide-zinc-200 dark:divide-zinc-700">
+
+                        @forelse($resultRequests as $request)
+
+                        <tr>
+                            <td class="px-4 py-3 font-medium text-zinc-900 dark:text-zinc-100">
+                                {{ $request->result_no }}
+                            </td>
+                            <td class="px-4 py-3 font-medium text-zinc-900 dark:text-zinc-100">
+                                {{ $request->reported_by }}
+                            </td>
+                            <td class="px-4 py-3 font-medium text-zinc-900 dark:text-zinc-100">
+                                {{ \Carbon\Carbon::parse($request->date_reported)->format('M d, Y') }}
+                            </td>
+                            <td class="px-4 py-3 font-medium text-zinc-900 dark:text-zinc-100">
+                                {{ $request->assigned_names }}
+                            </td>
+                            <td class="px-4 py-3">
+                                @php
+                                $priorityColor = match (strtolower($request->priority_name)) {
+                                'normal' => 'bg-green-100 text-green-700 ring-green-600/20',
+                                'high' => 'bg-orange-100 text-orange-700 ring-orange-600/20',
+                                'urgent' => 'bg-red-100 text-red-700 ring-red-600/20',
+                                default => 'bg-zinc-100 text-zinc-700 ring-zinc-600/20',
+                                };
+                                @endphp
+                                <span class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold ring-1 ring-inset {{ $priorityColor }}">
+                                    {{ $request->priority_name }}
+                                </span>
+                            </td>
+                            <td class="px-4 py-3">
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-zinc-100 text-zinc-800 dark:bg-zinc-700 dark:text-zinc-300">
+                                    {{ $request->status_name }}
+                                </span>
+                            </td>
+                            <td class="px-4 py-3 text-center">
+                                <flux:dropdown align="end">
+                                    <flux:button
+                                        size="sm"
+                                        variant="ghost"
+                                        icon="ellipsis-vertical">
+                                    </flux:button>
+                                    <flux:menu>
+                                        <flux:menu.item
+                                            icon="document-text"
+                                            wire:click="ViewNTE({{ $request->assignment_id }})">
+                                            View NTE
+                                        </flux:menu.item>
+                                    </flux:menu>
+                                </flux:dropdown>
+                            </td>
+                        </tr>
+
+                        @empty
+
+                        <tr>
+                            <td colspan="7" class="px-4 py-6 text-center text-zinc-500">
+                                No Result Concern requests found.
+                            </td>
+                        </tr>
+
+                        @endforelse
+
+                    </tbody>
+
+                </table>
+            </div>
+        </div>
+    </div>
+</flux:modal>

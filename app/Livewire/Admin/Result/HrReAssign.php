@@ -245,7 +245,6 @@ class HrReAssign extends Component
             $this->status = '';
             $this->new_assignees = [];
         }
-
         $this->department_name = null;
         if ($result_assigned->department_id) {
             $this->department_name = DB::table('departments')
