@@ -73,7 +73,7 @@
                         class="text-xl font-bold text-gray-900
                                sm:text-2xl
                                dark:text-white">
-                        {{ $cpar_request_count }}
+                        {{ $request_count }}
                     </div>
 
                     <div
@@ -117,7 +117,7 @@
                         class="text-xl font-bold text-gray-900
                                sm:text-2xl
                                dark:text-white">
-                        {{ $assigned_cpar }}
+                        {{ $assigned_count }}
                     </div>
 
                     <div
@@ -173,95 +173,6 @@
                 </div>
             </div>
         </flux:modal.trigger>
-
-        <flux:modal.trigger name="RESULTModal">
-            <div
-                class="group flex w-full min-w-0 cursor-pointer items-center gap-3
-                       rounded-2xl border border-gray-200
-                       bg-white p-4 shadow-sm
-                       transition-all duration-300
-                       hover:-translate-y-1 hover:shadow-xl
-                       sm:gap-4 sm:p-5
-                       dark:border-zinc-700
-                       dark:bg-zinc-900">
-
-                <div
-                    class="flex size-11 shrink-0 items-center justify-center
-                           rounded-xl
-                           bg-green-100 text-green-600
-                           transition-all duration-300
-                           group-hover:bg-green-500
-                           group-hover:text-white
-                           sm:size-12
-                           dark:bg-green-900/30
-                           dark:text-green-400">
-
-                    <flux:icon.chart-bar
-                        class="size-5 sm:size-6" />
-                </div>
-
-                <div class="min-w-0 flex-1">
-                    <div
-                        class="text-xl font-bold text-gray-900
-                               sm:text-2xl
-                               dark:text-white">
-                        {{ $result_request_count }}
-                    </div>
-
-                    <div
-                        class="truncate text-sm font-medium
-                               text-gray-500
-                               dark:text-zinc-400">
-                        Result Related Concern
-                    </div>
-                </div>
-            </div>
-        </flux:modal.trigger>
-
-        <flux:modal.trigger name="AssignedModal">
-            <div
-                class="group flex w-full min-w-0 cursor-pointer items-center gap-3
-                       rounded-2xl border border-gray-200
-                       bg-white p-4 shadow-sm
-                       transition-all duration-300
-                       hover:-translate-y-1 hover:shadow-xl
-                       sm:gap-4 sm:p-5
-                       dark:border-zinc-700
-                       dark:bg-zinc-900">
-
-                <div
-                    class="flex size-11 shrink-0 items-center justify-center
-                           rounded-xl
-                           bg-green-100 text-green-600
-                           transition-all duration-300
-                           group-hover:bg-green-500
-                           group-hover:text-white
-                           sm:size-12
-                           dark:bg-green-900/30
-                           dark:text-green-400">
-
-                    <flux:icon.chart-bar
-                        class="size-5 sm:size-6" />
-                </div>
-
-                <div class="min-w-0 flex-1">
-                    <div
-                        class="text-xl font-bold text-gray-900
-                               sm:text-2xl
-                               dark:text-white">
-                        {{ $result_assign_count }}
-                    </div>
-
-                    <div
-                        class="truncate text-sm font-medium
-                               text-gray-500
-                               dark:text-zinc-400">
-                        Assigned Result
-                    </div>
-                </div>
-            </div>
-        </flux:modal.trigger>
-
     </div>
 
     <div class="w-full px-3 pb-4 sm:px-4 lg:px-6">
@@ -279,6 +190,10 @@
     <livewire:user.modal.cpar_ir_table />
     <livewire:user.modal.cpar_ir_explanation />
 
+
+    <!-- result -->
+    <livewire:user.modal.result_form />
+    <livewire:user.modal.result_cancel />
     <!-- result -->
     <livewire:user.modal.result_notif />
     <livewire:user.modal.result_assigned />

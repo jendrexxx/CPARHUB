@@ -67,9 +67,9 @@ class CparEdit extends Component
         $this->modal('EditCPARModal')->show();
     }
 
-    public function cancelRequest($id)
+    public function cancelRequest($assignment_id = '')
     {
-        $this->dispatch('view-Cancel', id: $id);
+        $this->dispatch('view-Cancel', id: $assignment_id);
     }
 
     public function render()

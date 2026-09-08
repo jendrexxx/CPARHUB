@@ -146,9 +146,7 @@ class ResultRequestForm extends Component
             'created_by'            => Auth::id(),
         ]);
 
-        session()->flash('success', 'Result Concern submitted successfully.');
-
-        return redirect()->route('user_dashboard');
+        return redirect()->route('user_dashboard')->with('toast', ['type' => 'success', 'message' => 'Result Concern submitted successfully',]);
     }
 
     public function render()

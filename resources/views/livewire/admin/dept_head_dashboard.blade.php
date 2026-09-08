@@ -40,7 +40,7 @@
 
                 <div class="min-w-0">
                     <div class="text-2xl font-bold text-gray-900 dark:text-white">
-                        {{ $cpar_request_count }}
+                        {{ $concern_count }}
                     </div>
 
                     <div class="text-sm font-medium text-gray-500 dark:text-zinc-400">
@@ -69,69 +69,11 @@
 
                 <div class="min-w-0">
                     <div class="text-2xl font-bold text-gray-900 dark:text-white">
-                        {{ $submission_cpar }}
+                        {{ $acknowledgment_count }}
                     </div>
 
                     <div class="text-sm font-medium text-gray-500 dark:text-zinc-400">
                         Acknowledgment Concern
-                    </div>
-                </div>
-            </div>
-        </flux:modal.trigger>
-
-        {{-- Result Request --}}
-        <flux:modal.trigger name="ResultModal">
-            <div
-                class="group flex h-full w-full cursor-pointer items-center gap-4
-                   rounded-2xl border border-gray-200 bg-white p-5 shadow-sm
-                   transition-all duration-200 hover:-translate-y-1 hover:shadow-lg
-                   dark:border-zinc-700 dark:bg-zinc-900">
-                <div
-                    class="flex h-12 w-12 shrink-0 items-center justify-center
-                       rounded-xl bg-green-100 text-green-600
-                       transition-colors duration-200
-                       group-hover:bg-green-500 group-hover:text-white
-                       dark:bg-green-900/30 dark:text-green-400
-                       dark:group-hover:bg-green-500 dark:group-hover:text-white">
-                    <flux:icon.chart-bar class="h-6 w-6" />
-                </div>
-
-                <div class="min-w-0">
-                    <div class="text-2xl font-bold text-gray-900 dark:text-white">
-                        {{ $result_request_count }}
-                    </div>
-
-                    <div class="text-sm font-medium text-gray-500 dark:text-zinc-400">
-                        Result Request
-                    </div>
-                </div>
-            </div>
-        </flux:modal.trigger>
-
-        {{-- Result Acknowledgment Concern --}}
-        <flux:modal.trigger name="ResultSubmissionModal">
-            <div
-                class="group flex h-full w-full cursor-pointer items-center gap-4
-                   rounded-2xl border border-gray-200 bg-white p-5 shadow-sm
-                   transition-all duration-200 hover:-translate-y-1 hover:shadow-lg
-                   dark:border-zinc-700 dark:bg-zinc-900">
-                <div
-                    class="flex h-12 w-12 shrink-0 items-center justify-center
-                       rounded-xl bg-purple-100 text-purple-600
-                       transition-colors duration-200
-                       group-hover:bg-purple-500 group-hover:text-white
-                       dark:bg-purple-900/30 dark:text-purple-400
-                       dark:group-hover:bg-purple-500 dark:group-hover:text-white">
-                    <flux:icon.chart-bar class="h-6 w-6" />
-                </div>
-
-                <div class="min-w-0">
-                    <div class="text-2xl font-bold text-gray-900 dark:text-white">
-                        {{ $result_concern_count }}
-                    </div>
-
-                    <div class="text-sm font-medium text-gray-500 dark:text-zinc-400">
-                        Result Acknowledgment Concern
                     </div>
                 </div>
             </div>
@@ -143,9 +85,7 @@
     <livewire:admin.cpar.cpar_re-assigned />
     <livewire:admin.cpar.cpar_submission_form />
     <livewire:admin.cpar.cpar_submission_modal />
-
     <!-- RESULT -->
-    <livewire:admin.result.result_notif />
     <livewire:admin.result.result_assign />
     <livewire:admin.result.result_concern_form />
     <livewire:admin.result.result_concern_modal />

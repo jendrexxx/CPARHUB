@@ -5,19 +5,19 @@ namespace App\Livewire\User\Modal;
 use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 
-class CparCancel extends Component
+class ResultCancel extends Component
 {
-    public $cancelId;
+    public $cancelId = '';
     public $cancelReason = '';
     protected $listeners = [
-        'view-Cancel' => 'viewCancel',
+        'view-result-Cancel' => 'viewCancel',
     ];
 
     public function viewCancel($id = '')
     {
         $this->cancelId = $id;
         $this->cancelReason = '';
-        $this->modal('cancel-cpar')->show();
+        $this->modal('cancel-result')->show();
     }
 
     public function confirmCancel()
@@ -25,7 +25,7 @@ class CparCancel extends Component
         $this->validate([
             'cancelReason' => 'required|string|max:1000',
         ], [
-            'cancelReason.required' => 'Please provide a reason for cancelling this CPAR.',
+            'cancelReason.required' => 'Please provide a reason for cancelling this RESULT.',
         ]);
 
         $assignment = DB::table('cpar_assignments')
@@ -33,7 +33,7 @@ class CparCancel extends Component
             ->first();
 
         if (!$assignment) {
-            $this->addError('cancelReason', 'CPAR assignment not found.');
+            $this->addError('cancelReason', 'RESULT assignment not found.');
             return;
         }
 
@@ -52,15 +52,15 @@ class CparCancel extends Component
 
         $this->dispatch('refreshCparData');
         $this->dispatch('refreshCparCount');
+        $this->dispatch('modal-close',name: 'cancel-result');
+        $this->dispatch('modal-close',name: 'result-form');
 
-        session()->flash(
-            'success',
-            'CPAR has been cancelled successfully.'
+        session()->flash('success','RESULT has been cancelled successfully.'
         );
     }
 
     public function render()
     {
-        return view('livewire.user.modal.cpar_cancel');
+        return view('livewire.user.modal.result_cancel');
     }
 }

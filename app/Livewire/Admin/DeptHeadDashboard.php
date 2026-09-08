@@ -17,13 +17,15 @@ class DeptHeadDashboard extends Component
     public $employee_no = '';
     public $submission_cpar = '';
     public $id = '';
-    public $result_concern_count ='';
+    public $result_concern_count = '';
+    public $concern_count = [];
+    public $acknowledgment_count = [];
 
     protected $listeners = [
         'refreshHeadCount' => 'loadHeadCount',
         'refreshSubmissionCount' => 'loadHeadSubmissionCount',
         'refreshResultCount' => 'loadResultCount',
-        'refreshAcknowledgeCount' => 'loadResultAcknowledgeCount'
+        'refreshAcknowledgeCount' => 'loadAcknowledgeCount'
     ];
 
     public function mount()
@@ -35,58 +37,49 @@ class DeptHeadDashboard extends Component
             $this->id = $info->id;
         }
         $this->loadHeadCount();
-        $this->loadHeadSubmissionCount();
-        $this->loadResultCount();
-        $this->loadResultAcknowledgeCount();
+        $this->loadAcknowledgeCount();
     }
 
-    public function loadResultCount()
+    public function loadHeadCount()
     {
-        $this->result_request_count = DB::table('result_error_forms as a')
-            ->join('result_error_source_of_infos as b', 'a.source_of_information', '=', 'b.id')
-            ->join('result_complain_categories as c', 'a.complainant_category', '=', 'c.id')
+        // Result Error count
+        $resultRequestCount = DB::table('result_error_forms as a')
             ->join('cpar_assignments as d', 'a.id', '=', 'd.result_id')
             ->where('d.dept_head_assigned', $this->id)
             ->where('d.record_type', 10)
             ->where('d.status_id', 1)
             ->count();
-    }
 
-    public function loadResultAcknowledgeCount()
-    {
-        $this->result_concern_count = DB::table('result_error_forms as a')
-            ->join('result_error_source_of_infos as b', 'a.source_of_information', '=', 'b.id')
-            ->join('result_complain_categories as c', 'a.complainant_category', '=', 'c.id')
-            ->join('cpar_assignments as d', 'a.id', '=', 'd.result_id')
-            ->where('d.dept_head_assigned', $this->id)
-            ->where('d.record_type', 10)
-            ->where('d.status_id', 15)
-            ->count();
-    }
-
-    public function loadHeadCount()
-    {
-        $this->cpar_request_count = DB::table('cpar_request_forms as a')
+        // CPAR count
+        $cparRequestCount = DB::table('cpar_request_forms as a')
             ->join('cpar_assignments as b', 'a.id', '=', 'b.cpar_id')
-            ->join('cpar_attachments as c', 'a.id', '=', 'c.cpar_id')
-            ->join('employees as i', 'b.dept_head_assigned', 'i.id')
-            ->join('cpar_statuses as h', 'b.status_id', '=', 'h.id')
-            ->where('b.status_id', 1)
+            ->where('b.dept_head_assigned', $this->id)
             ->where('b.record_type', 5)
-            ->where('i.id', $this->id)
+            ->where('b.status_id', 1)
             ->count();
+        // Total
+        $this->concern_count = $resultRequestCount + $cparRequestCount;
     }
 
-    public function loadHeadSubmissionCount()
+    public function loadAcknowledgeCount()
     {
-        $this->submission_cpar = DB::table('cpar_request_forms as a')
-            ->join('cpar_assignments as b', 'a.id', '=', 'b.cpar_id')
-            ->join('departments as g', 'a.department_id', '=', 'g.id')
-            ->join('cpar_statuses as h', 'b.status_id', '=', 'h.id')
-            ->join('employees as j', 'b.assigned_to', 'j.id')
+        // CPAR acknowledgment count
+        $cparCount = DB::table('cpar_assignments as b')
+            ->join('employees as j', 'b.assigned_to', '=', 'j.id')
             ->where('b.status_id', 15)
+            ->where('b.record_type', 5)
             ->where('j.dept_head', $this->employee_no)
             ->count();
+
+        // Result Error acknowledgment count
+        $resultCount = DB::table('cpar_assignments as d')
+            ->where('d.status_id', 15)
+            ->where('d.record_type', 10)
+            ->where('d.dept_head_assigned', $this->id)
+            ->count();
+
+        // Combined count
+        $this->acknowledgment_count = $cparCount + $resultCount;
     }
 
     public function render()

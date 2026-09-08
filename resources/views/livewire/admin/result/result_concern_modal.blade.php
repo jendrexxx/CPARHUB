@@ -264,19 +264,50 @@
                     {{-- IR ATTACHMENT --}}
                     <div>
                         @if ($existing_ir_attachment)
-                        <div class="mt-2 flex items-center gap-2">
-                            <flux:button
-                                type="button"
-                                icon="eye"
-                                variant="primary"
-                                size="sm"
-                                href="{{ Storage::url($existing_ir_attachment) }}"
-                                target="_blank">
-                                View Existing IR
-                            </flux:button>
-                            <flux:text class="text-sm text-zinc-500">
-                                Existing attachment
+                        <div class="mt-4">
+                            <flux:text class="mb-2 font-semibold">
+                                Incident Report (IR)
                             </flux:text>
+                            <div
+                                class="flex items-center justify-between rounded-lg
+                                border border-zinc-200 bg-zinc-50 px-4 py-3
+                                dark:border-zinc-700 dark:bg-zinc-800">
+
+                                <div class="flex items-center gap-3">
+
+                                    <flux:icon.document-text
+                                        class="size-5 text-red-600" />
+
+                                    <div>
+
+                                        <flux:text class="font-medium">
+                                            IR Attachment
+                                        </flux:text>
+
+                                        <flux:text
+                                            size="sm"
+                                            class="text-zinc-500">
+
+                                            Incident Report PDF is already uploaded.
+
+                                        </flux:text>
+
+                                    </div>
+
+                                </div>
+
+                                <flux:button
+                                    size="sm"
+                                    variant="ghost"
+                                    icon="eye"
+                                    href="{{ Storage::url($existing_ir_attachment) }}"
+                                    target="_blank">
+
+                                    View PDF
+
+                                </flux:button>
+
+                            </div>
                         </div>
                         @endif
                     </div>

@@ -68,7 +68,6 @@ class CparSubmissionModal extends Component
                 'b.id',
                 'b.cpar_id',
                 'b.assigned_to',
-                'b.remarks',
                 'b.dept_head_assigned',
                 'b.department_id',
                 'c.file_path',
@@ -83,6 +82,7 @@ class CparSubmissionModal extends Component
                 'j.action_taken_by',
                 'j.date_completed',
                 'j.tat',
+                'j.remarks',
                 'k.source_name',
                 'l.complain_name',
                 'm.concern_name',
@@ -129,6 +129,7 @@ class CparSubmissionModal extends Component
         $this->attachment = $cpar->file_path ?? null;
         $this->ir_attachment = $cpar->ir_attachment ?? null;
         $this->assigned_to = $cpar->assigned_to;
+        $this->remarks = $cpar->remarks;
         $this->modal('submission-cpar')->show();
     }
 
@@ -202,8 +203,7 @@ class CparSubmissionModal extends Component
         $this->dispatch('modal-close', name: 'submission-cpar');
         $this->dispatch('modal-close', name: 'CPARSubmissionModal');
         $this->dispatch('refreshSubmission');
-        $this->dispatch('refreshSubmissionCount');
-
+        $this->dispatch('refreshAcknowledgeCount');
         $this->reset([
             'remarks',
         ]);

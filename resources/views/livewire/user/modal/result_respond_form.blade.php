@@ -105,11 +105,12 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 
                         {{-- DATA AND INFORMATION --}}
-                        <div class="rounded-lg border border-zinc-200 dark:border-zinc-700 p-4">
-
-                            <flux:label>
-                                Data and Information Errors
-                            </flux:label>
+                        <div class="rounded-lg border border-zinc-200 p-4 dark:border-zinc-700">
+                            <div class="mb-4 border-b border-zinc-200 pb-2 dark:border-zinc-700">
+                                <flux:text class="font-medium">
+                                    Data and Information Errors
+                                </flux:text>
+                            </div>
 
                             <div class="space-y-3">
                                 @foreach ($data as $item)
@@ -394,7 +395,7 @@
                 wire:target="saveResponse">
 
                 <span wire:loading.remove wire:target="saveResponse">
-                    Submit Response
+                    Submit
                 </span>
 
                 <span wire:loading wire:target="saveResponse">

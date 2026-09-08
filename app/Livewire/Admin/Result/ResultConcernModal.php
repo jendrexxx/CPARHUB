@@ -185,23 +185,11 @@ class ResultConcernModal extends Component
                 throw new \Exception('Investigation record not found.');
             }
 
-            /*
-        |--------------------------------------------------------------------------
-        | OLD VALUES
-        |--------------------------------------------------------------------------
-        */
-
             $oldValue = [
                 'result_no' => $this->result_no,
                 'remarks'   => $oldInvestigation->remarks,
                 'status_id' => $oldAssignment->status_id,
             ];
-
-            /*
-        |--------------------------------------------------------------------------
-        | UPDATE INVESTIGATION
-        |--------------------------------------------------------------------------
-        */
 
             DB::table('cpar_investigations')
                 ->where('assigned_id', $this->id)
@@ -210,12 +198,6 @@ class ResultConcernModal extends Component
                     'updated_at' => now(),
                 ]);
 
-            /*
-        |--------------------------------------------------------------------------
-        | UPDATE ASSIGNMENT STATUS
-        |--------------------------------------------------------------------------
-        */
-
             DB::table('cpar_assignments')
                 ->where('id', $this->id)
                 ->update([
@@ -223,23 +205,11 @@ class ResultConcernModal extends Component
                     'updated_at' => now(),
                 ]);
 
-            /*
-        |--------------------------------------------------------------------------
-        | NEW VALUES
-        |--------------------------------------------------------------------------
-        */
-
             $newValue = [
                 'result_no' => $this->result_no,
                 'remarks'   => $this->dept_head_remarks,
                 'status_id' => 20,
             ];
-
-            /*
-        |--------------------------------------------------------------------------
-        | AUDIT LOG
-        |--------------------------------------------------------------------------
-        */
 
             DB::table('audit_logs')->insert([
                 'user_reported_by'  => $this->employeeName,
@@ -261,35 +231,12 @@ class ResultConcernModal extends Component
                 'updated_at'        => now(),
             ]);
         });
-
-        /*
-    |--------------------------------------------------------------------------
-    | SUCCESS
-    |--------------------------------------------------------------------------
-    */
-
-        $this->dispatch(
-            'toast',
-            type: 'success',
-            message: 'RESULT acknowledged successfully submitted.'
-        );
-
-        $this->dispatch(
-            'modal-close',
-            name: 'acknowledge-result'
-        );
-
-        $this->dispatch(
-            'modal-close',
-            name: 'ResultSubmissionModal'
-        );
-
-        $this->dispatch('refreshAcknowledgeData');
+        $this->dispatch('toast',type: 'success',message: 'RESULT acknowledged successfully submitted.');
+        $this->dispatch('modal-close', name: 'submission-cpar');
+        $this->dispatch('modal-close', name: 'CPARSubmissionModal');
+        $this->dispatch('refreshSubmission');
         $this->dispatch('refreshAcknowledgeCount');
-
-        $this->reset([
-            'dept_head_remarks',
-        ]);
+        $this->reset(['dept_head_remarks',]);
     }
 
 

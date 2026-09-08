@@ -154,9 +154,8 @@ class HrReAssign extends Component
                 'i.last_name',
                 'm.priority_name'
             )
-            ->where('d.id', $id)
+            ->where('d.result_id', $id)
             ->first();
-
         if (!$result_assigned) {
             return;
         }
@@ -193,7 +192,6 @@ class HrReAssign extends Component
         $this->concern_description = $result_assigned->concern_description;
         $this->priority = $result_assigned->priority_name;
         $this->result_id = $result_assigned->result_id;
-
         $assignments = DB::table('cpar_assignments as b')
             ->leftJoin(
                 'cpar_statuses as h',
@@ -214,7 +212,6 @@ class HrReAssign extends Component
             ->where('b.record_type', 10)
             ->orderBy('b.id')
             ->get();
-
         if ($assignments->count() > 0) {
             $firstAssignment = $assignments->first();
             // Main assignment
@@ -352,9 +349,9 @@ class HrReAssign extends Component
         );
 
         $this->dispatch('modal-close', name: 'hr-reassign-result');
-        $this->dispatch('modal-close', name: 'RESULTModal');
-        $this->dispatch('HRrefreshData');
-        $this->dispatch('HRrefreshCount');
+        $this->dispatch('modal-close', name: 'CPARHRModal');
+        $this->dispatch('refreshHRData');
+        $this->dispatch('refreshHRCount');
     }
 
     public function render()

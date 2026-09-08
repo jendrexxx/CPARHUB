@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\DB;
 
 class CparAssigned extends Component
 {
-    public $cpar_requests = [];
+    public $assigned_requests = [];
     public $editingId = null;
     public $showEditModal = false;
     public $edit_cpar_no = '';
@@ -36,53 +36,126 @@ class CparAssigned extends Component
 
     public function loadAssignedRecords()
     {
-        $this->cpar_requests = DB::table('cpar_request_forms as a')
-            ->leftJoin('cpar_assignments as b', 'a.id', '=', 'b.cpar_id')
-            ->leftJoin('cpar_attachments as c', 'a.id', '=', 'c.cpar_id')
-            ->leftJoin('cpar_source_origins as d', 'a.source_id', '=', 'd.id')
-            ->leftJoin('cpar_complain_categories as e', 'a.complaint_category_id', '=', 'e.id')
-            ->leftJoin('cpar_concern_categories as f', 'a.concern_category_id', '=', 'f.id')
-            ->leftJoin('employees as g', 'a.employee_no', '=', 'g.employee_no')
-            ->leftJoin('cpar_statuses as h', 'b.status_id', '=', 'h.id')
-            ->join('employees as i', 'b.assigned_to', 'i.id')
-            ->join('priority_levels as m', 'a.priority_level', '=', 'm.id')
+        /*
+    |--------------------------------------------------------------------------
+    | CPAR ASSIGNED RECORDS
+    |--------------------------------------------------------------------------
+    */
+        $cpar = DB::table('cpar_request_forms as a')
+            ->join('cpar_assignments as b', 'a.id', '=', 'b.cpar_id')
+            ->leftJoin('departments as d', 'a.department_id', '=', 'd.id')
+            ->join('employees as e', 'b.assigned_to', '=', 'e.id')
+            ->join('priority_levels as p', 'a.priority_level', '=', 'p.id')
+            ->join('cpar_statuses as s', 'b.status_id', '=', 's.id')
             ->select(
                 'a.id',
-                'a.cpar_no',
+
+                // Common fields
+                'a.cpar_no as record_no',
                 'a.reported_by',
-                'a.date_open',
+                'a.date_open as record_date',
+
+                DB::raw("'CPAR' as record_type"),
+
+                // CPAR information
                 'a.concern_description',
                 'a.complainant_name',
+
+                // Assignment
                 'b.id as assignment_id',
-                'b.cpar_id',
+                'b.cpar_id as record_id',
+                DB::raw('NULL as result_id'),
                 'b.assigned_to',
                 'b.status_id',
                 'b.remarks',
                 'b.dept_head_assigned',
                 'b.department_id',
-                'd.source_name',
-                'e.complain_name',
-                'f.concern_name',
-                'g.department_name',
-                'c.file_path',
-                'h.status_name',
-                'i.branch_id',
-                'i.first_name',
-                'i.last_name',
-                'm.priority_name'
+
+                // Department
+                'd.department_name',
+
+                // Priority / Status
+                'p.priority_name',
+                's.status_name',
+
+                // Assigned employee
+                DB::raw("
+                CONCAT(
+                    e.first_name,
+                    ' ',
+                    e.last_name
+                ) as assigned_names
+            ")
             )
             ->where('b.status_id', 10)
-            ->where('b.assigned_to', $this->id)
-            ->distinct()
-            ->orderByDesc('a.id')
-            ->get();
+            ->where('b.assigned_to', (int) $this->id)
+            ->where('b.record_type', 5);
 
-        foreach ($this->cpar_requests as $request) {
-            $employee = Employee::find($request->assigned_to);
-            $request->assigned_names = $employee
-                ? $employee->first_name . ' ' . $employee->last_name
-                : 'Unknown Employee';
-        }
+        $result = DB::table('result_error_forms as a')
+            ->join(
+                'cpar_assignments as b',
+                'a.id',
+                '=',
+                'b.result_id'
+            )
+            ->join(
+                'employees as e',
+                'b.assigned_to',
+                '=',
+                'e.id'
+            )
+            ->join(
+                'priority_levels as p',
+                'a.priority_level',
+                '=',
+                'p.id'
+            )
+            ->join(
+                'cpar_statuses as s',
+                'b.status_id',
+                '=',
+                's.id'
+            )
+            ->select(
+                'a.id',
+                // Common fields
+                'a.result_no as record_no',
+                'a.reported_by',
+                'a.date_reported as record_date',
+                DB::raw("'RESULT' as record_type"),
+                // Result Error information
+                'a.patient_name as concern_description',
+                DB::raw('NULL as complainant_name'),
+                // Assignment
+                'b.id as assignment_id',
+                DB::raw('NULL as record_id'),
+                'b.result_id',
+                'b.assigned_to',
+                'b.status_id',
+                'b.remarks',
+                'b.dept_head_assigned',
+                DB::raw('NULL as department_id'),
+                DB::raw('NULL as department_name'),
+                // Priority / Status
+                'p.priority_name',
+                's.status_name',
+                // Assigned employee
+                DB::raw("
+                CONCAT(
+                    e.first_name,
+                    ' ',
+                    e.last_name
+                ) as assigned_names
+            ")
+            )
+            ->where('b.status_id', 10)
+            ->where('b.assigned_to', (int) $this->id)
+            ->where('b.record_type', 10);
+
+        $this->assigned_requests = $cpar
+            ->unionAll($result)
+            ->orderByDesc('record_date')
+            ->get();
     }
 
     public function viewDetails($id)
@@ -93,6 +166,11 @@ class CparAssigned extends Component
     public function respondCpar($id)
     {
         $this->dispatch('respond-CPAR', id: $id);
+    }
+
+    public function respondResult($id)
+    {
+        $this->dispatch('respond-Result', id: $id);
     }
 
     public function render()

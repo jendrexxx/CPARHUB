@@ -31,6 +31,7 @@ class HrHeadDashboard extends Component
     public $disciplinaryCategories = [];
     public $memo_count = '';
     public $result_ir_cpar_count = '', $decision_result_count = '';
+    public $hr_request_count = [];
 
     protected $listeners = [
         'refreshHRCount' => 'loadHRCount',
@@ -70,33 +71,68 @@ class HrHeadDashboard extends Component
 
     public function loadHRCount()
     {
-        $this->cpar_request_count = DB::table('cpar_request_forms as a')
+        // CPAR count
+        $cparCount = DB::table('cpar_request_forms as a')
             ->join('cpar_assignments as b', 'a.id', '=', 'b.cpar_id')
-            ->join('cpar_attachments as c', 'a.id', '=', 'c.cpar_id')
-            ->join('cpar_source_origins as d', 'a.source_id', '=', 'd.id')
-            ->join('cpar_complain_categories as e', 'a.complaint_category_id', '=', 'e.id')
-            ->join('cpar_concern_categories as f', 'a.concern_category_id', '=', 'f.id')
-            ->join('departments as g', 'a.department_id', '=', 'g.id')
-            ->join('cpar_statuses as h', 'b.status_id', '=', 'h.id')
             ->join('employees as i', 'b.assigned_to', '=', 'i.id')
             ->where('b.status_id', 5)
             ->where('b.record_type', 5)
             ->where('i.branch_id', $this->branch_id)
             ->count(DB::raw('DISTINCT a.id'));
+
+        // Result Error count
+        $resultCount = DB::table('result_error_forms as a')
+            ->join('cpar_assignments as d', 'a.id', '=', 'd.result_id')
+            ->join('employees as i', 'd.assigned_to', '=', 'i.id')
+            ->where('d.status_id', 5)
+            ->where('d.record_type', 10)
+            ->where('i.branch_id', $this->branch_id)
+            ->count(DB::raw('DISTINCT a.id'));
+
+        // Combined count
+        $this->hr_request_count = $cparCount + $resultCount;
     }
 
     public function loadAcknowledgeCount()
     {
-        $this->acknowledged_cpar = DB::table('cpar_request_forms as a')
-            ->join('cpar_assignments as b', 'a.id', '=', 'b.cpar_id')
-            ->join('departments as g', 'a.department_id', '=', 'g.id')
-            ->join('cpar_statuses as h', 'b.status_id', '=', 'h.id')
+        // CPAR count
+        $cparCount = DB::table('cpar_assignments as b')
+            ->join('cpar_request_forms as a', 'a.id', '=', 'b.cpar_id')
             ->leftJoin('employees as i', 'b.assigned_to', '=', 'i.id')
             ->join('cpar_investigations as j', 'b.id', '=', 'j.assigned_id')
             ->where('b.status_id', 20)
             ->where('b.record_type', 5)
-            ->where('branch_id', $this->branch_id)
+            ->where('i.branch_id', $this->branch_id)
+            ->whereNotExists(function ($query) {
+                $query->select(DB::raw(1))
+                    ->from('cpar_assignments as b2')
+                    ->whereColumn('b2.cpar_id', 'b.cpar_id')
+                    ->where('b2.status_id', 20)
+                    ->where('b2.record_type', 5)
+                    ->whereColumn('b2.id', '>', 'b.id');
+            })
             ->count();
+
+
+        // Result Error count
+        $resultCount = DB::table('cpar_assignments as b')
+            ->join('result_error_forms as a', 'a.id', '=', 'b.result_id')
+            ->leftJoin('employees as i', 'b.assigned_to', '=', 'i.id')
+            ->where('b.status_id', 20)
+            ->where('b.record_type', 10)
+            ->where('i.branch_id', $this->branch_id)
+            ->whereNotExists(function ($query) {
+                $query->select(DB::raw(1))
+                    ->from('cpar_assignments as b2')
+                    ->whereColumn('b2.result_id', 'b.result_id')
+                    ->where('b2.status_id', 20)
+                    ->where('b2.record_type', 10)
+                    ->whereColumn('b2.id', '>', 'b.id');
+            })
+            ->count();
+
+        // Combined count
+        $this->acknowledged_cpar = $cparCount + $resultCount;
     }
 
     public function loadDecisionCount()

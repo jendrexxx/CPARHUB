@@ -14,7 +14,7 @@ use App\Models\result_error_technical_equipments;
 class ResultAssign extends Component
 {
     protected $listeners = [
-        'open-assign' => 'open_modal'
+        'open-assign-result' => 'open_modal'
     ];
     protected $casts = [
         'assigned_to' => 'array',
@@ -107,7 +107,7 @@ class ResultAssign extends Component
                 'i.last_name',
                 'm.priority_name'
             )
-            ->where('d.id', $id)
+            ->where('d.result_id', $id)
             ->first();
         if (!$result_assigned) {
             return;
@@ -335,8 +335,8 @@ class ResultAssign extends Component
         $this->dispatch('toast', type: 'success', message: 'Result successfully assigned.');
         $this->dispatch('modal-close', name: 'reassign-cpar');
         $this->dispatch('modal-close', name: 'CPARHRModal');
-        $this->dispatch('refreshResultData');
-        $this->dispatch('refreshResultCount');
+        $this->dispatch('refreshHeadRecords');
+        $this->dispatch('refreshHeadCount');
     }
 
     public function render()
