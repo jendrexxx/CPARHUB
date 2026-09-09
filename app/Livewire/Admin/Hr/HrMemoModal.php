@@ -137,7 +137,6 @@ class HrMemoModal extends Component
             )
             ->where('b.id', $id)
             ->first();
-
         if (!$open_memo) {
             return;
         }
@@ -333,7 +332,7 @@ class HrMemoModal extends Component
                 DB::table('audit_logs')->insert([
                     'user_reported_by'  => $this->employeeName,
                     'user_reported'     => $this->assigned_to,
-                    'action' => 'MEMO DRAFT',
+                    'action' => 'OTHERS MEMO DRAFT',
                     'old_value' => json_encode(
                         $changedOldValues,
                         JSON_UNESCAPED_UNICODE
@@ -464,7 +463,7 @@ class HrMemoModal extends Component
                 'subject'          => $this->memo_subject,
                 'memo_content'     => $this->memo_content,
                 'memo_attachment'  => $memoAttachment,
-                'memo_status'      => 'ISSUED',
+                'memo_status'      => 'OTHERS MEMO ISSUED',
                 'status_id'        => 50,
             ];
 
@@ -500,7 +499,7 @@ class HrMemoModal extends Component
             DB::table('audit_logs')->insert([
                 'user_reported_by'  => $this->employeeName,
                 'user_reported'     => $this->assigned_to,
-                'action'     => 'MEMO ISSUED',
+                'action'     => 'OTHERS MEMO ISSUED',
                 'old_value'  => json_encode(
                     $changedOldValues,
                     JSON_UNESCAPED_UNICODE
@@ -517,20 +516,9 @@ class HrMemoModal extends Component
             $this->current_memo_attachment = $memoAttachment;
             $this->memo_attachment = null;
         });
-        $this->dispatch(
-            'toast',
-            type: 'success',
-            message: 'Memo has been issued successfully.'
-        );
-        $this->dispatch(
-            'modal-close',
-            name: 'hr-memo-modal'
-        );
-
-        $this->dispatch(
-            'modal-close',
-            name: 'HRMemoModal'
-        );
+        $this->dispatch('toast',type: 'success',message: 'Memo has been issued successfully.');
+        $this->dispatch('modal-close',name: 'hr-memo-modal');
+        $this->dispatch('modal-close',name: 'HRMemoModal');
         $this->dispatch('refreshMemoRecords');
         $this->dispatch('refreshMemoCount');
     }

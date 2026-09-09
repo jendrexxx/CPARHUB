@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('cpar_memos', function (Blueprint $table) {
             $table->increments('id');
             $table->string('cpar_id')->nullable();
+            $table->string('result_id')->nullable();
             $table->string('assignment_id')->nullable();
             $table->string('memo_no')->unique();
             $table->string('memo_date');

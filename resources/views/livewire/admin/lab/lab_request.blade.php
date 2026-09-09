@@ -15,9 +15,6 @@
 
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
-                {{-- =================================================
-                    LEFT: CPAR INFORMATION
-                ================================================== --}}
                 <div class="space-y-5">
 
                     <div>

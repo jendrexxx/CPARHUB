@@ -24,19 +24,17 @@
                 <div class="flex-1">
                     <flux:input
                         wire:model.live.debounce.300ms="search"
-                        placeholder="Search CPAR No., employee, department..."
+                        placeholder="Search CPAR / Result No., employee, department..."
                         icon="magnifying-glass" />
                 </div>
 
                 @if ($search)
-
                 <flux:button
                     variant="ghost"
                     icon="x-mark"
                     wire:click="$set('search', '')">
                     Clear
                 </flux:button>
-
                 @endif
 
             </div>
@@ -46,12 +44,17 @@
 
                 <table class="w-full text-sm">
 
+                    {{-- TABLE HEADER --}}
                     <thead class="bg-zinc-50 dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-700">
 
                         <tr>
 
                             <th class="px-4 py-3 text-center font-semibold">
-                                CPAR No.
+                                Type
+                            </th>
+
+                            <th class="px-4 py-3 text-center font-semibold">
+                                Request No.
                             </th>
 
                             <th class="px-4 py-3 text-center font-semibold">
@@ -82,43 +85,74 @@
 
                     </thead>
 
+                    {{-- TABLE BODY --}}
                     <tbody class="divide-y divide-zinc-200 dark:divide-zinc-700">
 
-                        @forelse ($hrMemoList as $cpar)
+                        @forelse ($hrMemoList as $record)
 
                         <tr class="hover:bg-zinc-50 dark:hover:bg-zinc-800 transition text-center">
 
-                            {{-- CPAR NO. --}}
-                            <td class="px-4 py-4 whitespace-nowrap">
+                            {{-- RECORD TYPE --}}
+                            <td class="px-4 py-4">
 
-                                <div class="font-semibold text-zinc-900 dark:text-white">
-                                    {{ $cpar->cpar_no }}
-                                </div>
+                                @if ($record->record_type === 'CPAR')
+
+                                <flux:badge
+                                    color="blue"
+                                    icon="document-text">
+                                    CPAR
+                                </flux:badge>
+
+                                @else
+
+                                <flux:badge
+                                    color="purple"
+                                    icon="document-text">
+                                    RESULT
+                                </flux:badge>
+
+                                @endif
 
                             </td>
+
+                            {{-- RECORD NO --}}
+                            <td class="px-4 py-4 whitespace-nowrap">
+                                <div class="font-semibold text-zinc-900 dark:text-white">
+                                    {{ $record->record_no }}
+                                </div>
+                            </td>
+
 
                             {{-- EMPLOYEE --}}
                             <td class="px-4 py-4">
 
                                 <div class="font-medium text-zinc-900 dark:text-white">
-                                    {{ $cpar->employee_name }}
+                                    {{ $record->employee_name }}
                                 </div>
 
+                                @if (!empty($record->employee_no))
+                                <div class="text-xs text-zinc-500 dark:text-zinc-400">
+                                    {{ $record->employee_no }}
+                                </div>
+                                @endif
+
                             </td>
+
 
                             {{-- DEPARTMENT --}}
                             <td class="px-4 py-4">
 
                                 <span class="text-zinc-600 dark:text-zinc-400">
-                                    {{ $cpar->department_name }}
+                                    {{ $record->department_name }}
                                 </span>
 
                             </td>
 
+
                             {{-- DISCIPLINARY HISTORY --}}
                             <td class="px-4 py-4 text-center">
 
-                                @if ($cpar->offense_count == 0)
+                                @if ($record->offense_count == 0)
 
                                 <flux:badge
                                     color="green"
@@ -126,7 +160,7 @@
                                     No Previous Offense
                                 </flux:badge>
 
-                                @elseif ($cpar->offense_count == 1)
+                                @elseif ($record->offense_count == 1)
 
                                 <flux:badge
                                     color="yellow"
@@ -134,7 +168,7 @@
                                     1 Previous
                                 </flux:badge>
 
-                                @elseif ($cpar->offense_count == 2)
+                                @elseif ($record->offense_count == 2)
 
                                 <flux:badge
                                     color="orange"
@@ -147,19 +181,20 @@
                                 <flux:badge
                                     color="red"
                                     icon="exclamation-triangle">
-                                    {{ $cpar->offense_count }} Previous
+                                    {{ $record->offense_count }} Previous
                                 </flux:badge>
 
                                 @endif
 
                             </td>
 
+
                             {{-- DOCUMENTS --}}
                             <td class="px-4 py-4">
 
                                 <div class="flex justify-center gap-2">
 
-                                    @if (!empty($cpar->ir_id))
+                                    @if (!empty($record->ir_id))
 
                                     <flux:badge color="red">
                                         IR Submitted
@@ -167,7 +202,7 @@
 
                                     @endif
 
-                                    @if (!empty($cpar->nte_no))
+                                    @if (!empty($record->nte_no))
 
                                     <flux:badge color="blue">
                                         NTE Submitted
@@ -175,7 +210,10 @@
 
                                     @endif
 
-                                    @if (empty($cpar->ir_id) && empty($cpar->nte_no))
+                                    @if (
+                                    empty($record->ir_id) &&
+                                    empty($record->nte_no)
+                                    )
 
                                     <span class="text-zinc-400">
                                         —
@@ -187,38 +225,50 @@
 
                             </td>
 
+
                             {{-- STATUS --}}
                             <td class="px-4 py-4 text-center">
 
                                 <flux:badge color="yellow">
-                                    {{ $cpar->status_name }}
+                                    {{ $record->status_name }}
                                 </flux:badge>
 
                             </td>
 
+
                             {{-- ACTION --}}
                             <td class="px-4 py-3 text-center">
-
                                 <flux:dropdown align="end">
 
                                     <flux:button
                                         size="sm"
                                         variant="ghost"
-                                        icon="ellipsis-vertical">
-                                    </flux:button>
+                                        icon="ellipsis-vertical"
+                                        aria-label="Actions" />
 
                                     <flux:menu>
 
+                                        @if ($record->record_type === 'CPAR')
+
                                         <flux:menu.item
                                             icon="eye"
-                                            wire:click="viewMemo({{ $cpar->assignment_id }})">
-                                            View
+                                            wire:click="viewMemo({{ $record->assignment_id }})">
+                                            View Other Memo
                                         </flux:menu.item>
+
+                                        @elseif ($record->record_type === 'RESULT')
+
+                                        <flux:menu.item
+                                            icon="eye"
+                                            wire:click="viewResultMemo({{ $record->assignment_id }})">
+                                            View Result
+                                        </flux:menu.item>
+
+                                        @endif
 
                                     </flux:menu>
 
                                 </flux:dropdown>
-
                             </td>
 
                         </tr>
@@ -228,7 +278,7 @@
                         {{-- EMPTY STATE --}}
                         <tr>
 
-                            <td colspan="7" class="px-4 py-12 text-center">
+                            <td colspan="8" class="px-4 py-12 text-center">
 
                                 <flux:icon
                                     name="check-circle"
@@ -239,13 +289,9 @@
                                     class="mt-3">
 
                                     @if ($search)
-
-                                    No Employees Found
-
+                                    No Records Found
                                     @else
-
                                     No Employees for Memo
-
                                     @endif
 
                                 </flux:heading>
@@ -259,7 +305,8 @@
 
                                     @else
 
-                                    No employees are currently pending for memo issuance.
+                                    No employees are currently pending
+                                    for memo issuance.
 
                                     @endif
 

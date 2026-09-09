@@ -1,5 +1,5 @@
 <flux:modal
-    name="nte-result"
+    name="ir-result"
     class="w-full max-w-7xl">
 
     <div class="space-y-6">

@@ -263,7 +263,7 @@ class LabRequest extends Component
             DB::table('audit_logs')->insert([
                 'user_reported_by'       => $this->employeeName,
                 'user_reported'     => $this->assigned_to,
-                'action'     => 'LAB VERIFIED',
+                'action'     => 'OTHERS LAB VERIFIED',
                 'old_value'  => json_encode($oldValue),
                 'new_value'  => json_encode($newValue),
                 'status_changed_by' => $this->user_id,
@@ -335,7 +335,7 @@ class LabRequest extends Component
             DB::table('audit_logs')->insert([
                 'user_reported_by'       => $this->employeeName,
                 'user_reported'     => $this->assigned_to,
-                'action' => 'BACK TO HR',
+                'action' => 'BACK TO HR OTHERS',
                 'old_value' => json_encode([
                     'management_remarks' => $oldRecord?->management_remarks,
                     'status_id'           => $oldAssignment?->status_id,
@@ -344,7 +344,6 @@ class LabRequest extends Component
                     'management_remarks' => $this->management_remarks,
                     'status_id'           => 30,
                 ], JSON_UNESCAPED_UNICODE),
-
                 'date'       => now(),
                 'created_at' => now(),
                 'updated_at' => now(),

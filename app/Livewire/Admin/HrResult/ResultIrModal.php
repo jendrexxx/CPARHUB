@@ -18,7 +18,7 @@ class ResultIrModal extends Component
 
     public $resultResponse = [];
     public $result_no = '', $reported_by = '', $patient_name = '', $attending_physician = '', $actual_released_date = '', $source_name = '', $complain_name = '', $concern_description = '', $department_name = '', $priority = '', $remarks = '', $status = '', $dept_head_assigned = '', $date_reported = '', $test_procedure = '', $complainant_name = '';
-    public $id = '', $employee_no = '', $branch_id = '', $department_id = '', $assignment_remarks = '', $assignment_id = '', $cpar_id = '';
+    public $id = '', $employee_no = '', $branch_id = '', $department_id = '', $assignment_remarks = '', $assignment_id = '', $result_id = '';
     public $employees = [];
     public $assigned_to = [];
     public $new_assignees = [];
@@ -34,7 +34,7 @@ class ResultIrModal extends Component
     public $nte_attachment = '', $nte_no = '', $ir_request_id = '';
 
     protected $listeners = [
-        'open-nte-cpar' => 'open'
+        'nte-result' => 'open'
     ];
 
     public function mount()
@@ -93,7 +93,7 @@ class ResultIrModal extends Component
                 'b.source_name',
                 'c.complain_name',
                 'd.id',
-                'd.cpar_id',
+                'd.result_id',
                 'd.assigned_to',
                 'd.remarks',
                 'd.dept_head_assigned',
@@ -140,7 +140,7 @@ class ResultIrModal extends Component
         $this->existing_ir_attachment = $result_acknowledge->ir_attachment;
         $this->id = $result_acknowledge->id;
         $this->employee_assigned_to = $result_acknowledge->employee_assigned_to;
-        $this->cpar_id   = $result_acknowledge->cpar_id;
+        $this->result_id   = $result_acknowledge->result_id;
         $this->result_no = $result_acknowledge->result_no;
         $this->date_reported = Carbon::parse($result_acknowledge->date_reported)->format('m-d-Y');
         $this->reported_by = $result_acknowledge->reported_by;
@@ -175,7 +175,7 @@ class ResultIrModal extends Component
         $this->date_completed = $result_acknowledge->date_completed;
         $this->tat = $result_acknowledge->tat;
         $this->ir_request_id = $result_acknowledge->ir_request_id;
-        $this->modal('nte-result')->show();
+        $this->modal('ir-result')->show();
     }
 
     public function sendNTE()
@@ -201,12 +201,12 @@ class ResultIrModal extends Component
                     'public'
                 );
             }
-            
+
             DB::table('cpar_notice_to_explains')->insert([
                 'assignment_id' => $this->ir_request_id,
                 'nte_no'        => $this->nte_no,
                 'nte_attachment' => $nteAttachmentPath,
-                'status'        => 'NTE',
+                'status'        => 'RESULT NTE',
                 'issued_at'     => $this->date_reported,
                 'due_date'      => Carbon::parse($this->date_reported)->addDays(5),
                 'created_by'    => auth()->id(),
@@ -240,6 +240,13 @@ class ResultIrModal extends Component
         });
 
         $this->reset('nte_attachment');
+        $this->dispatch('modal-close', name: 'acknowledge-cpar');
+        $this->dispatch('modal-close', name: 'CPARAcknowledgeModal');
+        $this->dispatch('refreshAcknowledgeRecords');
+        $this->dispatch('refreshAcknowledgeCount');
+        $this->dispatch('refreshDecisionRecords');
+        $this->dispatch('refreshDecisionCount');
+        $this->dispatch('refreshPreviousOffense');
         $this->dispatch('toast', type: 'success', message: 'Notice to Explain sent successfully..');
     }
 

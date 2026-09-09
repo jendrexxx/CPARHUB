@@ -38,7 +38,8 @@ class LabSupervisorDashboard extends Component
 
     public function loadLABCount()
     {
-        $this->cpar_request_count = DB::table('cpar_request_forms as a')
+        // CPAR count
+        $cparCount = DB::table('cpar_request_forms as a')
             ->join('cpar_assignments as b', 'a.id', '=', 'b.cpar_id')
             ->join('cpar_attachments as c', 'a.id', '=', 'c.cpar_id')
             ->join('cpar_source_origins as d', 'a.source_id', '=', 'd.id')
@@ -48,6 +49,17 @@ class LabSupervisorDashboard extends Component
             ->join('cpar_statuses as h', 'b.status_id', '=', 'h.id')
             ->where('b.status_id', 35)
             ->count();
+
+        // Result Error count
+        $resultCount = DB::table('result_error_forms as a')
+            ->join('cpar_assignments as b', 'a.id', '=', 'b.result_id')
+            ->join('departments as g', 'a.department_id', '=', 'g.id')
+            ->join('cpar_statuses as h', 'b.status_id', '=', 'h.id')
+            ->where('b.status_id', 35)
+            ->count();
+
+        // Combined count
+        $this->cpar_request_count = $cparCount + $resultCount;
     }
 
     public function updatedOffenseTab()

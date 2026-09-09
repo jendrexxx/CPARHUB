@@ -1,6 +1,6 @@
 <flux:modal
     name="view-notice-to-explain"
-    class="w-[120%] max-w-[1100px] mt-6 top-0 z-50"
+    class="w-[120%] max-w-[1500px] mt-6 top-0 z-50"
     wire:model="showViewNte">
 
     <div class="space-y-6">

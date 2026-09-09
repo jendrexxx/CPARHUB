@@ -463,4 +463,5 @@
     </div>
     <livewire:admin.lab.lab_notif />
     <livewire:admin.lab.lab_request />
+    <livewire:admin.lab.lab_result />
 </div>

@@ -46,10 +46,6 @@
                             </th>
 
                             <th class="px-4 py-3">
-                                Department
-                            </th>
-
-                            <th class="px-4 py-3">
                                 Assigned To
                             </th>
 
@@ -109,14 +105,12 @@
 
                             </td>
 
-
                             {{-- REQUEST NO --}}
                             <td class="px-4 py-3 font-medium text-zinc-900 dark:text-zinc-100">
 
                                 {{ $request->record_no }}
 
                             </td>
-
 
                             {{-- REPORTED BY --}}
                             <td class="px-4 py-3 text-zinc-700 dark:text-zinc-300">
@@ -132,15 +126,6 @@
                                 {{ \Carbon\Carbon::parse($request->record_date)->format('M d, Y') }}
 
                             </td>
-
-
-                            {{-- DEPARTMENT --}}
-                            <td class="px-4 py-3 text-zinc-700 dark:text-zinc-300">
-
-                                {{ $request->department_name ?? 'N/A' }}
-
-                            </td>
-
 
                             {{-- ASSIGNED TO --}}
                             <td class="px-4 py-3 text-zinc-700 dark:text-zinc-300">
@@ -193,17 +178,12 @@
 
                             </td>
 
-
                             {{-- DOCUMENTS --}}
                             <td class="px-4 py-4">
 
-                                @if ($request->record_type === 'CPAR')
-
                                 <div class="flex justify-center gap-2">
-
                                     {{-- IR --}}
                                     @if (!empty($request->ir_id))
-
                                     <span
                                         class="inline-flex items-center
                                                            rounded-full
@@ -214,13 +194,9 @@
                                                            dark:text-red-400">
                                         Submitted IR
                                     </span>
-
                                     @endif
-
-
                                     {{-- NTE --}}
                                     @if (!empty($request->nte_no))
-
                                     <span
                                         class="inline-flex items-center
                                                            rounded-full
@@ -231,16 +207,13 @@
                                                            dark:text-blue-400">
                                         Submitted NTE
                                     </span>
-
                                     @endif
-
 
                                     {{-- NO DOCUMENT --}}
                                     @if (
                                     empty($request->ir_id) &&
                                     empty($request->nte_no)
                                     )
-
                                     <span class="text-zinc-400">
                                         —
                                     </span>
@@ -248,14 +221,6 @@
                                     @endif
 
                                 </div>
-
-                                @else
-
-                                <span class="text-zinc-400">
-                                    N/A
-                                </span>
-
-                                @endif
 
                             </td>
 
@@ -363,21 +328,13 @@
 
                                         @endif
 
-
-                                        <flux:menu.item
-                                            icon="eye"
-                                            wire:click="ViewSubmissionCPAR({{ $request->assignment_id }})">
-                                            View CPAR Acknowledgment
-                                        </flux:menu.item>
-
-
                                         {{-- RESULT ERROR --}}
                                         @elseif ($request->record_type === 'RESULT')
 
                                         <flux:menu.item
-                                            icon="eye"
-                                            wire:click="ViewSubmissionResult({{ $request->assignment_id }})">
-                                            View Result Acknowledgment
+                                            icon="document-text"
+                                            wire:click="createNTE({{ $request->assignment_id }})">
+                                            Request NTE
                                         </flux:menu.item>
 
                                         @endif

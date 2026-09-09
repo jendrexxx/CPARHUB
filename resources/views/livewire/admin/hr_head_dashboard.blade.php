@@ -184,6 +184,7 @@
     <livewire:admin.hr.hr_memo_notif :branch_id="$branch_id" :key="'hr-memo-notif-'.$branch_id" />
     <!-- RESULT -->
     <livewire:admin.result.hr_re-assign />
-    <livewire:admin.hr_result.result_ir_notif />
     <livewire:admin.hr_result.result_ir_modal />
+    <livewire:admin.hr_result.hr_decision_modal />
+    <livewire:admin.hr_result.hr_memo_modal />
 </div>

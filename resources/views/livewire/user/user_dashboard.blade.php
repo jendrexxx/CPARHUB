@@ -198,4 +198,5 @@
     <livewire:user.modal.result_notif />
     <livewire:user.modal.result_assigned />
     <livewire:user.modal.result_respond_form />
+    <livewire:user.modal.result-nte />
 </div>

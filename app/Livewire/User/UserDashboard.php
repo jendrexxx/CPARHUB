@@ -43,7 +43,6 @@ class UserDashboard extends Component
         $this->loadRequestCount();
         $this->loadAssignedCount();
         $this->loadNTECount();
-        $this->loadIRCount();
     }
 
     // cpar request count
@@ -90,28 +89,31 @@ class UserDashboard extends Component
     // cpar NTE count
     public function loadNTECount()
     {
-        $this->nte_cpar = DB::table('cpar_request_forms as a')
-            ->join('cpar_assignments as b', 'a.id', '=', 'b.cpar_id')
-            ->join('departments as g', 'a.department_id', '=', 'g.id')
-            ->join('cpar_statuses as h', 'b.status_id', '=', 'h.id')
+        // =========================
+        // CPAR NTE COUNT
+        // =========================
+        $cparCount = DB::table('cpar_assignments as b')
+            ->join('cpar_request_forms as a', 'a.id', '=', 'b.cpar_id')
             ->join('cpar_ir_requests as i', 'b.id', '=', 'i.assignment_ir_id')
             ->join('cpar_notice_to_explains as j', 'j.assignment_id', '=', 'i.id')
             ->where('b.assigned_to', $this->id)
             ->where('b.status_id', 23)
             ->where('b.record_type', 5)
             ->count();
-    }
-    // cpar IR count
-    public function loadIRCount()
-    {
-        $this->ir_cpar = DB::table('cpar_request_forms as a')
-            ->join('cpar_assignments as b', 'a.id', '=', 'b.cpar_id')
-            ->join('departments as g', 'a.department_id', '=', 'g.id')
-            ->join('cpar_statuses as h', 'b.status_id', '=', 'h.id')
-            ->join('cpar_ir_requests as i', 'i.assignment_ir_id', '=', 'b.id')
-            ->where('i.employee_no', $this->employee_no)
-            ->where('b.status_id', 30)
+
+        // =========================
+        // RESULT ERROR NTE COUNT
+        // =========================
+        $resultCount = DB::table('cpar_assignments as b')
+            ->join('result_error_forms as a', 'a.id', '=', 'b.result_id')
+            ->where('b.assigned_to', $this->id)
+            ->where('b.status_id', 23)
+            ->where('b.record_type', 10)
             ->count();
+        // =========================
+        // COMBINED COUNT
+        // =========================
+        $this->nte_cpar = $cparCount + $resultCount;
     }
 
     public function printIncidentReport()

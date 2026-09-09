@@ -31,25 +31,61 @@ class CparNteTable extends Component
 
     public function loadNte()
     {
-        $this->nteList = DB::table('cpar_request_forms as a')
+        $cpar = DB::table('cpar_request_forms as a')
             ->join('cpar_assignments as b', 'a.id', '=', 'b.cpar_id')
-            ->join('departments as g', 'a.department_id', '=', 'g.id')
-            ->join('cpar_statuses as h', 'b.status_id', '=', 'h.id')
             ->join('cpar_ir_requests as i', 'b.id', '=', 'i.assignment_ir_id')
-            ->join('cpar_notice_to_explains as j', 'j.assignment_id', '=', 'i.id')
-            ->where('b.assigned_to', $this->id)
-            ->where('b.status_id', 23)
-            ->where('b.record_type', 5)
+            ->join('cpar_statuses as c', 'b.status_id', '=', 'c.id')
+            ->join(
+                'cpar_notice_to_explains as j',
+                'j.assignment_id',
+                '=',
+                'i.id'
+            )
             ->select(
+                'j.id',
                 'j.nte_no',
                 'j.nte_attachment',
                 'j.issued_at',
                 'j.due_date',
-                'j.status',
-                'b.id',
-                'b.cpar_id',
-                'a.cpar_no'
+                'b.id as assignment_id',
+                'b.cpar_id as record_id',
+                'c.status_name as status',
+                'a.cpar_no as record_no',
+                DB::raw("'CPAR' as record_type")
             )
+            ->where('b.assigned_to', $this->id)
+            ->where('b.status_id', 23)
+            ->where('b.record_type', 5);
+
+        $result = DB::table('result_error_forms as a')
+            ->join('cpar_assignments as b', 'a.id', '=', 'b.result_id')
+            ->join('cpar_ir_requests as i', 'b.id', '=', 'i.assignment_ir_id')
+            ->join('cpar_statuses as c', 'b.status_id', '=', 'c.id')
+            ->join(
+                'cpar_notice_to_explains as j',
+                'j.assignment_id',
+                '=',
+                'i.id'
+            )
+            ->select(
+                'j.id',
+                'j.nte_no',
+                'j.nte_attachment',
+                'j.issued_at',
+                'j.due_date',
+                'b.id as assignment_id',
+                'b.result_id as record_id',
+                'c.status_name as status',
+                'a.result_no as record_no',
+                DB::raw("'RESULT' as record_type")
+            )
+            ->where('b.assigned_to', $this->id)
+            ->where('b.status_id', 23)
+            ->where('b.record_type', 10);
+
+        $this->nteList = $cpar
+            ->unionAll($result)
+            ->orderByDesc('issued_at')
             ->get();
 
         $this->nte_cpar = $this->nteList->count();

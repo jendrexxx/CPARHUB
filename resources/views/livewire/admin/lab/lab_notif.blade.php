@@ -38,7 +38,10 @@
                     <thead class="bg-zinc-50 dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-700">
                         <tr>
                             <th class="px-4 py-3 text-center font-semibold">
-                                CPAR No.
+                                Type
+                            </th>
+                            <th class="px-4 py-3 text-center font-semibold">
+                                Request No.
                             </th>
                             <th class="px-4 py-3 text-center font-semibold">
                                 Reported Employee
@@ -66,7 +69,28 @@
                         @forelse ($cpar_reviews as $cpar)
                         <tr
                             class="hover:bg-zinc-50 dark:hover:bg-zinc-800 transition text-center">
+                            {{-- Type --}}
+                            <td class="px-4 py-4 whitespace-nowrap">
 
+                                @if ($cpar->record_type === 'CPAR')
+
+                                <flux:badge
+                                    color="red"
+                                    icon="document-text">
+                                    CPAR
+                                </flux:badge>
+
+                                @else
+
+                                <flux:badge
+                                    color="purple"
+                                    icon="document-text">
+                                    RESULT ERROR
+                                </flux:badge>
+
+                                @endif
+
+                            </td>
                             {{-- CPAR No. --}}
                             <td class="px-4 py-4 whitespace-nowrap">
                                 <div class="font-semibold text-zinc-900 dark:text-white">
@@ -132,15 +156,22 @@
                                     <flux:button
                                         size="sm"
                                         variant="ghost"
-                                        icon="ellipsis-vertical">
-                                    </flux:button>
+                                        icon="ellipsis-vertical"
+                                        aria-label="Actions" />
                                     <flux:menu>
-                                        {{-- View Details --}}
+                                        @if ($cpar->record_type === 'CPAR')
                                         <flux:menu.item
                                             icon="eye"
                                             wire:click="viewDetails({{ $cpar->assignment_id }})">
-                                            View
+                                            View CPAR
                                         </flux:menu.item>
+                                        @elseif ($cpar->record_type === 'RESULT')
+                                        <flux:menu.item
+                                            icon="eye"
+                                            wire:click="viewLabResult({{ $cpar->assignment_id }})">
+                                            View Result Error
+                                        </flux:menu.item>
+                                        @endif
                                     </flux:menu>
                                 </flux:dropdown>
                             </td>

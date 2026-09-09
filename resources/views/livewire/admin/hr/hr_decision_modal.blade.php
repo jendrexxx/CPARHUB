@@ -351,7 +351,6 @@
                                 </flux:text>
                             </div>
 
-
                             {{-- Current IR Attachment --}}
                             @if ($current_ir_attachment)
 
