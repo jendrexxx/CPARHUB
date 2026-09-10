@@ -34,7 +34,7 @@
                             </th>
 
                             <th class="px-4 py-3">
-                                No.
+                                Request No.
                             </th>
 
                             <th class="px-4 py-3">

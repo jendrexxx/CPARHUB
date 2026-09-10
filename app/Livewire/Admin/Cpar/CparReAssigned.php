@@ -299,6 +299,7 @@ class CparReAssigned extends Component
         $this->dispatch('toast', type: 'success', message: 'CPAR successfully assigned.');
         $this->dispatch('modal-close', name: 'reassign-cpar');
         $this->dispatch('modal-close', name: 'CPARHRModal');
+        $this->dispatch('refreshNotificationCount');
         $this->dispatch('refreshHeadRecords');
         $this->dispatch('refreshHeadCount');
     }

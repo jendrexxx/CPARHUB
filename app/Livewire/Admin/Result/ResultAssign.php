@@ -107,7 +107,7 @@ class ResultAssign extends Component
                 'i.last_name',
                 'm.priority_name'
             )
-            ->where('d.result_id', $id)
+            ->where('d.id', $id)
             ->first();
         if (!$result_assigned) {
             return;
@@ -177,12 +177,10 @@ class ResultAssign extends Component
         );
 
         if (count($allAssignees) !== count(array_unique($allAssignees))) {
-
             $this->addError(
                 'assigned_to',
                 'The same employee cannot be assigned more than once.'
             );
-
             return;
         }
 
@@ -206,29 +204,22 @@ class ResultAssign extends Component
             ->toArray();
 
         if (!empty($alreadyAssigned)) {
-
             $this->addError(
                 'assigned_to',
                 'One or more selected employees are already assigned to this Result.'
             );
-
             return;
         }
 
         DB::transaction(function () use (
-            $mainAssignee,
-            $additionalAssignees
-        ) {
-
+            $mainAssignee,$additionalAssignees) {
             $mainAssignment = cpar_assignments::where(
                 'id',
                 $this->assignment_id
             )->first();
-
             $oldValue = null;
 
             if ($mainAssignment) {
-
                 $oldStatus = DB::table('cpar_statuses')
                     ->where('id', $mainAssignment->status_id)
                     ->value('status_name');
@@ -244,7 +235,6 @@ class ResultAssign extends Component
             }
 
             if (!$mainAssignment) {
-
                 $mainAssignment = cpar_assignments::create([
                     'result_id'          => $this->result_id,
                     'employee_no'        => $this->employee_no,
@@ -258,7 +248,6 @@ class ResultAssign extends Component
                     'created_by'         => auth()->id(),
                 ]);
             } else {
-
                 $mainAssignment->update([
                     'employee_no'   => $this->employee_no,
                     'assigned_to'   => $mainAssignee,
@@ -270,7 +259,6 @@ class ResultAssign extends Component
             }
 
             foreach ($additionalAssignees as $employeeId) {
-
                 cpar_assignments::create([
                     'result_id'          => $this->result_id,
                     'employee_no'        => $this->employee_no,
@@ -298,7 +286,6 @@ class ResultAssign extends Component
 
             DB::table('audit_logs')->insert([
                 'user_reported_by'  => $this->employeeName,
-
                 'user_reported'     => json_encode(
                     array_values(
                         array_merge(
@@ -315,23 +302,15 @@ class ResultAssign extends Component
                 'old_value'         => $oldValue
                     ? json_encode($oldValue)
                     : null,
-
                 'new_value'         => json_encode($newValue),
-
                 'status_changed_by' => $this->id,
-
                 'date'              => now(),
                 'created_at'        => now(),
                 'updated_at'        => now(),
             ]);
         });
 
-        $this->reset([
-            'assigned_to',
-            'new_assignees',
-            'assignment_remarks',
-        ]);
-
+        $this->reset(['assigned_to','new_assignees','assignment_remarks',]);
         $this->dispatch('toast', type: 'success', message: 'Result successfully assigned.');
         $this->dispatch('modal-close', name: 'reassign-cpar');
         $this->dispatch('modal-close', name: 'CPARHRModal');

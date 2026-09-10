@@ -73,7 +73,7 @@ class ResultRespondForm extends Component
             $lastNumber = (int) substr($lastResult, -5);
             $nextNumber = $lastNumber + 1;
         }
-        $this->ir_id = 'IR-' . $year . '-' . str_pad($nextNumber, 5, '0', STR_PAD_LEFT);
+        $this->ir_id = 'RC-IR-' . $year . '-' . str_pad($nextNumber, 5, '0', STR_PAD_LEFT);
     }
 
     public function open_modal($id = null)
@@ -214,12 +214,6 @@ class ResultRespondForm extends Component
 
         DB::transaction(function () {
 
-            /*
-        |--------------------------------------------------------------------------
-        | GET EXISTING RECORDS
-        |--------------------------------------------------------------------------
-        */
-
             $oldInvestigation = DB::table('cpar_investigations')
                 ->where('assigned_id', $this->id)
                 ->first();
@@ -232,34 +226,13 @@ class ResultRespondForm extends Component
                 ->where('assignment_ir_id', $this->id)
                 ->first();
 
-
-            /*
-        |--------------------------------------------------------------------------
-        | IR NUMBER
-        |--------------------------------------------------------------------------
-        */
-
             if ($oldIR) {
-
-                /*
-             * EXISTING IR
-             *
-             * Keep the existing IR number.
-             * Do NOT update ir_id.
-             */
 
                 $savedIrId = $oldIR->ir_id;
             } else {
 
-                /*
-             * NEW IR
-             */
-
                 $savedIrId = $this->ir_id;
 
-                /*
-             * Check duplicate IR number.
-             */
                 $duplicateIr = DB::table('cpar_ir_requests')
                     ->where('ir_id', $savedIrId)
                     ->exists();
@@ -303,13 +276,6 @@ class ResultRespondForm extends Component
                 }
             }
 
-
-            /*
-        |--------------------------------------------------------------------------
-        | INVESTIGATION
-        |--------------------------------------------------------------------------
-        */
-
             cpar_investigations::updateOrCreate(
                 [
                     'assigned_id' => $this->id,
@@ -324,13 +290,6 @@ class ResultRespondForm extends Component
                 ]
             );
 
-
-            /*
-        |--------------------------------------------------------------------------
-        | ASSIGNMENT STATUS
-        |--------------------------------------------------------------------------
-        */
-
             cpar_assignments::where('id', $this->id)
                 ->update([
                     'employee_no' => $this->employee_no,
@@ -338,38 +297,20 @@ class ResultRespondForm extends Component
                     'updated_at'  => now(),
                 ]);
 
-
-            /*
-        |--------------------------------------------------------------------------
-        | IR REQUEST
-        |--------------------------------------------------------------------------
-        */
-
             $issuedAt = now();
             $dueDate  = now()->addDay();
 
             if ($oldIR) {
-
-                /*
-             * EXISTING IR
-             *
-             * IMPORTANT:
-             * ir_id is NOT included here.
-             */
 
                 $updateData = [
                     'employee_no'  => $this->employee_no,
                     'submitted_at' => null,
                     'issued_at'    => $issuedAt,
                     'due_date'     => $dueDate,
-                    'status'       => 'IR SUBMITTED',
+                    'status'       => 'RESULT IR SUBMITTED',
                     'updated_at'   => now(),
                 ];
 
-                /*
-             * Only update attachment if
-             * a new file was uploaded.
-             */
                 if ($irAttachmentPath) {
                     $updateData['ir_attachment'] = $irAttachmentPath;
                 }
@@ -382,10 +323,6 @@ class ResultRespondForm extends Component
                     ?? $oldIR->ir_attachment;
             } else {
 
-                /*
-             * NEW IR
-             */
-
                 DB::table('cpar_ir_requests')->insert([
                     'assignment_ir_id' => $this->id,
                     'ir_id'            => $savedIrId,
@@ -394,20 +331,13 @@ class ResultRespondForm extends Component
                     'submitted_at'     => null,
                     'issued_at'        => $issuedAt,
                     'due_date'         => $dueDate,
-                    'status'           => 'IR SUBMITTED',
+                    'status'           => 'RESULT IR SUBMITTED',
                     'created_at'       => now(),
                     'updated_at'       => now(),
                 ]);
 
                 $newAttachmentPath = $irAttachmentPath;
             }
-
-
-            /*
-        |--------------------------------------------------------------------------
-        | OLD VALUE
-        |--------------------------------------------------------------------------
-        */
 
             $oldValue = [
                 'result_no'           => $this->result_no,
@@ -428,13 +358,6 @@ class ResultRespondForm extends Component
                 'status_id'         => $oldAssignment?->status_id,
             ];
 
-
-            /*
-        |--------------------------------------------------------------------------
-        | NEW VALUE
-        |--------------------------------------------------------------------------
-        */
-
             $newValue = [
                 'result_no'           => $this->result_no,
                 'identified_cause'  => $this->identified_cause,
@@ -444,26 +367,15 @@ class ResultRespondForm extends Component
                 'date_completed'    => $this->date_completed,
                 'tat'               => $this->tat,
 
-                /*
-             * Always use the actual saved IR number.
-             */
                 'ir_id'             => $savedIrId,
-
                 'employee_no'       => $this->employee_no,
                 'ir_attachment'     => $newAttachmentPath,
                 'submitted_at'      => null,
                 'issued_at'         => $issuedAt,
                 'due_date'          => $dueDate,
-                'ir_status'         => 'IR SUBMITTED',
+                'ir_status'         => 'RESULT IR SUBMITTED',
                 'status_id'         => 15,
             ];
-
-
-            /*
-        |--------------------------------------------------------------------------
-        | DETECT CHANGES
-        |--------------------------------------------------------------------------
-        */
 
             $changedOldValue = [];
             $changedNewValue = [];
@@ -495,13 +407,6 @@ class ResultRespondForm extends Component
                 }
             }
 
-
-            /*
-        |--------------------------------------------------------------------------
-        | AUDIT LOG
-        |--------------------------------------------------------------------------
-        */
-
             DB::table('audit_logs')->insert([
                 'user_reported_by' => $this->employeeName,
 
@@ -509,7 +414,7 @@ class ResultRespondForm extends Component
                     ? json_encode($this->assigned_to)
                     : $this->assigned_to,
 
-                'action' => 'CPAR RESPONSE SUBMITTED',
+                'action' => 'RESULT RESPONSE SUBMITTED',
 
                 'old_value' => !empty($changedOldValue)
                     ? json_encode(
@@ -535,13 +440,6 @@ class ResultRespondForm extends Component
             ]);
         });
 
-
-        /*
-    |--------------------------------------------------------------------------
-    | RESET
-    |--------------------------------------------------------------------------
-    */
-
         $this->reset([
             'identified_cause',
             'provided_solution',
@@ -552,13 +450,6 @@ class ResultRespondForm extends Component
             'remarks',
             'ir_attachment',
         ]);
-
-
-        /*
-    |--------------------------------------------------------------------------
-    | NOTIFICATION
-    |--------------------------------------------------------------------------
-    */
 
         $this->dispatch(
             'toast',

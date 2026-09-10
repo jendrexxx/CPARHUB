@@ -6,6 +6,7 @@ use Livewire\Attributes\Layout;
 use Illuminate\Support\Facades\Auth;
 use App\Models\employee;
 use Illuminate\Support\Facades\DB;
+use Flux\Flux;
 
 use Livewire\Component;
 
@@ -20,6 +21,7 @@ class DeptHeadDashboard extends Component
     public $result_concern_count = '';
     public $concern_count = [];
     public $acknowledgment_count = [];
+    public $request_count = 0;
 
     protected $listeners = [
         'refreshHeadCount' => 'loadHeadCount',
@@ -38,6 +40,9 @@ class DeptHeadDashboard extends Component
         }
         $this->loadHeadCount();
         $this->loadAcknowledgeCount();
+        if (request()->query('open') === 'notifications') {
+            Flux::modal('CPARModal')->show();
+        }
     }
 
     public function loadHeadCount()
@@ -49,7 +54,6 @@ class DeptHeadDashboard extends Component
             ->where('d.record_type', 10)
             ->where('d.status_id', 1)
             ->count();
-
         // CPAR count
         $cparRequestCount = DB::table('cpar_request_forms as a')
             ->join('cpar_assignments as b', 'a.id', '=', 'b.cpar_id')
@@ -70,14 +74,12 @@ class DeptHeadDashboard extends Component
             ->where('b.record_type', 5)
             ->where('j.dept_head', $this->employee_no)
             ->count();
-
         // Result Error acknowledgment count
         $resultCount = DB::table('cpar_assignments as d')
             ->where('d.status_id', 15)
             ->where('d.record_type', 10)
             ->where('d.dept_head_assigned', $this->id)
             ->count();
-
         // Combined count
         $this->acknowledgment_count = $cparCount + $resultCount;
     }

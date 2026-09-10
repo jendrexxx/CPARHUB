@@ -417,16 +417,9 @@ class CparRespondForm extends Component
                 'submitted_at'      => null,
                 'issued_at'         => $issuedAt,
                 'due_date'          => $dueDate,
-                'ir_status'         => 'IR SUBMITTED',
+                'ir_status'         => 'OTHERS IR SUBMITTED',
                 'status_id'         => 15,
             ];
-
-
-            /*
-        |--------------------------------------------------------------------------
-        | DETECT CHANGES
-        |--------------------------------------------------------------------------
-        */
 
             $changedOldValue = [];
             $changedNewValue = [];

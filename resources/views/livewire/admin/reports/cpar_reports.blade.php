@@ -1,5 +1,4 @@
 <div class="space-y-6">
-
     {{-- HEADER --}}
     <div>
         <h2 class="text-2xl font-bold text-zinc-900 dark:text-white">
@@ -10,7 +9,6 @@
             View and analyze Corrective & Preventive Action Reports.
         </p>
     </div>
-
     {{-- FILTER CARD --}}
     <div class="rounded-xl border border-zinc-200 bg-white p-4 sm:p-5 dark:border-zinc-700 dark:bg-zinc-900">
 
@@ -96,7 +94,6 @@
 
             </div>
 
-
             {{-- DECISION --}}
             <div class="sm:col-span-1">
 
@@ -169,11 +166,9 @@
             </flux:button>
 
         </div>
-
         @endif
 
     </div>
-
     {{-- TABLE CONTROLS --}}
     <div class="flex items-center justify-between">
 
@@ -220,60 +215,55 @@
 
     </div>
     {{-- REPORT TABLE --}}
-    <div class="overflow-x-auto
-               rounded-xl
-               border border-zinc-200
-               dark:border-zinc-700">
+    <div class="overflow-x-auto rounded-xl border border-zinc-200 dark:border-zinc-700">
 
-        <table class="w-full text-left text-sm">
+        <table class="min-w-[1200px] w-full text-left text-sm">
 
-            {{-- HEADER --}}
-            <thead
-                class="border-b
-                       border-zinc-200
-                       bg-zinc-50
-                       dark:border-zinc-700
-                       dark:bg-zinc-900">
+            <thead class="border-b border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900">
 
                 <tr>
 
-                    <th class="px-4 py-3 text-center font-semibold">
-                        CPAR No.
+                    <th class="whitespace-nowrap px-4 py-3 text-center font-semibold">
+                        Type
                     </th>
 
-                    <th class="px-4 py-3 text-center font-semibold">
+                    <th class="whitespace-nowrap px-4 py-3 text-center font-semibold">
+                        Reference No.
+                    </th>
+
+                    <th class="whitespace-nowrap px-4 py-3 text-center font-semibold">
                         Reported By
                     </th>
 
-                    <th class="px-4 py-3 text-center font-semibold">
+                    <th class="whitespace-nowrap px-4 py-3 text-center font-semibold">
                         Reported Employee
                     </th>
 
-                    <th class="px-4 py-3 text-center font-semibold">
+                    <th class="whitespace-nowrap px-4 py-3 text-center font-semibold">
                         Branch
                     </th>
 
-                    <th class="px-4 py-3 text-center font-semibold">
+                    <th class="whitespace-nowrap px-4 py-3 text-center font-semibold">
                         Department
                     </th>
 
-                    <th class="px-4 py-3 text-center font-semibold">
+                    <th class="whitespace-nowrap px-4 py-3 text-center font-semibold">
                         Date Open
                     </th>
 
-                    <th class="px-4 py-3 text-center font-semibold">
+                    <th class="whitespace-nowrap px-4 py-3 text-center font-semibold">
                         Decision Category
                     </th>
 
-                    <th class="px-4 py-3 text-center font-semibold">
+                    <th class="whitespace-nowrap px-4 py-3 text-center font-semibold">
                         Valid Until
                     </th>
 
-                    <th class="px-4 py-3 text-center font-semibold">
+                    <th class="whitespace-nowrap px-4 py-3 text-center font-semibold">
                         Status
                     </th>
 
-                    <th class="px-4 py-3 text-center font-semibold">
+                    <th class="whitespace-nowrap px-4 py-3 text-center font-semibold">
                         Actions
                     </th>
 
@@ -281,95 +271,89 @@
 
             </thead>
 
+            <tbody class="divide-y divide-zinc-200 dark:divide-zinc-700">
 
-            {{-- BODY --}}
-            <tbody
-                class="divide-y
-                       divide-zinc-200
-                       dark:divide-zinc-700">
+                @forelse ($cparReports as $record)
 
-                @forelse ($cparReports as $cpar)
+                <tr class="text-center transition hover:bg-zinc-50 dark:hover:bg-zinc-800">
 
-                <tr
-                    class="text-center
-                           transition
-                           hover:bg-zinc-50
-                           dark:hover:bg-zinc-800">
+                    {{-- TYPE --}}
+                    <td class="whitespace-nowrap px-4 py-4">
 
-
-                    {{-- CPAR NO --}}
-                    <td
-                        class="whitespace-nowrap
-                               px-4 py-4">
+                        @if ($record->record_type === 'CPAR')
 
                         <span
-                            class="font-semibold
-                                   text-zinc-900
-                                   dark:text-white">
-
-                            {{ $cpar->cpar_no }}
-
+                            class="inline-flex items-center rounded-full bg-red-100 px-2.5 py-1 text-xs font-medium text-red-700 dark:bg-red-950 dark:text-red-400">
+                            CPAR
                         </span>
+
+                        @else
+
+                        <span
+                            class="inline-flex items-center rounded-full bg-blue-100 px-2.5 py-1 text-xs font-medium text-blue-700 dark:bg-blue-950 dark:text-blue-400">
+                            RESULT
+                        </span>
+
+                        @endif
 
                     </td>
 
 
+                    {{-- REFERENCE NO --}}
+                    <td class="whitespace-nowrap px-4 py-4">
+
+                        <span class="font-semibold text-zinc-900 dark:text-white">
+                            {{ $record->record_no }}
+                        </span>
+
+                    </td>
+
                     {{-- REPORTED BY --}}
-                    <td
-                        class="whitespace-nowrap
-                               px-4 py-4">
+                    <td class="whitespace-nowrap px-4 py-4">
 
-                        <span
-                            class="font-semibold
-                                   text-zinc-900
-                                   dark:text-white">
-
-                            {{ $cpar->reported_by }}
-
+                        <span class="font-semibold text-zinc-900 dark:text-white">
+                            {{ $record->reported_by ?? '—' }}
                         </span>
 
                     </td>
 
 
                     {{-- EMPLOYEE --}}
-                    <td class="px-4 py-4">
+                    <td class="whitespace-nowrap px-4 py-4">
 
-                        <span
-                            class="font-semibold
-                                   text-zinc-900
-                                   dark:text-white">
-
-                            {{ $cpar->employee_name ?? '—' }}
-
+                        <span class="font-semibold text-zinc-900 dark:text-white">
+                            {{ $record->employee_name ?: '—' }}
                         </span>
+
+                        @if ($record->employee_no)
+
+                        <div class="text-xs text-zinc-500 dark:text-zinc-400">
+                            {{ $record->employee_no }}
+                        </div>
+
+                        @endif
 
                     </td>
 
 
                     {{-- BRANCH --}}
-                    <td class="px-4 py-4">
-
-                        {{ $cpar->branch_name ?? '—' }}
-
+                    <td class="whitespace-nowrap px-4 py-4">
+                        {{ $record->branch_name ?? '—' }}
                     </td>
 
 
                     {{-- DEPARTMENT --}}
-                    <td class="px-4 py-4">
-
-                        {{ $cpar->department_name ?? '—' }}
-
+                    <td class="whitespace-nowrap px-4 py-4">
+                        {{ $record->department_name ?? '—' }}
                     </td>
 
 
                     {{-- DATE OPEN --}}
-                    <td
-                        class="whitespace-nowrap
-                               px-4 py-4">
+                    <td class="whitespace-nowrap px-4 py-4">
 
-                        @if ($cpar->date_open)
+                        @if ($record->date_open)
 
-                        {{ \Carbon\Carbon::parse($cpar->date_open)->format('M d, Y') }}
+                        {{ \Carbon\Carbon::parse($record->date_open)->format('M d, Y') }}
 
                         @else
 
@@ -380,48 +364,26 @@
                     </td>
 
 
-                    {{-- Decision Category --}}
+                    {{-- DECISION --}}
                     <td class="px-4 py-4">
 
-                        <div
-                            class="flex
-                                   flex-wrap
-                                   justify-center
-                                   gap-1">
+                        <div class="flex flex-wrap justify-center gap-1">
 
-                            @if ($cpar->decision_name)
+                            @if ($record->decision_name)
 
-                            @foreach (
-                            explode(', ', $cpar->decision_name)
-                            as $decision
-                            )
+                            @foreach (explode(', ', $record->decision_name) as $decision)
 
                             <span
-                                class="inline-flex
-                                       items-center
-                                       rounded-full
-                                       bg-red-100
-                                       px-2.5
-                                       py-1
-                                       text-xs
-                                       font-medium
-                                       text-red-700
-                                       dark:bg-red-950
-                                       dark:text-red-400">
-
+                                class="inline-flex items-center rounded-full bg-red-100 px-2.5 py-1 text-xs font-medium text-red-700 dark:bg-red-950 dark:text-red-400">
                                 {{ $decision }}
-
                             </span>
 
                             @endforeach
 
                             @else
 
-                            <span
-                                class="text-zinc-400">
-
+                            <span class="text-zinc-400">
                                 —
-
                             </span>
 
                             @endif
@@ -432,30 +394,19 @@
 
 
                     {{-- VALID UNTIL --}}
-                    <td
-                        class="whitespace-nowrap
-                               px-4 py-4">
+                    <td class="whitespace-nowrap px-4 py-4">
 
-                        @if ($cpar->valid_until)
+                        @if ($record->valid_until)
 
                         @php
-                        $validUntil = \Carbon\Carbon::parse(
-                        $cpar->valid_until
-                        );
+                        $validUntil = \Carbon\Carbon::parse($record->valid_until);
                         @endphp
 
                         <span
-                            class="inline-flex
-                                   items-center
-                                   rounded-full
-                                   px-2.5
-                                   py-1
-                                   text-xs
-                                   font-medium
-                                   {{ $validUntil->isFuture()
-                                        ? 'bg-green-100 text-green-700 dark:bg-green-950 dark:text-green-400'
-                                        : 'bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-400'
-                                   }}">
+                            class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium
+                                {{ $validUntil->isFuture()
+                                    ? 'bg-green-100 text-green-700 dark:bg-green-950 dark:text-green-400'
+                                    : 'bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-400' }}">
 
                             {{ $validUntil->format('M d, Y') }}
 
@@ -463,11 +414,8 @@
 
                         @else
 
-                        <span
-                            class="text-zinc-400">
-
+                        <span class="text-zinc-400">
                             —
-
                         </span>
 
                         @endif
@@ -476,21 +424,12 @@
 
 
                     {{-- STATUS --}}
-                    <td class="px-4 py-4">
+                    <td class="whitespace-nowrap px-4 py-4">
 
                         <span
-                            class="inline-flex
-                                   items-center
-                                   rounded-full
-                                   bg-yellow-100
-                                   px-2.5
-                                   py-1
-                                   text-xs
-                                   font-medium
-                                   text-yellow-700
-                                   dark:bg-yellow-950
-                                   dark:text-yellow-400">
-                            {{ $cpar->status_name ?? '—' }}
+                            class="inline-flex items-center rounded-full bg-yellow-100 px-2.5 py-1 text-xs font-medium text-yellow-700 dark:bg-yellow-950 dark:text-yellow-400">
+
+                            {{ $record->status_name ?? '—' }}
 
                         </span>
 
@@ -498,9 +437,7 @@
 
 
                     {{-- ACTIONS --}}
-                    <td
-                        class="px-4 py-3
-                               text-center">
+                    <td class="px-4 py-3 text-center">
 
                         <flux:dropdown align="end">
 
@@ -510,17 +447,32 @@
                                 icon="ellipsis-vertical">
                             </flux:button>
 
-
                             <flux:menu>
+
+                                @if ($record->record_type === 'CPAR')
 
                                 <flux:menu.item
                                     icon="document-text"
-                                    href="{{ route('cpar.pdf', $cpar->assignment_id) }}"
+                                    href="{{ route('cpar.pdf', $record->assignment_id) }}"
                                     target="_blank">
 
-                                    PDF
+                                    CPAR PDF
 
                                 </flux:menu.item>
+
+                                @else
+
+                                {{-- RESULT PDF --}}
+                                <flux:menu.item
+                                    icon="document-text"
+                                    href="{{ route('result.pdf', $record->assignment_id) }}"
+                                    target="_blank">
+
+                                    RESULT PDF
+
+                                </flux:menu.item>
+
+                                @endif
 
                             </flux:menu>
 
@@ -530,35 +482,21 @@
 
                 </tr>
 
-
                 @empty
 
-                {{-- EMPTY --}}
                 <tr>
 
                     <td
-                        colspan="10"
+                        colspan="11"
                         class="px-4 py-12 text-center">
 
-                        <div
-                            class="flex
-                                   flex-col
-                                   items-center
-                                   justify-center">
+                        <div class="flex flex-col items-center justify-center">
 
                             <div
-                                class="flex
-                                       h-12
-                                       w-12
-                                       items-center
-                                       justify-center
-                                       rounded-full
-                                       bg-zinc-100
-                                       dark:bg-zinc-800">
+                                class="flex h-12 w-12 items-center justify-center rounded-full bg-zinc-100 dark:bg-zinc-800">
 
                                 <svg
-                                    class="h-6 w-6
-                                           text-zinc-400"
+                                    class="h-6 w-6 text-zinc-400"
                                     fill="none"
                                     viewBox="0 0 24 24"
                                     stroke="currentColor">
@@ -573,24 +511,15 @@
 
                             </div>
 
-
                             <h3
-                                class="mt-3
-                                       text-sm
-                                       font-semibold
-                                       text-zinc-900
-                                       dark:text-white">
+                                class="mt-3 text-sm font-semibold text-zinc-900 dark:text-white">
 
-                                No CPAR Records Found
+                                No CPAR / RESULT Records Found
 
                             </h3>
 
-
                             <p
-                                class="mt-1
-                                       text-sm
-                                       text-zinc-500
-                                       dark:text-zinc-400">
+                                class="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
 
                                 @if ($search)
 
@@ -601,7 +530,7 @@
 
                                 @else
 
-                                There are currently no CPAR records available.
+                                There are currently no CPAR or RESULT records available.
 
                                 @endif
 
@@ -620,12 +549,9 @@
         </table>
 
     </div>
-
-    {{-- PAGINATION --}}
     @if ($cparReports->hasPages())
     <div class="pt-2">
         {{ $cparReports->links() }}
     </div>
     @endif
-
 </div>

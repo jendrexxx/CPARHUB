@@ -10,6 +10,7 @@ use App\Livewire\Admin\LabSupervisorDashboard;
 use App\Livewire\Admin\Reports\CparMasterFile;
 use App\Livewire\Admin\Reports\CparReports;
 use App\Livewire\Admin\Reports\Pdf;
+use App\Livewire\Admin\Reports\ResultPdf;
 use App\Livewire\System\Setup;
 use App\Livewire\User\UserDashboard;
 use Illuminate\Support\Facades\Route;
@@ -38,6 +39,8 @@ Route::middleware(['auth', 'verified', 'session.timeout'])->group(function () {
         ->name('lab_supervisor');
 
     Route::get('/cpar/{assignment_id}/pdf', [Pdf::class, 'pdf'])->name('cpar.pdf');
+    Route::get('/result/{assignment_id}/pdf', [ResultPdf::class, 'result'])->name('result.pdf');
+
 });
 
 Route::middleware(['auth', 'verified', 'session.timeout'])->group(function () {
