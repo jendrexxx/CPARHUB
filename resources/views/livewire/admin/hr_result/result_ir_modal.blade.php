@@ -348,11 +348,14 @@
                         </div>
 
                     </div>
-                    <flux:input type="file" label="NTE Attachment" wire:model="nte_attachment" accept=".pdf" />
+
+                    <flux:input
+                        type="file"
+                        label="NTE Attachment"
+                        wire:model="nte_attachment"
+                        accept=".pdf" />
                 </div>
-
             </div>
-
         </div>
 
         {{-- Footer --}}

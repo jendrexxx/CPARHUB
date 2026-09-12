@@ -29,9 +29,6 @@ class CparSubmissionForm extends Component
 
     public function loadSubmissionRecords()
     {
-        // =========================
-        // CPAR
-        // =========================
         $cpar = DB::table('cpar_request_forms as a')
             ->join('cpar_assignments as b', 'a.id', '=', 'b.cpar_id')
             ->join('departments as g', 'a.department_id', '=', 'g.id')

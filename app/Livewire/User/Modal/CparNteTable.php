@@ -35,12 +35,7 @@ class CparNteTable extends Component
             ->join('cpar_assignments as b', 'a.id', '=', 'b.cpar_id')
             ->join('cpar_ir_requests as i', 'b.id', '=', 'i.assignment_ir_id')
             ->join('cpar_statuses as c', 'b.status_id', '=', 'c.id')
-            ->join(
-                'cpar_notice_to_explains as j',
-                'j.assignment_id',
-                '=',
-                'i.id'
-            )
+            ->join('cpar_notice_to_explains as j','j.assignment_id','=','i.id')
             ->select(
                 'j.id',
                 'j.nte_no',
@@ -91,9 +86,14 @@ class CparNteTable extends Component
         $this->nte_cpar = $this->nteList->count();
     }
 
-    public function viewNTE($id)
+    public function viewNTE($assignment_id)
     {
-        $this->dispatch('view-NTE', id: $id);
+        $this->dispatch('view-NTE', id: $assignment_id);
+    }
+
+    public function viewResultNTE($assignment_id)
+    {
+        $this->dispatch('View-Result-NTE', id: $assignment_id);
     }
 
     public function render()

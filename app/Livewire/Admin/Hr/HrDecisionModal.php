@@ -379,6 +379,7 @@ class HrDecisionModal extends Component
         $this->dispatch('refreshPreviousOffense');
         $this->dispatch('refreshAcknowledgeRecords');
         $this->dispatch('refreshAcknowledgeCount');
+        $this->dispatch('refreshNotificationCount');
     }
 
     public function saveDraft()

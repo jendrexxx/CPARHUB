@@ -194,19 +194,13 @@ class CparSubmissionModal extends Component
             ]);
         });
 
-        $this->dispatch(
-            'toast',
-            type: 'success',
-            message: 'CPAR Acknowledge successfully submitted.'
-        );
-
+        $this->dispatch('toast',type: 'success',message: 'CPAR Acknowledge successfully submitted.');
         $this->dispatch('modal-close', name: 'submission-cpar');
         $this->dispatch('modal-close', name: 'CPARSubmissionModal');
         $this->dispatch('refreshSubmission');
         $this->dispatch('refreshAcknowledgeCount');
-        $this->reset([
-            'remarks',
-        ]);
+        $this->dispatch('refreshNotificationCount');
+        $this->reset(['remarks',]);
     }
 
     public function render()

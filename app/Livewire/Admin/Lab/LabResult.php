@@ -339,6 +339,7 @@ class LabResult extends Component
         $this->dispatch('modal-close',name: 'LABrequest');
         $this->dispatch('refreshLABRecords');
         $this->dispatch('refreshLABCount');
+        $this->dispatch('refreshNotificationCount');
     }
 
     public function render()

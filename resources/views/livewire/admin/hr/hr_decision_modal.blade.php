@@ -270,7 +270,6 @@
 
                             {{-- Current NTE Attachment --}}
                             @if ($current_nte_attachment)
-
                             <div
                                 class="flex items-center justify-between rounded-lg
                                border border-zinc-200 bg-zinc-50 px-4 py-3
@@ -312,25 +311,7 @@
                                 </flux:button>
 
                             </div>
-
                             @endif
-
-
-                            {{-- Upload New NTE --}}
-                            <flux:input
-                                type="file"
-                                wire:model="nte_attachment"
-                                accept="application/pdf" />
-
-
-                            {{-- NTE Validation --}}
-                            @error('nte_attachment')
-
-                            <span class="text-sm text-red-600">
-                                {{ $message }}
-                            </span>
-
-                            @enderror
 
                         </div>
 
@@ -397,23 +378,6 @@
                             </div>
 
                             @endif
-
-
-                            {{-- Upload New IR --}}
-                            <flux:input
-                                type="file"
-                                wire:model="ir_attachment"
-                                accept="application/pdf" />
-
-
-                            {{-- IR Validation --}}
-                            @error('ir_attachment')
-
-                            <span class="text-sm text-red-600">
-                                {{ $message }}
-                            </span>
-
-                            @enderror
 
                         </div>
 

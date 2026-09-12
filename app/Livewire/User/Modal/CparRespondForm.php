@@ -531,14 +531,13 @@ class CparRespondForm extends Component
             'modal-close',
             name: 'CPARAssignedModal'
         );
-
         $this->dispatch('refreshAssignedData');
         $this->dispatch('refreshAssignedCount');
+        $this->dispatch('refreshNotificationCount');
     }
 
     public function saveDraft()
     {
-        dd($this->ir_id);
         $this->validate([
             'identified_cause'  => 'nullable',
             'provided_solution' => 'nullable',
@@ -549,12 +548,6 @@ class CparRespondForm extends Component
         ]);
 
         DB::transaction(function () {
-
-            /*
-        |--------------------------------------------------------------------------
-        | GET OLD RECORDS
-        |--------------------------------------------------------------------------
-        */
 
             $oldInvestigation = DB::table('cpar_investigations')
                 ->where('assigned_id', $this->id)
@@ -568,13 +561,6 @@ class CparRespondForm extends Component
                 ->where('assignment_ir_id', $this->id)
                 ->first();
 
-
-            /*
-        |--------------------------------------------------------------------------
-        | IR ATTACHMENT
-        |--------------------------------------------------------------------------
-        */
-
             $irAttachmentPath = null;
 
             if ($this->ir_attachment) {
@@ -583,13 +569,6 @@ class CparRespondForm extends Component
                     'public'
                 );
             }
-
-
-            /*
-        |--------------------------------------------------------------------------
-        | SAVE INVESTIGATION
-        |--------------------------------------------------------------------------
-        */
 
             cpar_investigations::updateOrCreate(
                 [
@@ -605,32 +584,13 @@ class CparRespondForm extends Component
                 ]
             );
 
-
-            /*
-        |--------------------------------------------------------------------------
-        | SAVE / UPDATE IR
-        |--------------------------------------------------------------------------
-        */
-
             if ($oldIR) {
-
-                /*
-            |--------------------------------------------------------------------------
-            | EXISTING IR
-            |
-            | IMPORTANT:
-            | Do NOT update ir_id.
-            |--------------------------------------------------------------------------
-            */
 
                 $updateData = [
                     'employee_no' => $this->employee_no,
                     'updated_at'  => now(),
                 ];
 
-                /*
-            | Only update attachment when a new file was uploaded
-            */
                 if ($irAttachmentPath) {
                     $updateData['ir_attachment'] = $irAttachmentPath;
                 }
@@ -639,28 +599,12 @@ class CparRespondForm extends Component
                     ->where('id', $oldIR->id)
                     ->update($updateData);
 
-                /*
-            | Keep the EXISTING IR number
-            */
                 $savedIrId = $oldIR->ir_id;
-
-                /*
-            | Keep existing attachment if no new file was uploaded
-            */
                 $newAttachmentPath = $irAttachmentPath
                     ?? $oldIR->ir_attachment;
             } else {
 
-                /*
-            |--------------------------------------------------------------------------
-            | NEW IR
-            |
-            | Only here do we use the generated $this->ir_id
-            |--------------------------------------------------------------------------
-            */
-
                 $savedIrId = $this->ir_id;
-
                 DB::table('cpar_ir_requests')->insert([
                     'assignment_ir_id' => $this->id,
                     'ir_id'            => $savedIrId,
@@ -677,26 +621,12 @@ class CparRespondForm extends Component
                 $newAttachmentPath = $irAttachmentPath;
             }
 
-
-            /*
-        |--------------------------------------------------------------------------
-        | UPDATE CPAR ASSIGNMENT
-        |--------------------------------------------------------------------------
-        */
-
             cpar_assignments::where('id', $this->id)
                 ->update([
                     'employee_no' => $this->employee_no,
                     'status_id'   => 10,
                     'updated_at'  => now(),
                 ]);
-
-
-            /*
-        |--------------------------------------------------------------------------
-        | AUDIT LOG
-        |--------------------------------------------------------------------------
-        */
 
             $oldData = [
                 'identified_cause'  => $oldInvestigation?->identified_cause,
@@ -706,17 +636,12 @@ class CparRespondForm extends Component
                 'date_completed'    => $oldInvestigation?->date_completed,
                 'tat'               => $oldInvestigation?->tat,
 
-                /*
-            | Existing IR ID
-            */
                 'ir_id'             => $oldIR?->ir_id,
-
                 'employee_no'       => $oldIR?->employee_no,
                 'ir_attachment'     => $oldIR?->ir_attachment,
                 'ir_status'         => $oldIR?->status,
                 'status_id'         => $oldAssignment?->status_id,
             ];
-
 
             $newData = [
                 'identified_cause'  => $this->identified_cause ?: null,
@@ -725,28 +650,12 @@ class CparRespondForm extends Component
                 'action_taken_by'   => $this->employee_name,
                 'date_completed'    => $this->date_completed ?: null,
                 'tat'               => $this->tat ?: null,
-
-                /*
-            | IMPORTANT:
-            | Use $savedIrId instead of $this->ir_id
-            |
-            | Existing record = old IR number
-            | New record      = generated IR number
-            */
                 'ir_id'             => $savedIrId,
-
                 'employee_no'       => $this->employee_no,
                 'ir_attachment'     => $newAttachmentPath,
                 'ir_status'         => 'DRAFT',
                 'status_id'         => 10,
             ];
-
-
-            /*
-        |--------------------------------------------------------------------------
-        | DETECT CHANGES
-        |--------------------------------------------------------------------------
-        */
 
             $changedOldValue = [];
             $changedNewValue = [];
@@ -769,13 +678,6 @@ class CparRespondForm extends Component
                     $changedNewValue[$field] = $newValue;
                 }
             }
-
-
-            /*
-        |--------------------------------------------------------------------------
-        | INSERT AUDIT LOG
-        |--------------------------------------------------------------------------
-        */
 
             if (!empty($changedNewValue)) {
 
@@ -801,25 +703,8 @@ class CparRespondForm extends Component
                 ]);
             }
         });
-
-
-        /*
-    |--------------------------------------------------------------------------
-    | UI EVENTS
-    |--------------------------------------------------------------------------
-    */
-
-        $this->dispatch(
-            'toast',
-            type: 'success',
-            message: 'CPAR response saved as draft.'
-        );
-
-        $this->dispatch(
-            'modal-close',
-            name: 'respond-cpar'
-        );
-
+        $this->dispatch('toast',type: 'success',message: 'CPAR response saved as draft.');
+        $this->dispatch('modal-close',name: 'respond-cpar');
         $this->dispatch('refreshAssignedData');
         $this->dispatch('refreshAssignedCount');
     }

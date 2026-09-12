@@ -268,6 +268,7 @@ class CparNteExplanation extends Component
         $this->dispatch('modal-close', name: 'NoticeToExplainModal');
         $this->dispatch('refreshCparNTEData');
         $this->dispatch('refreshNTECount');
+        $this->dispatch('refreshNotificationCount');
         $this->dispatch('toast', type: 'success', message: 'NTE response submitted successfully.');
     }
 

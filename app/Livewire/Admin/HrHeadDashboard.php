@@ -32,6 +32,7 @@ class HrHeadDashboard extends Component
     public $memo_count = '';
     public $result_ir_cpar_count = '', $decision_result_count = '';
     public $hr_request_count = [];
+    public bool $dashboardLoaded = false;
 
     protected $listeners = [
         'refreshHRCount' => 'loadHRCount',
@@ -59,6 +60,20 @@ class HrHeadDashboard extends Component
         $this->branches = DB::table('branches')
             ->orderBy('branch_name')
             ->get();
+        $this->loadHRCount();
+        $this->loadAcknowledgeCount();
+        $this->loadDecisionCount();
+        $this->loadMemoCount();
+    }
+
+    public function loadDashboard()
+    {
+        $this->loadDashboardData();
+        $this->dashboardLoaded = true;
+    }
+
+    public function loadDashboardData()
+    {
         $this->loadHRCount();
         $this->loadAcknowledgeCount();
         $this->loadDecisionCount();
@@ -205,6 +220,15 @@ class HrHeadDashboard extends Component
         $this->loadAcknowledgeCount();
         $this->loadDecisionCount();
         $this->loadMemoCount();
+    }
+
+    public function placeholder()
+    {
+        return <<<'HTML'
+        <div class="flex items-center justify-center h-64">
+            <flux:icon.loading />
+        </div>
+        HTML;
     }
 
     public function render()

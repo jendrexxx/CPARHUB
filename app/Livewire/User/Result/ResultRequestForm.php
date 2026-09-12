@@ -116,7 +116,8 @@ class ResultRequestForm extends Component
             'actual_released_date' => 'required',
             'test_procedure' => 'required',
             'complain_category_id' => 'required',
-            'complain_name' => 'required'
+            'complain_name' => 'required',
+            'priority' => 'required'
         ]);
         $result = result_error_form::create([
             'result_no' => $this->result_no,

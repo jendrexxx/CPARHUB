@@ -212,6 +212,7 @@ class HrIrRequest extends Component
         $this->dispatch('modal-close', name: 'incident-report-request');
         $this->dispatch('refreshAcknowledgeRecords');
         $this->dispatch('refreshAcknowledgeCount');
+        $this->dispatch('refreshNotificationCount');
         // Toast
         $this->dispatch(
             'toast',

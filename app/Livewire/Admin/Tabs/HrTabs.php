@@ -74,6 +74,21 @@ class HrTabs extends Component
         $this->resetPage();
     }
 
+    public function placeholder()
+    {
+        return <<<'HTML'
+        <div class="p-4">
+            <div class="animate-pulse space-y-4">
+
+                <div class="h-6 w-48 rounded bg-zinc-200 dark:bg-zinc-700"></div>
+
+                <div class="h-24 rounded-xl bg-zinc-200 dark:bg-zinc-700"></div>
+
+            </div>
+        </div>
+    HTML;
+    }
+
     public function render()
     {
         $query = DB::table('cpar_request_forms as a')
@@ -82,14 +97,20 @@ class HrTabs extends Component
             ->leftJoin('cpar_statuses as h', 'b.status_id', '=', 'h.id')
             ->leftJoin('employees as i', 'b.assigned_to', '=', 'i.id')
             ->leftJoin('cpar_ir_requests as j', 'b.id', '=', 'j.assignment_ir_id')
-            ->leftJoin('cpar_employee_disciplinary_records as k','b.id','=','k.assignment_id')
-            ->leftJoin('cpar_notice_to_explains as d','j.id','=','d.assignment_id')
-            ->leftJoin('cpar_decision_categories as l',
-                DB::raw("JSON_CONTAINS(k.decision_ids,JSON_QUOTE(CAST(l.id AS CHAR)))"),'=',
-                DB::raw('1'))
-            ->leftJoin('cpar_disciplinary_categories as m',
-                DB::raw("JSON_CONTAINS(k.discipline_ids,JSON_QUOTE(CAST(m.id AS CHAR)))"),'=',
-                DB::raw('1'))
+            ->leftJoin('cpar_employee_disciplinary_records as k', 'b.id', '=', 'k.assignment_id')
+            ->leftJoin('cpar_notice_to_explains as d', 'j.id', '=', 'd.assignment_id')
+            ->leftJoin(
+                'cpar_decision_categories as l',
+                DB::raw("JSON_CONTAINS(k.decision_ids,JSON_QUOTE(CAST(l.id AS CHAR)))"),
+                '=',
+                DB::raw('1')
+            )
+            ->leftJoin(
+                'cpar_disciplinary_categories as m',
+                DB::raw("JSON_CONTAINS(k.discipline_ids,JSON_QUOTE(CAST(m.id AS CHAR)))"),
+                '=',
+                DB::raw('1')
+            )
             ->select(
                 'a.id',
                 'a.cpar_no',
@@ -158,40 +179,42 @@ class HrTabs extends Component
                         AND ca.cpar_id != a.id
                 ) as offense_count
                 ")
-                )
-                ->when(
-                    trim($this->search) !== '',
-                    function ($query) {
-                        $search = '%' . trim($this->search) . '%';
+            )
+            ->when(
+                trim($this->search) !== '',
+                function ($query) {
+                    $search = '%' . trim($this->search) . '%';
 
-                        $query->where(function ($q) use ($search) {
-                            $q->where('a.cpar_no', 'like', $search)
-                                ->orWhere('a.reported_by', 'like', $search)
-                                ->orWhere('i.first_name', 'like', $search)
-                                ->orWhere('i.last_name', 'like', $search)
-                                ->orWhere('i.employee_no', 'like', $search);
-                        });
-                    }
-                )
-                ->where('b.record_type', 5)
-                ->where('i.branch_id', $this->branch)
-                ->groupBy(
-                    'a.id',
-                    'a.cpar_no',
-                    'a.reported_by',
-                    'a.date_open',
-                    'b.id',
-                    'b.cpar_id',
-                    'b.status_id',
-                    'i.employee_no',
-                    'i.first_name',
-                    'i.last_name',
-                    'i.branch_id',
-                    'g.department_name'
-                )
-                ->orderByDesc('b.id');
+                    $query->where(function ($q) use ($search) {
+                        $q->where('a.cpar_no', 'like', $search)
+                            ->orWhere('a.reported_by', 'like', $search)
+                            ->orWhere('i.first_name', 'like', $search)
+                            ->orWhere('i.last_name', 'like', $search)
+                            ->orWhere('i.employee_no', 'like', $search);
+                    });
+                }
+            )
+            ->where('b.record_type', 5)
+            ->where('i.branch_id', $this->branch)
+            ->groupBy(
+                'a.id',
+                'a.cpar_no',
+                'a.reported_by',
+                'a.date_open',
+                'b.id',
+                'b.cpar_id',
+                'b.status_id',
+                'i.employee_no',
+                'i.first_name',
+                'i.last_name',
+                'i.branch_id',
+                'g.department_name'
+            )
+            ->orderByDesc('b.id');
         $cpar_offense = $query->paginate($this->perPage);
-        return view('livewire.admin.tabs.hr_tabs',['cpar_offense' => $cpar_offense,]
+        return view(
+            'livewire.admin.tabs.hr_tabs',
+            ['cpar_offense' => $cpar_offense,]
         );
     }
 }

@@ -245,13 +245,6 @@ class ResultRespondForm extends Component
                 }
             }
 
-
-            /*
-        |--------------------------------------------------------------------------
-        | ATTACHMENT
-        |--------------------------------------------------------------------------
-        */
-
             $irAttachmentPath = null;
 
             if ($this->ir_attachment) {
@@ -469,6 +462,7 @@ class ResultRespondForm extends Component
 
         $this->dispatch('refreshAssignedData');
         $this->dispatch('refreshAssignedCount');
+        $this->dispatch('refreshNotificationCount');
     }
 
     public function saveDraft()
@@ -479,7 +473,7 @@ class ResultRespondForm extends Component
             'recommendation'    => 'nullable',
             'date_completed'    => 'nullable',
             'tat'               => 'nullable',
-            'ir_attachment'     => 'nullable|file|mimes:pdf|max:10240',
+            'ir_attachment'    => 'nullable|file|mimes:pdf|max:10240',
         ]);
 
         DB::transaction(function () {
@@ -496,12 +490,12 @@ class ResultRespondForm extends Component
                 ->where('assignment_ir_id', $this->id)
                 ->first();
 
-            $newAttachmentPath = $oldIR?->ir_attachment;
+            $attachmentPath = $oldIR?->ir_attachment;
 
             if ($this->ir_attachment) {
 
                 // Store new attachment
-                $newAttachmentPath = $this->ir_attachment->store(
+                $attachmentPath = $this->ir_attachment->store(
                     'result/ir',
                     'public'
                 );
@@ -531,22 +525,31 @@ class ResultRespondForm extends Component
             );
 
             if ($oldIR) {
-                // Existing IR record → UPDATE
+
+                // Existing IR → UPDATE
                 DB::table('cpar_ir_requests')
                     ->where('id', $oldIR->id)
                     ->update([
                         'employee_no'   => $this->employee_no,
-                        'ir_attachment' => $newAttachmentPath,
+
+                        // IMPORTANT:
+                        // Keep old attachment if no new file was uploaded
+                        'ir_attachment' => $attachmentPath,
+
                         'updated_at'    => now(),
                     ]);
             } else {
-                // No existing IR record → INSERT
+
+                // No existing IR → INSERT
                 DB::table('cpar_ir_requests')
                     ->insert([
                         'assignment_ir_id' => $this->id,
                         'ir_id'            => $this->ir_id,
                         'employee_no'      => $this->employee_no,
-                        'ir_attachment'    => $newAttachmentPath,
+
+                        // null if no attachment was uploaded
+                        'ir_attachment'    => $attachmentPath,
+
                         'submitted_at'     => null,
                         'issued_at'        => null,
                         'due_date'         => null,
@@ -570,12 +573,15 @@ class ResultRespondForm extends Component
                 'action_taken_by'   => $oldInvestigation?->action_taken_by,
                 'date_completed'    => $oldInvestigation?->date_completed,
                 'tat'               => $oldInvestigation?->tat,
-                'ir_id'             => $this->ir_id,
+
+                'ir_id'             => $oldIR?->ir_id ?? $this->ir_id,
                 'employee_no'       => $oldIR?->employee_no,
                 'ir_attachment'     => $oldIR?->ir_attachment,
                 'ir_status'         => $oldIR?->status,
+
                 'status_id'         => $oldAssignment?->status_id,
             ];
+
 
             $newData = [
                 'identified_cause'  => $this->identified_cause ?: null,
@@ -586,7 +592,7 @@ class ResultRespondForm extends Component
                 'tat'               => $this->tat ?: null,
                 'ir_id'             => $this->ir_id,
                 'employee_no'       => $this->employee_no,
-                'ir_attachment'     => $newAttachmentPath,
+                'ir_attachment'     => $attachmentPath,
                 'ir_status'         => 'DRAFT',
                 'status_id'         => 10,
             ];
@@ -598,6 +604,8 @@ class ResultRespondForm extends Component
 
                 $oldValue = $oldData[$field] ?? null;
 
+
+                // Carbon → string
                 if ($oldValue instanceof \Carbon\Carbon) {
                     $oldValue = $oldValue->format('Y-m-d H:i:s');
                 }
@@ -606,6 +614,8 @@ class ResultRespondForm extends Component
                     $newValue = $newValue->format('Y-m-d H:i:s');
                 }
 
+
+                // Compare
                 if ((string) $oldValue !== (string) $newValue) {
 
                     $changedOldValue[$field] = $oldValue;
@@ -614,19 +624,25 @@ class ResultRespondForm extends Component
             }
 
             if (!empty($changedNewValue)) {
+
                 DB::table('audit_logs')->insert([
                     'user_reported_by' => $this->employeeName,
-                    'user_reported' => $this->assigned_to,
+                    'user_reported'    => $this->assigned_to,
+
                     'action' => 'RESULT RESPONSE DRAFT',
+
                     'old_value' => json_encode(
                         $changedOldValue,
                         JSON_UNESCAPED_UNICODE
                     ),
+
                     'new_value' => json_encode(
                         $changedNewValue,
                         JSON_UNESCAPED_UNICODE
                     ),
+
                     'status_changed_by' => $this->assigned_to,
+
                     'date'       => now(),
                     'created_at' => now(),
                     'updated_at' => now(),
@@ -634,11 +650,21 @@ class ResultRespondForm extends Component
             }
         });
 
-        $this->dispatch('toast', type: 'success', message: 'Result Successfully Saved as Draft.');
-        $this->dispatch('modal-close', name: 'respond-result');
+        $this->dispatch(
+            'toast',
+            type: 'success',
+            message: 'Result Successfully Saved as Draft.'
+        );
+
+        $this->dispatch(
+            'modal-close',
+            name: 'respond-result'
+        );
+
         $this->dispatch('refreshData');
         $this->dispatch('refreshResultCount');
     }
+
 
     public function render()
     {

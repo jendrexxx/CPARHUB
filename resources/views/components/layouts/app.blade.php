@@ -6,5 +6,5 @@
         {{ $slot }}
     </flux:main>
 </x-layouts.app.sidebar>
-    <!-- notification -->
-    <livewire:notification.message />
+<!-- notification -->
+<livewire:notification.message/>

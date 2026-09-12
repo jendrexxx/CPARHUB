@@ -360,10 +360,6 @@
 
         </div>
 
-
-        {{-- ====================================================== --}}
-        {{-- FOOTER --}}
-        {{-- ====================================================== --}}
         <div class="flex flex-col-reverse sm:flex-row sm:justify-end gap-3 border-t border-zinc-200 dark:border-zinc-700 pt-5">
 
             <flux:button

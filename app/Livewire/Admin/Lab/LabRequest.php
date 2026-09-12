@@ -291,6 +291,7 @@ class LabRequest extends Component
 
         $this->dispatch('refreshLABRecords');
         $this->dispatch('refreshLABCount');
+        $this->dispatch('refreshNotificationCount');
     }
 
     public function backToHR()

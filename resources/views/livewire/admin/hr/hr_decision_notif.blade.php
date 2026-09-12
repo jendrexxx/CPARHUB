@@ -69,7 +69,7 @@
                             </th>
 
                             <th class="px-4 py-3 text-center font-semibold">
-                                Disciplinary History
+                                Priority level
                             </th>
 
                             <th class="px-4 py-3 text-center font-semibold">
@@ -159,34 +159,11 @@
 
                             </td>
 
-
-                            {{-- Disciplinary History --}}
+                            {{-- Priority level --}}
                             <td class="px-4 py-4 text-center">
-                                @if ($record->offense_count == 0)
-                                <flux:badge
-                                    color="green"
-                                    icon="check-circle">
-                                    No Previous Offense
-                                </flux:badge>
-                                @elseif ($record->offense_count == 1)
-                                <flux:badge
-                                    color="yellow"
-                                    icon="exclamation-triangle">
-                                    1 Previous
-                                </flux:badge>
-                                @elseif ($record->offense_count == 2)
-                                <flux:badge
-                                    color="orange"
-                                    icon="exclamation-triangle">
-                                    2 Previous
-                                </flux:badge>
-                                @else
-                                <flux:badge
-                                    color="red"
-                                    icon="exclamation-triangle">
-                                    {{ $record->offense_count }} Previous
-                                </flux:badge>
-                                @endif
+                                <span class="text-zinc-600 dark:text-zinc-400">
+                                    {{ $record->department_name ?? 'N/A' }}
+                                </span>
                             </td>
 
                             {{-- Documents --}}

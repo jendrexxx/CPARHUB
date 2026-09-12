@@ -26,15 +26,43 @@ class HrMemoNotif extends Component
 
     public function loadMemoRecords()
     {
-        // =========================================================
-        // CPAR RECORDS
-        // =========================================================
         $cpar = DB::table('cpar_request_forms as a')
-            ->join('cpar_assignments as b', 'a.id', '=', 'b.cpar_id')
-            ->join('cpar_investigations as c', 'b.id', '=', 'c.assigned_id')
-            ->join('departments as g', 'a.department_id', '=', 'g.id')
-            ->join('cpar_statuses as h', 'b.status_id', '=', 'h.id')
-            ->join('employees as i', 'b.assigned_to', '=', 'i.id')
+            ->join(
+                'cpar_assignments as b',
+                'a.id',
+                '=',
+                'b.cpar_id'
+            )
+            ->join(
+                'cpar_investigations as c',
+                'b.id',
+                '=',
+                'c.assigned_id'
+            )
+            ->join(
+                'departments as g',
+                'a.department_id',
+                '=',
+                'g.id'
+            )
+            ->join(
+                'cpar_statuses as h',
+                'b.status_id',
+                '=',
+                'h.id'
+            )
+            ->join(
+                'employees as i',
+                'b.assigned_to',
+                '=',
+                'i.id'
+            )
+            ->join(
+                'priority_levels as k',
+                'a.priority_level',
+                '=',
+                'k.id'
+            )
             ->leftJoin(
                 'cpar_ir_requests as j',
                 'b.id',
@@ -48,24 +76,23 @@ class HrMemoNotif extends Component
                 'd.assignment_id'
             )
             ->select(
+                // Record
                 'a.id as record_id',
                 'a.cpar_no as record_no',
                 'a.reported_by',
                 'a.date_open as record_date',
-
                 DB::raw("'CPAR' as record_type"),
 
+                // Assignment
                 'b.id as assignment_id',
                 'b.assigned_to',
 
                 // Employee
                 'i.employee_no',
-
                 DB::raw("
                 CONCAT(i.first_name, ' ', i.last_name)
                 AS employee_name
             "),
-
                 // Investigation
                 'c.identified_cause',
                 'c.provided_solution',
@@ -82,27 +109,13 @@ class HrMemoNotif extends Component
                 'g.department_name',
                 'h.status_name',
 
-                // Previous offense count
-                DB::raw("
-                (
-                    SELECT COUNT(*)
-                    FROM cpar_employee_disciplinary_records r
-                    INNER JOIN cpar_assignments ca
-                        ON ca.id = r.assignment_id
-                    WHERE ca.assigned_to = b.assigned_to
-                      AND ca.record_type = 5
-                      AND r.status = 'FINAL'
-                ) AS offense_count
-            ")
+                // Priority
+                'k.priority_name'
             )
             ->where('b.status_id', 40)
             ->where('b.record_type', 5)
             ->where('i.branch_id', $this->branch_id);
 
-
-        // =========================================================
-        // RESULT RECORDS
-        // =========================================================
         $result = DB::table('result_error_forms as a')
             ->join(
                 'cpar_assignments as b',
@@ -141,19 +154,19 @@ class HrMemoNotif extends Component
                 'd.assignment_id'
             )
             ->select(
+                // Record
                 'a.id as record_id',
                 'a.result_no as record_no',
                 'a.reported_by',
                 'a.date_reported as record_date',
-
                 DB::raw("'RESULT' as record_type"),
 
+                // Assignment
                 'b.id as assignment_id',
                 'b.assigned_to',
 
                 // Employee
                 'i.employee_no',
-
                 DB::raw("
                 CONCAT(i.first_name, ' ', i.last_name)
                 AS employee_name
@@ -175,32 +188,18 @@ class HrMemoNotif extends Component
                 'g.department_name',
                 'h.status_name',
 
-                // Previous offense count
-                DB::raw("
-                (
-                    SELECT COUNT(*)
-                    FROM cpar_employee_disciplinary_records r
-                    INNER JOIN cpar_assignments ca
-                        ON ca.id = r.assignment_id
-                    WHERE ca.assigned_to = b.assigned_to
-                      AND ca.record_type = 10
-                      AND r.status = 'FINAL'
-                ) AS offense_count
-            ")
+                // IMPORTANT:
+                // Must match CPAR's k.priority_name column
+                DB::raw("NULL as priority_name")
             )
             ->where('b.status_id', 40)
             ->where('b.record_type', 10)
             ->where('i.branch_id', $this->branch_id);
 
-
-        // =========================================================
-        // SEARCH
-        // =========================================================
         if (!empty($this->search)) {
 
             $search = '%' . $this->search . '%';
 
-            // CPAR search
             $cpar->where(function ($q) use ($search) {
 
                 $q->where('a.cpar_no', 'like', $search)
@@ -213,8 +212,6 @@ class HrMemoNotif extends Component
                     ->orWhere('j.ir_id', 'like', $search);
             });
 
-
-            // RESULT search
             $result->where(function ($q) use ($search) {
 
                 $q->where('a.result_no', 'like', $search)
@@ -227,14 +224,13 @@ class HrMemoNotif extends Component
                     ->orWhere('j.ir_id', 'like', $search);
             });
         }
-        // =========================================================
-        // COMBINE CPAR + RESULT
-        // =========================================================
+
         $this->hrMemoList = $cpar
             ->unionAll($result)
             ->orderByDesc('record_date')
             ->get();
     }
+
 
     public function updatedBranchId($value = '')
     {

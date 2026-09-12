@@ -335,15 +335,6 @@
                         readonly
                         class="opacity-60 cursor-not-allowed bg-zinc-100 dark:bg-zinc-800" />
 
-
-                    {{-- ACTION TAKEN --}}
-                    <flux:input
-                        label="Action Taken By"
-                        wire:model="action_taken_by"
-                        readonly
-                        class="opacity-60 cursor-not-allowed bg-zinc-100 dark:bg-zinc-800" />
-
-
                     {{-- COMPLETION DETAILS --}}
                     <div class="border-t border-zinc-200 dark:border-zinc-700 pt-5">
 
@@ -355,8 +346,12 @@
                             Review the completion information before issuing the memo.
                         </flux:text>
 
-
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+                            <flux:input
+                                label="Action Taken By"
+                                wire:model="action_taken_by"
+                                readonly
+                                class="opacity-60 cursor-not-allowed bg-zinc-100 dark:bg-zinc-800" />
 
                             <flux:input
                                 label="Date Completed"
@@ -401,23 +396,17 @@
 
                     </div>
 
-
                     {{-- DEPT HEAD REMARKS --}}
                     <flux:textarea
                         label="Dept Head Remarks"
-                        wire:model="head_remarks"
+                        wire:model="dept_head_remarks"
                         rows="4"
                         readonly
                         class="opacity-60 cursor-not-allowed bg-zinc-100 dark:bg-zinc-800" />
-
                 </div>
 
             </div>
 
-
-            {{-- ===================================================== --}}
-            {{-- SUPPORTING DOCUMENTS --}}
-            {{-- ===================================================== --}}
             <flux:separator />
 
             <div class="space-y-4">
@@ -453,7 +442,7 @@
                             </div>
 
 
-                            @if ($current_nte_attachment)
+                            @if ($response_attachment)
 
                             <div
                                 class="flex items-center justify-between rounded-lg
@@ -488,7 +477,7 @@
                                     size="sm"
                                     variant="ghost"
                                     icon="eye"
-                                    href="{{ Storage::url($current_nte_attachment) }}"
+                                    href="{{ Storage::url($response_attachment) }}"
                                     target="_blank">
 
                                     View PDF
@@ -524,7 +513,7 @@
                             </div>
 
 
-                            @if ($current_ir_attachment)
+                            @if ($existing_ir_attachment)
 
                             <div
                                 class="flex items-center justify-between rounded-lg
@@ -559,7 +548,7 @@
                                     size="sm"
                                     variant="ghost"
                                     icon="eye"
-                                    href="{{ Storage::url($current_ir_attachment) }}"
+                                    href="{{ Storage::url($existing_ir_attachment) }}"
                                     target="_blank">
 
                                     View PDF

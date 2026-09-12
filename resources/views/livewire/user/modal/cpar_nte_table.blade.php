@@ -163,27 +163,30 @@
 
                         {{-- ACTION --}}
                         <td class="px-4 py-3 text-center">
-
                             <flux:dropdown align="end">
-
                                 <flux:button
                                     size="sm"
                                     variant="ghost"
                                     icon="ellipsis-vertical"
                                     aria-label="Actions" />
-
                                 <flux:menu>
-
+                                    {{-- CPAR --}}
+                                    @if ($nte->record_type === 'CPAR')
                                     <flux:menu.item
                                         icon="eye"
-                                        wire:click="viewNTE({{ $nte->id }})">
+                                        wire:click="viewNTE({{ $nte->assignment_id }})">
                                         View NTE
                                     </flux:menu.item>
-
+                                    {{-- RESULT ERROR --}}
+                                    @elseif ($nte->record_type === 'RESULT')
+                                    <flux:menu.item
+                                        icon="document-text"
+                                        wire:click="viewResultNTE({{ $nte->assignment_id }})">
+                                        Respond to Result Error
+                                    </flux:menu.item>
+                                    @endif
                                 </flux:menu>
-
                             </flux:dropdown>
-
                         </td>
 
                     </tr>

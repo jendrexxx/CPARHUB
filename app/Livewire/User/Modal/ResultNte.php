@@ -34,7 +34,7 @@ class ResultNte extends Component
     public $nte_attachment = '', $response_attachment = '', $nte_no = '';
 
     protected $listeners = [
-        'view-NTE' => 'viewNTE',
+        'View-Result-NTE' => 'viewNTE',
         'refreshCparNTEData' => 'loadNte'
     ];
 
@@ -49,6 +49,7 @@ class ResultNte extends Component
         $this->data = result_error_data_informations::all();
         $this->quality = result_error_quality_accuracies::all();
         $this->technical = result_error_technical_equipments::all();
+        
     }
 
     public function viewNte($id)
@@ -139,13 +140,11 @@ class ResultNte extends Component
         $this->existing_ir_attachment = $nte->ir_attachment ?? '';
         // NTE Response
         $this->current_nte_attachment = $cpar->response_attachment ?? '';
-
         $nte_request = DB::table('cpar_notice_to_explains')->where('assignment_id', $this->id)->first();
         $this->hasNTERequest = !is_null($nte_request);
         $this->id = $nte->id;
         $this->action_taken_by = $nte->action_taken_by;
         $this->employee_assigned_to = $nte->employee_assigned_to;
-        $this->nte_id   = $nte->result_id;
         $this->result_no = $nte->result_no;
         $this->date_reported = Carbon::parse($nte->date_reported)->format('m-d-Y');
         $this->reported_by = $nte->reported_by;
@@ -298,6 +297,7 @@ class ResultNte extends Component
         $this->dispatch('modal-close', name: 'NoticeToExplainModal');
         $this->dispatch('refreshCparNTEData');
         $this->dispatch('refreshNTECount');
+        $this->dispatch('refreshNotificationCount');
         $this->dispatch('toast', type: 'success', message: 'NTE response submitted successfully.');
     }
 

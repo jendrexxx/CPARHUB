@@ -189,8 +189,6 @@
     <livewire:user.modal.cpar_nte_explanation />
     <livewire:user.modal.cpar_ir_table />
     <livewire:user.modal.cpar_ir_explanation />
-
-
     <!-- result -->
     <livewire:user.modal.result_form />
     <livewire:user.modal.result_cancel />

@@ -38,14 +38,12 @@
                             <a
                                 href="{{ route('user_dashboard') }}"
                                 wire:navigate
-                                class="flex items-center"
-                            >
+                                class="flex items-center">
 
                                 <img
                                     src="{{ asset('logo/premiere_header_logo.jpeg') }}"
                                     alt="Premiere Medical Cardiovascular Laboratory"
-                                    class="h-10 w-auto object-contain"
-                                >
+                                    class="h-10 w-auto object-contain">
 
                             </a>
 
@@ -64,24 +62,23 @@
                                 {{-- ================================================= --}}
                                 @if(auth()->user()->can('View User Dashboard'))
 
-                                    <a
-                                        href="{{ route('user_dashboard') }}"
-                                        wire:navigate
-                                        class="rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200
+                                <a
+                                    href="{{ route('user_dashboard') }}"
+                                    wire:navigate
+                                    class="rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200
                                             {{ request()->routeIs('user_dashboard')
                                                 ? 'bg-gray-900 text-white'
-                                                : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900' }}"
-                                    >
+                                                : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900' }}">
 
-                                        <span class="inline-flex items-center gap-2">
+                                    <span class="inline-flex items-center gap-2">
 
-                                            <flux:icon.home class="size-4" />
+                                        <flux:icon.home class="size-4" />
 
-                                            User Dashboard
+                                        User Dashboard
 
-                                        </span>
+                                    </span>
 
-                                    </a>
+                                </a>
 
                                 @endif
 
@@ -91,24 +88,23 @@
                                 {{-- ================================================= --}}
                                 @if(auth()->user()->can('View Department Dashboard'))
 
-                                    <a
-                                        href="{{ route('dept_head_dashboard') }}"
-                                        wire:navigate
-                                        class="rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200
+                                <a
+                                    href="{{ route('dept_head_dashboard') }}"
+                                    wire:navigate
+                                    class="rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200
                                             {{ request()->routeIs('dept_head_dashboard')
                                                 ? 'bg-gray-900 text-white'
-                                                : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900' }}"
-                                    >
+                                                : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900' }}">
 
-                                        <span class="inline-flex items-center gap-2">
+                                    <span class="inline-flex items-center gap-2">
 
-                                            <flux:icon.home class="size-4" />
+                                        <flux:icon.home class="size-4" />
 
-                                            Dept Head Dashboard
+                                        Dept Head Dashboard
 
-                                        </span>
+                                    </span>
 
-                                    </a>
+                                </a>
 
                                 @endif
 
@@ -118,52 +114,42 @@
                                 {{-- ================================================= --}}
                                 @if(auth()->user()->can('View HR Dashboard'))
 
-                                    <a
-                                        href="{{ route('hr_dashboard') }}"
-                                        wire:navigate
-                                        class="rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200
+                                <a
+                                    href="{{ route('hr_dashboard') }}"
+                                    wire:navigate
+                                    class="rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200
                                             {{ request()->routeIs('hr_dashboard')
                                                 ? 'bg-gray-900 text-white'
-                                                : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900' }}"
-                                    >
+                                                : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900' }}">
 
-                                        <span class="inline-flex items-center gap-2">
+                                    <span class="inline-flex items-center gap-2">
 
-                                            <flux:icon.home class="size-4" />
+                                        <flux:icon.home class="size-4" />
 
-                                            HR Dashboard
+                                        HR Dashboard
 
-                                        </span>
+                                    </span>
 
-                                    </a>
+                                </a>
 
                                 @endif
 
-
-                                {{-- ================================================= --}}
-                                {{-- LAB SUPERVISOR --}}
-                                {{-- ================================================= --}}
-                                @if(auth()->user()->can('View Lab Supervisor'))
-
-                                    <a
-                                        href="{{ route('lab_supervisor') }}"
-                                        wire:navigate
-                                        class="rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200
-                                            {{ request()->routeIs('lab_supervisor')
-                                                ? 'bg-gray-900 text-white'
-                                                : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900' }}"
-                                    >
-
-                                        <span class="inline-flex items-center gap-2">
-
-                                            <flux:icon.document class="size-4" />
-
-                                            Lab Supervisor
-
-                                        </span>
-
-                                    </a>
-
+                                @if(
+                                auth()->user()->can('View Lab Supervisor') ||
+                                auth()->user()->can('View PGL Supervisor')
+                                )
+                                <a
+                                    href="{{ route('lab_supervisor') }}"
+                                    wire:navigate
+                                    class="rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200
+                                {{ request()->routeIs('lab_supervisor')
+                                    ? 'bg-gray-900 text-white'
+                                    : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900' }}">
+                                    <span class="inline-flex items-center gap-2">
+                                        <flux:icon.document class="size-4" />
+                                        Lab Supervisor
+                                    </span>
+                                </a>
                                 @endif
 
 
@@ -172,135 +158,91 @@
                                 {{-- ================================================= --}}
                                 @if(auth()->user()->can('View Admin Dashboard'))
 
-                                    <a
-                                        href="{{ route('admin_dashboard') }}"
-                                        wire:navigate
-                                        class="rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200
+                                <a
+                                    href="{{ route('admin_dashboard') }}"
+                                    wire:navigate
+                                    class="rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200
                                             {{ request()->routeIs('admin_dashboard')
                                                 ? 'bg-gray-900 text-white'
-                                                : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900' }}"
-                                    >
+                                                : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900' }}">
 
-                                        <span class="inline-flex items-center gap-2">
+                                    <span class="inline-flex items-center gap-2">
 
-                                            <flux:icon.home class="size-4" />
+                                        <flux:icon.home class="size-4" />
 
-                                            Admin Dashboard
+                                        Admin Dashboard
 
-                                        </span>
+                                    </span>
 
-                                    </a>
+                                </a>
 
                                 @endif
 
+                                @if(auth()->user()->can('View CPAR Master File'))
+                                <a
+                                    href="{{ route('cpar-master-file') }}"
+                                    wire:navigate
+                                    class="rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200
+                                    {{ request()->routeIs('cpar-master-file')
+                                        ? 'bg-gray-900 text-white'
+                                        : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900' }}">
 
-                                {{-- ================================================= --}}
+                                    <span class="inline-flex items-center gap-2">
+
+                                        <flux:icon.document-text class="size-4" />
+
+                                        Master File
+
+                                    </span>
+
+                                </a>
+                                @endif
+
                                 {{-- REPORTS --}}
-                                {{-- ================================================= --}}
-                                @if(
-                                    auth()->user()->can('View CPAR Reports') ||
-                                    auth()->user()->can('View CPAR Master File')
-                                )
+                                @if(auth()->user()->can('View CPAR Reports'))
+                                @if(auth()->user()->can('View CPAR Reports'))
 
-                                    <div class="relative group">
+                                <a
+                                    href="{{ route('cpar-report') }}"
+                                    wire:navigate
+                                    class="rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200
+                                    {{ request()->routeIs('cpar-report')
+                                        ? 'bg-gray-900 text-white'
+                                        : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900' }}">
 
-                                        <button
-                                            type="button"
-                                            class="inline-flex items-center gap-2 rounded-lg px-3 py-2
-                                                text-sm font-medium transition-all duration-200
-                                                {{ request()->routeIs('cpar-report') ||
-                                                   request()->routeIs('cpar-master-file')
-                                                    ? 'bg-gray-900 text-white'
-                                                    : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900' }}"
-                                        >
+                                    <span class="inline-flex items-center gap-2">
 
-                                            <flux:icon.clipboard-document-list class="size-4" />
+                                        <flux:icon.chart-bar class="size-4" />
 
-                                            Reports
+                                        Reports
 
-                                            <flux:icon.chevron-down class="size-4" />
+                                    </span>
 
-                                        </button>
-
-
-                                        {{-- REPORTS DROPDOWN --}}
-                                        <div
-                                            class="invisible absolute left-0 top-full z-50 mt-2 w-56
-                                                rounded-xl border border-gray-200
-                                                bg-white py-1 shadow-xl
-                                                opacity-0 transition-all duration-150
-                                                group-hover:visible group-hover:opacity-100"
-                                        >
-
-                                            {{-- CPAR MASTER FILE --}}
-                                            @if(auth()->user()->can('View CPAR Master File'))
-
-                                                <a
-                                                    href="{{ route('cpar-master-file') }}"
-                                                    wire:navigate
-                                                    class="flex items-center gap-2 px-4 py-2.5
-                                                        text-sm text-gray-700
-                                                        hover:bg-gray-100 hover:text-gray-900"
-                                                >
-
-                                                    <flux:icon.document-text class="size-4" />
-
-                                                    CPAR Master File
-
-                                                </a>
-
-                                            @endif
-
-
-                                            {{-- CPAR REPORT --}}
-                                            @if(auth()->user()->can('View CPAR Reports'))
-
-                                                <a
-                                                    href="{{ route('cpar-report') }}"
-                                                    wire:navigate
-                                                    class="flex items-center gap-2 px-4 py-2.5
-                                                        text-sm text-gray-700
-                                                        hover:bg-gray-100 hover:text-gray-900"
-                                                >
-
-                                                    <flux:icon.chart-bar class="size-4" />
-
-                                                    CPAR Reports
-
-                                                </a>
-
-                                            @endif
-
-                                        </div>
-
-                                    </div>
+                                </a>
 
                                 @endif
 
+                                @endif
 
-                                {{-- ================================================= --}}
-                                {{-- EMPLOYEES --}}
-                                {{-- ================================================= --}}
                                 @if(auth()->user()->can('View Employees'))
 
-                                    <a
-                                        href="{{ route('employees') }}"
-                                        wire:navigate
-                                        class="rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200
+                                <a
+                                    href="{{ route('employees') }}"
+                                    wire:navigate
+                                    class="rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200
                                             {{ request()->routeIs('employees')
                                                 ? 'bg-gray-900 text-white'
-                                                : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900' }}"
-                                    >
+                                                : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900' }}">
 
-                                        <span class="inline-flex items-center gap-2">
+                                    <span class="inline-flex items-center gap-2">
 
-                                            <flux:icon.users class="size-4" />
+                                        <flux:icon.users class="size-4" />
 
-                                            Employees
+                                        Employees
 
-                                        </span>
+                                    </span>
 
-                                    </a>
+                                </a>
 
                                 @endif
 
@@ -310,24 +252,23 @@
                                 {{-- ================================================= --}}
                                 @if(auth()->user()->can('View System Setup'))
 
-                                    <a
-                                        href="{{ route('system_setup') }}"
-                                        wire:navigate
-                                        class="rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200
+                                <a
+                                    href="{{ route('system_setup') }}"
+                                    wire:navigate
+                                    class="rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200
                                             {{ request()->routeIs('system_setup')
                                                 ? 'bg-gray-900 text-white'
-                                                : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900' }}"
-                                    >
+                                                : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900' }}">
 
-                                        <span class="inline-flex items-center gap-2">
+                                    <span class="inline-flex items-center gap-2">
 
-                                            <flux:icon.cog-6-tooth class="size-4" />
+                                        <flux:icon.cog-6-tooth class="size-4" />
 
-                                            System Setup
+                                        System Setup
 
-                                        </span>
+                                    </span>
 
-                                    </a>
+                                </a>
 
                                 @endif
 
@@ -354,8 +295,7 @@
                                     text-gray-700
                                     hover:bg-gray-100
                                     hover:text-gray-900
-                                    transition"
-                            >
+                                    transition">
 
                                 {{-- INITIALS --}}
                                 <span
@@ -363,8 +303,7 @@
                                         rounded-full
                                         bg-red-800
                                         text-sm font-semibold
-                                        text-white"
-                                >
+                                        text-white">
 
                                     {{ auth()->user()->initials() }}
 
@@ -398,8 +337,7 @@
                                     opacity-0
                                     transition-all duration-150
                                     group-hover:visible
-                                    group-hover:opacity-100"
-                            >
+                                    group-hover:opacity-100">
 
                                 {{-- USER INFORMATION --}}
                                 <div class="px-4 py-4">
@@ -412,8 +350,7 @@
                                                 rounded-full
                                                 bg-red-800
                                                 text-sm font-semibold
-                                                text-white"
-                                        >
+                                                text-white">
 
                                             {{ auth()->user()->initials() }}
 
@@ -451,8 +388,7 @@
                                     class="flex items-center gap-2
                                         px-4 py-3
                                         text-sm text-gray-700
-                                        hover:bg-gray-100"
-                                >
+                                        hover:bg-gray-100">
 
                                     <flux:icon.cog class="size-4" />
 
@@ -467,8 +403,7 @@
                                 {{-- LOGOUT --}}
                                 <form
                                     method="POST"
-                                    action="{{ route('logout') }}"
-                                >
+                                    action="{{ route('logout') }}">
 
                                     @csrf
 
@@ -479,8 +414,7 @@
                                             text-left text-sm
                                             text-gray-700
                                             hover:bg-gray-100
-                                            hover:text-red-600"
-                                    >
+                                            hover:text-red-600">
 
                                         <flux:icon.arrow-right-start-on-rectangle class="size-4" />
 
@@ -509,8 +443,7 @@
                             class="flex size-10 items-center justify-center
                                 rounded-full
                                 text-gray-600
-                                hover:bg-gray-100"
-                        >
+                                hover:bg-gray-100">
 
                             <flux:icon.bars-3 class="size-5" />
 
@@ -531,26 +464,24 @@
                 x-on:toggle-mobile-menu.window="open = !open"
                 x-show="open"
                 x-cloak
-                class="border-t border-gray-200 bg-white md:hidden"
-            >
+                class="border-t border-gray-200 bg-white md:hidden">
 
                 <div class="space-y-1 px-4 py-3">
 
                     {{-- USER DASHBOARD --}}
                     @if(auth()->user()->can('View User Dashboard'))
 
-                        <a
-                            href="{{ route('user_dashboard') }}"
-                            wire:navigate
-                            class="block rounded-lg px-3 py-2 text-sm font-medium
+                    <a
+                        href="{{ route('user_dashboard') }}"
+                        wire:navigate
+                        class="block rounded-lg px-3 py-2 text-sm font-medium
                                 {{ request()->routeIs('user_dashboard')
                                     ? 'bg-gray-900 text-white'
-                                    : 'text-gray-700 hover:bg-gray-100' }}"
-                        >
+                                    : 'text-gray-700 hover:bg-gray-100' }}">
 
-                            User Dashboard
+                        User Dashboard
 
-                        </a>
+                    </a>
 
                     @endif
 
@@ -558,18 +489,17 @@
                     {{-- DEPARTMENT HEAD --}}
                     @if(auth()->user()->can('View Department Dashboard'))
 
-                        <a
-                            href="{{ route('dept_head_dashboard') }}"
-                            wire:navigate
-                            class="block rounded-lg px-3 py-2 text-sm font-medium
+                    <a
+                        href="{{ route('dept_head_dashboard') }}"
+                        wire:navigate
+                        class="block rounded-lg px-3 py-2 text-sm font-medium
                                 {{ request()->routeIs('dept_head_dashboard')
                                     ? 'bg-gray-900 text-white'
-                                    : 'text-gray-700 hover:bg-gray-100' }}"
-                        >
+                                    : 'text-gray-700 hover:bg-gray-100' }}">
 
-                            Dept Head Dashboard
+                        Dept Head Dashboard
 
-                        </a>
+                    </a>
 
                     @endif
 
@@ -577,18 +507,17 @@
                     {{-- HR DASHBOARD --}}
                     @if(auth()->user()->can('View HR Dashboard'))
 
-                        <a
-                            href="{{ route('hr_dashboard') }}"
-                            wire:navigate
-                            class="block rounded-lg px-3 py-2 text-sm font-medium
+                    <a
+                        href="{{ route('hr_dashboard') }}"
+                        wire:navigate
+                        class="block rounded-lg px-3 py-2 text-sm font-medium
                                 {{ request()->routeIs('hr_dashboard')
                                     ? 'bg-gray-900 text-white'
-                                    : 'text-gray-700 hover:bg-gray-100' }}"
-                        >
+                                    : 'text-gray-700 hover:bg-gray-100' }}">
 
-                            HR Dashboard
+                        HR Dashboard
 
-                        </a>
+                    </a>
 
                     @endif
 
@@ -596,18 +525,17 @@
                     {{-- LAB SUPERVISOR --}}
                     @if(auth()->user()->can('View Lab Supervisor'))
 
-                        <a
-                            href="{{ route('lab_supervisor') }}"
-                            wire:navigate
-                            class="block rounded-lg px-3 py-2 text-sm font-medium
+                    <a
+                        href="{{ route('lab_supervisor') }}"
+                        wire:navigate
+                        class="block rounded-lg px-3 py-2 text-sm font-medium
                                 {{ request()->routeIs('lab_supervisor')
                                     ? 'bg-gray-900 text-white'
-                                    : 'text-gray-700 hover:bg-gray-100' }}"
-                        >
+                                    : 'text-gray-700 hover:bg-gray-100' }}">
 
-                            Lab Supervisor
+                        Lab Supervisor
 
-                        </a>
+                    </a>
 
                     @endif
 
@@ -615,73 +543,70 @@
                     {{-- ADMIN DASHBOARD --}}
                     @if(auth()->user()->can('View Admin Dashboard'))
 
-                        <a
-                            href="{{ route('admin_dashboard') }}"
-                            wire:navigate
-                            class="block rounded-lg px-3 py-2 text-sm font-medium
+                    <a
+                        href="{{ route('admin_dashboard') }}"
+                        wire:navigate
+                        class="block rounded-lg px-3 py-2 text-sm font-medium
                                 {{ request()->routeIs('admin_dashboard')
                                     ? 'bg-gray-900 text-white'
-                                    : 'text-gray-700 hover:bg-gray-100' }}"
-                        >
+                                    : 'text-gray-700 hover:bg-gray-100' }}">
 
-                            Admin Dashboard
+                        Admin Dashboard
 
-                        </a>
+                    </a>
 
                     @endif
 
 
                     {{-- REPORTS --}}
                     @if(
-                        auth()->user()->can('View CPAR Reports') ||
-                        auth()->user()->can('View CPAR Master File')
+                    auth()->user()->can('View CPAR Reports') ||
+                    auth()->user()->can('View CPAR Master File')
                     )
 
-                        <div class="pt-2">
+                    <div class="pt-2">
 
-                            <div class="px-3 py-2 text-xs font-semibold uppercase tracking-wider text-gray-500">
+                        <div class="px-3 py-2 text-xs font-semibold uppercase tracking-wider text-gray-500">
 
-                                Reports
-
-                            </div>
-
-
-                            @if(auth()->user()->can('View CPAR Master File'))
-
-                                <a
-                                    href="{{ route('cpar-master-file') }}"
-                                    wire:navigate
-                                    class="block rounded-lg px-3 py-2 text-sm font-medium
-                                        {{ request()->routeIs('cpar-master-file')
-                                            ? 'bg-gray-900 text-white'
-                                            : 'text-gray-700 hover:bg-gray-100' }}"
-                                >
-
-                                    CPAR Master File
-
-                                </a>
-
-                            @endif
-
-
-                            @if(auth()->user()->can('View CPAR Reports'))
-
-                                <a
-                                    href="{{ route('cpar-report') }}"
-                                    wire:navigate
-                                    class="block rounded-lg px-3 py-2 text-sm font-medium
-                                        {{ request()->routeIs('cpar-report')
-                                            ? 'bg-gray-900 text-white'
-                                            : 'text-gray-700 hover:bg-gray-100' }}"
-                                >
-
-                                    CPAR Reports
-
-                                </a>
-
-                            @endif
+                            Reports
 
                         </div>
+
+
+                        @if(auth()->user()->can('View CPAR Master File'))
+
+                        <a
+                            href="{{ route('cpar-master-file') }}"
+                            wire:navigate
+                            class="block rounded-lg px-3 py-2 text-sm font-medium
+                                        {{ request()->routeIs('cpar-master-file')
+                                            ? 'bg-gray-900 text-white'
+                                            : 'text-gray-700 hover:bg-gray-100' }}">
+
+                            CPAR Master File
+
+                        </a>
+
+                        @endif
+
+
+                        @if(auth()->user()->can('View CPAR Reports'))
+
+                        <a
+                            href="{{ route('cpar-report') }}"
+                            wire:navigate
+                            class="block rounded-lg px-3 py-2 text-sm font-medium
+                                        {{ request()->routeIs('cpar-report')
+                                            ? 'bg-gray-900 text-white'
+                                            : 'text-gray-700 hover:bg-gray-100' }}">
+
+                            CPAR Reports
+
+                        </a>
+
+                        @endif
+
+                    </div>
 
                     @endif
 
@@ -689,18 +614,17 @@
                     {{-- EMPLOYEES --}}
                     @if(auth()->user()->can('View Employees'))
 
-                        <a
-                            href="{{ route('employees') }}"
-                            wire:navigate
-                            class="block rounded-lg px-3 py-2 text-sm font-medium
+                    <a
+                        href="{{ route('employees') }}"
+                        wire:navigate
+                        class="block rounded-lg px-3 py-2 text-sm font-medium
                                 {{ request()->routeIs('employees')
                                     ? 'bg-gray-900 text-white'
-                                    : 'text-gray-700 hover:bg-gray-100' }}"
-                        >
+                                    : 'text-gray-700 hover:bg-gray-100' }}">
 
-                            Employees
+                        Employees
 
-                        </a>
+                    </a>
 
                     @endif
 
@@ -708,18 +632,17 @@
                     {{-- SYSTEM SETUP --}}
                     @if(auth()->user()->can('View System Setup'))
 
-                        <a
-                            href="{{ route('system_setup') }}"
-                            wire:navigate
-                            class="block rounded-lg px-3 py-2 text-sm font-medium
+                    <a
+                        href="{{ route('system_setup') }}"
+                        wire:navigate
+                        class="block rounded-lg px-3 py-2 text-sm font-medium
                                 {{ request()->routeIs('system_setup')
                                     ? 'bg-gray-900 text-white'
-                                    : 'text-gray-700 hover:bg-gray-100' }}"
-                        >
+                                    : 'text-gray-700 hover:bg-gray-100' }}">
 
-                            System Setup
+                        System Setup
 
-                        </a>
+                    </a>
 
                     @endif
 
@@ -738,8 +661,7 @@
                                 rounded-full
                                 bg-red-800
                                 text-sm font-semibold
-                                text-white"
-                        >
+                                text-white">
 
                             {{ auth()->user()->initials() }}
 
@@ -772,8 +694,7 @@
                             href="{{ route('settings.profile') }}"
                             wire:navigate
                             class="block rounded-lg px-3 py-2 text-sm font-medium
-                                text-gray-700 hover:bg-gray-100"
-                        >
+                                text-gray-700 hover:bg-gray-100">
 
                             Settings
 
@@ -783,8 +704,7 @@
                         {{-- LOGOUT --}}
                         <form
                             method="POST"
-                            action="{{ route('logout') }}"
-                        >
+                            action="{{ route('logout') }}">
 
                             @csrf
 
@@ -794,8 +714,7 @@
                                     text-left text-sm font-medium
                                     text-gray-700
                                     hover:bg-gray-100
-                                    hover:text-red-600"
-                            >
+                                    hover:text-red-600">
 
                                 {{ __('Log Out') }}
 

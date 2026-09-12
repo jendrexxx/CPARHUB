@@ -247,43 +247,6 @@
             </div>
         </div>
 
-        <div class="border-t pt-6 space-y-5">
-            <div>
-                <flux:heading size="md">
-                    Employee Information
-                </flux:heading>
-
-                <flux:text>
-                    Confirm the employee assigned to this CPAR before sending the Incident Report request.
-                </flux:text>
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-
-                <flux:input
-                    label="Assigned Employee"
-                    wire:model="employee_name"
-                    readonly
-                    class="opacity-60 cursor-not-allowed bg-zinc-100 dark:bg-zinc-800" />
-
-                <flux:input
-                    label="Empoloyee No."
-                    wire:model="employee_no"
-                    readonly
-                    class="opacity-60 cursor-not-allowed bg-zinc-100 dark:bg-zinc-800" />
-
-                <flux:input
-                    label="CPAR No."
-                    wire:model="cpar_no"
-                    readonly
-                    class="opacity-60 cursor-not-allowed bg-zinc-100 dark:bg-zinc-800" />
-
-                <flux:input
-                    label="NTE No."
-                    wire:model="nte_no"
-                    readonly
-                    class="opacity-60 cursor-not-allowed bg-zinc-100 dark:bg-zinc-800" />
-            </div>
-        </div>
         <div class="flex justify-end gap-2">
 
             <flux:modal.close>

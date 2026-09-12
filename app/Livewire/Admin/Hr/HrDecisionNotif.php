@@ -37,6 +37,7 @@ class HrDecisionNotif extends Component
             ->join('departments as g', 'a.department_id', '=', 'g.id')
             ->join('cpar_statuses as h', 'b.status_id', '=', 'h.id')
             ->join('employees as i', 'b.assigned_to', '=', 'i.id')
+            ->join('priority_levels as k', 'a.priority_level', '=', 'k.id')
             ->leftJoin(
                 'cpar_ir_requests as j',
                 'b.id',
@@ -76,23 +77,8 @@ class HrDecisionNotif extends Component
                 // Department / Status
                 'g.department_name',
                 'h.status_name',
-                // Previous offense count
-                DB::raw("
-                    (
-                        CASE
-                            WHEN b.record_type = 10 THEN (
-                                SELECT COUNT(*)
-                                FROM cpar_employee_disciplinary_records r
-                                INNER JOIN cpar_assignments ca
-                                    ON ca.id = r.assignment_id
-                                WHERE ca.assigned_to = b.assigned_to
-                                AND ca.record_type = 5
-                                AND r.status = 'FINAL'
-                            )
-                            ELSE 0
-                        END
-                    ) AS offense_count
-                "))
+                'k.priority_name'
+            )
             ->whereIn('b.status_id', [20, 25, 30])
             ->where('b.record_type', 5)
             ->where('i.branch_id', $this->branch_id);
@@ -102,6 +88,7 @@ class HrDecisionNotif extends Component
             ->join('departments as g', 'a.department_id', '=', 'g.id')
             ->join('cpar_statuses as h', 'b.status_id', '=', 'h.id')
             ->join('employees as i', 'b.assigned_to', '=', 'i.id')
+            ->join('priority_levels as k', 'a.priority_level', '=', 'k.id')
             ->leftJoin(
                 'cpar_ir_requests as j',
                 'b.id',
@@ -115,83 +102,30 @@ class HrDecisionNotif extends Component
                 'd.assignment_id'
             )
             ->select(
-                // 1
                 'a.id as record_id',
-
-                // 2
                 'a.result_no as record_no',
-
-                // 3
                 'a.reported_by',
-
-                // 4
                 'a.date_reported as record_date',
-
-                // 5
                 DB::raw("'RESULT' as record_type"),
-
-                // 6
                 'b.id as assignment_id',
-
-                // 7
                 'b.assigned_to',
-
-                // 8
                 'i.employee_no',
-
-                // 9
                 DB::raw("
-            CONCAT(i.first_name, ' ', i.last_name)
-            as employee_name
-            "),
-
-                // 10
+                CONCAT(i.first_name, ' ', i.last_name)
+                as employee_name
+                "),
                 DB::raw("NULL as identified_cause"),
-
-                // 11
                 DB::raw("NULL as provided_solution"),
-
-                // 12
                 DB::raw("NULL as recommendation"),
-
-                // 13
                 DB::raw("NULL as action_taken_by"),
-
-                // 14
                 DB::raw("NULL as date_completed"),
-
-                // 15
                 DB::raw("NULL as tat"),
-
-                // 16
                 'd.nte_no',
-
-                // 17
                 'j.ir_id',
-
-                // 18
                 'g.department_name',
-
-                // 19
                 'h.status_name',
-
-                // 20
-                DB::raw("
-                    (
-                        CASE
-                            WHEN b.record_type = 10 THEN (
-                                SELECT COUNT(*)
-                                FROM cpar_employee_disciplinary_records r
-                                INNER JOIN cpar_assignments ca
-                                    ON ca.id = r.assignment_id
-                                WHERE ca.assigned_to = b.assigned_to
-                                AND ca.record_type = 10
-                                AND r.status = 'FINAL'
-                            )
-                            ELSE 0
-                        END
-                    ) AS offense_count
-                "))
+                'k.priority_name'
+            )
             ->whereIn('b.status_id', [20, 25, 30])
             ->where('b.record_type', 10)
             ->where('i.branch_id', $this->branch_id);

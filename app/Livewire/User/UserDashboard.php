@@ -54,14 +54,12 @@ class UserDashboard extends Component
             ->where('b.record_type', 5)
             ->where('a.employee_no', $this->employee_no)
             ->count();
-
         $resultCount = DB::table('result_error_forms as a')
             ->join('cpar_assignments as b', 'a.id', '=', 'b.result_id')
             ->where('b.status_id', 1)
             ->where('b.record_type', 10)
             ->where('a.employee_no', $this->employee_no)
             ->count();
-
         $this->request_count = $cparCount + $resultCount;
     }
     // cpar assigned count
@@ -74,8 +72,6 @@ class UserDashboard extends Component
             ->where('b.record_type', 5)
             ->where('b.assigned_to', (int) $this->id)
             ->count(DB::raw('DISTINCT a.id'));
-
-
         // Result Error assigned count
         $resultCount = DB::table('result_error_forms as a')
             ->join('cpar_assignments as b', 'a.id', '=', 'b.result_id')
@@ -89,9 +85,6 @@ class UserDashboard extends Component
     // cpar NTE count
     public function loadNTECount()
     {
-        // =========================
-        // CPAR NTE COUNT
-        // =========================
         $cparCount = DB::table('cpar_assignments as b')
             ->join('cpar_request_forms as a', 'a.id', '=', 'b.cpar_id')
             ->join('cpar_ir_requests as i', 'b.id', '=', 'i.assignment_ir_id')
@@ -101,18 +94,12 @@ class UserDashboard extends Component
             ->where('b.record_type', 5)
             ->count();
 
-        // =========================
-        // RESULT ERROR NTE COUNT
-        // =========================
         $resultCount = DB::table('cpar_assignments as b')
             ->join('result_error_forms as a', 'a.id', '=', 'b.result_id')
             ->where('b.assigned_to', $this->id)
             ->where('b.status_id', 23)
             ->where('b.record_type', 10)
             ->count();
-        // =========================
-        // COMBINED COUNT
-        // =========================
         $this->nte_cpar = $cparCount + $resultCount;
     }
 

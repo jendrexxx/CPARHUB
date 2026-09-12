@@ -131,6 +131,7 @@ class HrMemoModal extends Component
                 'i.recommendation',
                 'i.date_completed',
                 'i.tat',
+                'i.action_taken_by',
                 'i.remarks as dept_head_remarks',
                 // IR
                 'j.id as ir_ids',
@@ -215,6 +216,7 @@ class HrMemoModal extends Component
         $this->attending_physician = $result->attending_physician;
         $this->actual_released_date = $result->actual_released_date;
         $this->source_name = $result->source_name;
+        $this->action_taken_by = $result->action_taken_by;
         $this->quality_information = is_array($result->quality_information)
             ? $result->quality_information
             : json_decode($result->quality_information ?? '[]', true);
@@ -560,6 +562,7 @@ class HrMemoModal extends Component
         $this->dispatch('modal-close', name: 'HRMemoModal');
         $this->dispatch('refreshMemoRecords');
         $this->dispatch('refreshMemoCount');
+        $this->dispatch('refreshNotificationCount');
     }
 
     public function printResultMemo()

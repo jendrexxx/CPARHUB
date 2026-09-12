@@ -247,6 +247,7 @@ class ResultIrModal extends Component
         $this->dispatch('refreshDecisionRecords');
         $this->dispatch('refreshDecisionCount');
         $this->dispatch('refreshPreviousOffense');
+        $this->dispatch('refreshNotificationCount');
         $this->dispatch('toast', type: 'success', message: 'Notice to Explain sent successfully..');
     }
 

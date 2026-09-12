@@ -289,6 +289,7 @@ class HrReassign extends Component
         $this->dispatch('modal-close', name: 'CPARHRModal');
         $this->dispatch('refreshHRData');
         $this->dispatch('refreshHRCount');
+        $this->dispatch('refreshNotificationCount');
     }
 
     private function addReassignedAuditLog(

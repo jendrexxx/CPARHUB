@@ -42,45 +42,41 @@ class DeptHeadDashboard extends Component
         $this->loadAcknowledgeCount();
         if (request()->query('open') === 'notifications') {
             Flux::modal('CPARModal')->show();
+        }else{
+            Flux::modal('CPARModal')->close();
         }
     }
 
     public function loadHeadCount()
     {
-        // Result Error count
         $resultRequestCount = DB::table('result_error_forms as a')
             ->join('cpar_assignments as d', 'a.id', '=', 'd.result_id')
             ->where('d.dept_head_assigned', $this->id)
             ->where('d.record_type', 10)
             ->where('d.status_id', 1)
             ->count();
-        // CPAR count
         $cparRequestCount = DB::table('cpar_request_forms as a')
             ->join('cpar_assignments as b', 'a.id', '=', 'b.cpar_id')
             ->where('b.dept_head_assigned', $this->id)
             ->where('b.record_type', 5)
             ->where('b.status_id', 1)
             ->count();
-        // Total
         $this->concern_count = $resultRequestCount + $cparRequestCount;
     }
 
     public function loadAcknowledgeCount()
     {
-        // CPAR acknowledgment count
         $cparCount = DB::table('cpar_assignments as b')
             ->join('employees as j', 'b.assigned_to', '=', 'j.id')
             ->where('b.status_id', 15)
             ->where('b.record_type', 5)
             ->where('j.dept_head', $this->employee_no)
             ->count();
-        // Result Error acknowledgment count
         $resultCount = DB::table('cpar_assignments as d')
             ->where('d.status_id', 15)
             ->where('d.record_type', 10)
             ->where('d.dept_head_assigned', $this->id)
             ->count();
-        // Combined count
         $this->acknowledgment_count = $cparCount + $resultCount;
     }
 
