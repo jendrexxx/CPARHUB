@@ -63,7 +63,7 @@ class HrMemoModal extends Component
     {
         $year = now()->year;
         $lastMemoNo = DB::table('cpar_memos')
-            ->where('memo_no', 'like', 'MEMO-' . $year . '-%')
+            ->where('memo_no', 'like', 'RESULT-MEMO-' . $year . '-%')
             ->orderByDesc('id')
             ->value('memo_no');
 
@@ -160,7 +160,6 @@ class HrMemoModal extends Component
             )
             ->where('d.id', $id)
             ->first();
-
         $this->assigned_employee_no = $result->employee_no;
         $cpar_info = DB::table('employees as a')
             ->join('cpar_request_forms as b', 'a.employee_no', '=', 'b.employee_no')

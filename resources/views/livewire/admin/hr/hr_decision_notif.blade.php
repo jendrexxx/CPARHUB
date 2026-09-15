@@ -61,15 +61,22 @@
                             </th>
 
                             <th class="px-4 py-3 text-center font-semibold">
-                                Reported Employee
+                                Reported By
+                            </th>
+                            <th class="px-4 py-3 text-center font-semibold">
+                                Date Reported
                             </th>
 
-                            <th class="px-4 py-3 text-center font-semibold">
-                                Department
+                            <th class="px-4 py-3 text-center">
+                                Assigned To
                             </th>
 
                             <th class="px-4 py-3 text-center font-semibold">
                                 Priority level
+                            </th>
+
+                            <th class="px-4 py-3 text-center font-semibold">
+                                Offense
                             </th>
 
                             <th class="px-4 py-3 text-center font-semibold">
@@ -126,41 +133,64 @@
                                     {{ $record->record_no }}
                                 </div>
 
-                                <div class="text-xs text-zinc-500 mt-1">
-                                    {{ \Carbon\Carbon::parse($record->record_date)->format('M d, Y') }}
-                                </div>
-
+                            </td>
+                            {{-- REPORTED BY --}}
+                            <td class="px-4 py-3 text-zinc-700 dark:text-zinc-300">
+                                {{ $record->reported_by }}
                             </td>
 
+                            {{-- DATE --}}
+                            <td class="px-4 py-3 text-zinc-700 dark:text-zinc-300">
+
+                                {{ \Carbon\Carbon::parse($record->record_date)->format('M d, Y') }}
+
+                            </td>
 
                             {{-- Employee --}}
                             <td class="px-4 py-4">
                                 <div class="font-medium text-zinc-900 dark:text-white">
                                     {{ $record->employee_name ?? 'Unassigned' }}
                                 </div>
-
-                                @if (!empty($record->employee_no))
-                                <div class="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
-                                    {{ $record->employee_no }}
-                                </div>
-                                @endif
                             </td>
 
+                            {{-- PRIORITY --}}
+                            <td class="px-4 py-3">
 
-                            {{-- Department --}}
-                            <td class="px-4 py-4">
+                                @php
+                                $priorityColor = match (
+                                strtolower($record->priority_name ?? '')
+                                ) {
+                                'normal' =>
+                                'bg-green-100 text-green-700 ring-green-600/20
+                                dark:bg-green-950 dark:text-green-400',
 
-                                <span class="text-zinc-600 dark:text-zinc-400">
-                                    {{ $record->department_name ?? 'N/A' }}
+                                'high' =>
+                                'bg-orange-100 text-orange-700 ring-orange-600/20
+                                dark:bg-orange-950 dark:text-orange-400',
+
+                                'urgent' =>
+                                'bg-red-100 text-red-700 ring-red-600/20
+                                dark:bg-red-950 dark:text-red-400',
+
+                                default =>
+                                'bg-zinc-100 text-zinc-700 ring-zinc-600/20
+                                dark:bg-zinc-700 dark:text-zinc-300',
+                                };
+                                @endphp
+
+                                <span
+                                    class="inline-flex items-center gap-1.5
+                                               rounded-full px-2.5 py-1
+                                               text-xs font-semibold
+                                               ring-1 ring-inset
+                                               {{ $priorityColor }}">
+                                    {{ $record->priority_name ?? 'N/A' }}
                                 </span>
 
                             </td>
 
-                            {{-- Priority level --}}
-                            <td class="px-4 py-4 text-center">
-                                <span class="text-zinc-600 dark:text-zinc-400">
-                                    {{ $record->department_name ?? 'N/A' }}
-                                </span>
+                            <td>
+
                             </td>
 
                             {{-- Documents --}}

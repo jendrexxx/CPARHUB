@@ -208,6 +208,12 @@ class LabRequest extends Component
 
     public function verifiedLaboratory()
     {
+        $this->validate([
+            'management_remarks' => 'required|string|max:1000',
+        ], [
+            'management_remarks.required' => 'Management remarks is required.',
+            'management_remarks.max' => 'Management remarks must not exceed 1000 characters.',
+        ]);
         if (!$this->id) {
             return;
         }
@@ -296,7 +302,12 @@ class LabRequest extends Component
 
     public function backToHR()
     {
-
+        $this->validate([
+            'management_remarks' => 'required|string|max:1000',
+        ], [
+            'management_remarks.required' => 'Management remarks is required.',
+            'management_remarks.max' => 'Management remarks must not exceed 1000 characters.',
+        ]);
         if (!$this->id) {
             $this->dispatch(
                 'toast',

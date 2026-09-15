@@ -470,14 +470,12 @@
 
                 {{-- REMARKS --}}
                 <div class="space-y-3">
-                    <flux:label>
-                        Management Remarks
-                    </flux:label>
-
                     <flux:textarea
+                        label="Management Remarks"
                         wire:model="management_remarks"
-                        rows="6"
-                        placeholder="No management remarks available." />
+                        rows="4"
+                        placeholder="Enter management remarks..."
+                        class="uppercase" />
                 </div>
 
             </div>

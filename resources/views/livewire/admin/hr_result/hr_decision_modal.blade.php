@@ -517,15 +517,11 @@
                     @endforeach
                 </div>
 
-                {{-- DISCIPLINARY CATEGORY --}}
                 <div class="space-y-3">
-
                     <flux:heading size="sm">
                         Disciplinary Category
                     </flux:heading>
-
                     @foreach($selectedCategories as $index => $category)
-
                     <div class="flex items-end gap-2">
 
                         <div class="flex-1">
@@ -549,9 +545,7 @@
 
                         </div>
                     </div>
-
                     @endforeach
-
                 </div>
 
 

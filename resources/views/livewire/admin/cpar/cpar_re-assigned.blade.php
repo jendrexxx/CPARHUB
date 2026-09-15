@@ -266,7 +266,6 @@
                         wire:model="remarks"
                         rows="4"
                         placeholder="Enter assignment remarks..." />
-
                 </div>
 
             </div>

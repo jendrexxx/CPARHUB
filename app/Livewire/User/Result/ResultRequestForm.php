@@ -15,9 +15,11 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\employee;
 use App\Models\result_complain_categories;
 use Illuminate\Support\Facades\DB;
+use Livewire\WithFileUploads;
 
 class ResultRequestForm extends Component
 {
+    use WithFileUploads;
     public $result_no = '', $date_reported = '', $patient_name = '', $attending_physician = '', $actual_released_date = '', $complain_category_id = '', $complain_name = '', $concern_description = '', $employee_no = '', $reported_by = '', $test_procedure = '', $employeeCategoryId = '';
     public $source = [], $data = [], $quality = [], $technical = [], $data_information = [];
     public array $selectedData = [];
@@ -121,6 +123,12 @@ class ResultRequestForm extends Component
             'priority' => 'required'
         ]);
 
+        $attachmentPath = null;
+
+        if ($this->concern_attachment) {
+            $attachmentPath = $this->concern_attachment->store('cpar', 'public');
+        }
+
         $result = result_error_form::create([
             'result_no' => $this->result_no,
             'employee_no' => $this->employee_no,
@@ -148,8 +156,23 @@ class ResultRequestForm extends Component
             'record_type'           => 10,
             'created_by'            => Auth::id(),
         ]);
-        
-        
+
+        if ($attachmentPath) {
+            cpar_attachments::create([
+                'result_id'   => $result->id,
+                'file_name'   => $this->concern_attachment->getClientOriginalName(),
+                'file_path'   => $attachmentPath,
+                'file_type'   => $this->concern_attachment->getMimeType(),
+                'uploaded_by' => Auth::id(),
+            ]);
+        } else {
+            // Walang attachment
+            cpar_attachments::create([
+                'result_id'     => $result->id,
+                'uploaded_by' => Auth::id(),
+            ]);
+        }
+
 
         return redirect()->route('user_dashboard')->with('toast', ['type' => 'success', 'message' => 'Result Concern submitted successfully',]);
     }

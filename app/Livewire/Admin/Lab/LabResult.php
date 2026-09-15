@@ -29,7 +29,7 @@ class LabResult extends Component
     public $decisionCategories = [], $disciplinaryCategories = [], $offenseLevels = [];
     public $selectedCategories = [null], $selectedOffenseLevels = [''], $selectedHRDecisions = [''];
     public $isNoDisciplinaryAction = false;
-    public $nte_no = '', $hr_decision_remarks = '', $management_remarks ='';
+    public $nte_no = '', $hr_decision_remarks = '', $management_remarks = '';
 
     protected $listeners = [
         'open-result-details' => 'open',
@@ -210,6 +210,12 @@ class LabResult extends Component
 
     public function backToHR()
     {
+        $this->validate([
+            'management_remarks' => 'required|string|max:1000',
+        ], [
+            'management_remarks.required' => 'Management remarks is required.',
+            'management_remarks.max' => 'Management remarks must not exceed 1000 characters.',
+        ]);
         if (!$this->id) {
             $this->dispatch(
                 'toast',
@@ -263,7 +269,7 @@ class LabResult extends Component
                 'updated_at' => now(),
             ]);
         });
-        $this->dispatch('toast',type: 'success',message: 'RESULT has been returned to HR.');
+        $this->dispatch('toast', type: 'success', message: 'RESULT has been returned to HR.');
         // Close modal
         $this->dispatch('modal-close', name: 'LABModal');
         $this->dispatch('modal-close', name: 'LABrequest');
@@ -274,6 +280,12 @@ class LabResult extends Component
 
     public function verifiedLaboratory()
     {
+        $this->validate([
+            'management_remarks' => 'required|string|max:1000',
+        ], [
+            'management_remarks.required' => 'Management remarks is required.',
+            'management_remarks.max' => 'Management remarks must not exceed 1000 characters.',
+        ]);
         if (!$this->id) {
             return;
         }
@@ -334,9 +346,9 @@ class LabResult extends Component
             ]);
         });
 
-        $this->dispatch('toast',type: 'success',message: 'RESULT successfully verified by laboratory.');
-        $this->dispatch('modal-close',name: 'LABModal');
-        $this->dispatch('modal-close',name: 'LABrequest');
+        $this->dispatch('toast', type: 'success', message: 'RESULT successfully verified by laboratory.');
+        $this->dispatch('modal-close', name: 'LABModal');
+        $this->dispatch('modal-close', name: 'LABrequest');
         $this->dispatch('refreshLABRecords');
         $this->dispatch('refreshLABCount');
         $this->dispatch('refreshNotificationCount');

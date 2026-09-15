@@ -4,29 +4,21 @@
         class="w-[120%] max-w-[1500px] mt-6 top-0 z-50">
 
         <div class="space-y-6">
-
             {{-- Header --}}
             <div>
                 <flux:heading size="lg">
                     Assigned Requests
                 </flux:heading>
-
                 <flux:text>
                     Below is the list of CPAR and Result Error requests assigned to you for investigation and corrective action.
                 </flux:text>
             </div>
-
-
             {{-- Table --}}
             <div class="w-full overflow-x-auto rounded-lg border border-zinc-200 dark:border-zinc-700">
-
                 <table class="w-full text-sm text-center">
-
                     {{-- Header --}}
                     <thead class="bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 text-xs tracking-wider">
-
                         <tr>
-
                             <th class="px-4 py-3">
                                 Type
                             </th>
@@ -60,15 +52,10 @@
                             </th>
 
                         </tr>
-
                     </thead>
-
-
                     {{-- Body --}}
                     <tbody class="divide-y divide-zinc-200 dark:divide-zinc-700">
-
                         @forelse ($assigned_requests as $request)
-
                         <tr
                             wire:key="{{ strtolower($request->record_type) }}-{{ $request->assignment_id }}">
 
@@ -91,14 +78,10 @@
 
                             </td>
 
-
                             {{-- REQUEST NO --}}
                             <td class="px-4 py-3 font-medium text-zinc-900 dark:text-zinc-100">
-
                                 {{ $request->record_no }}
-
                             </td>
-
 
                             {{-- REPORTED BY --}}
                             <td class="px-4 py-3 text-zinc-700 dark:text-zinc-300">
@@ -236,28 +219,18 @@
                             </td>
 
                         </tr>
-
                         @empty
-
                         <tr>
-
                             <td
                                 colspan="9"
                                 class="px-4 py-10 text-center text-zinc-500 dark:text-zinc-400">
                                 No assigned requests found.
                             </td>
-
                         </tr>
-
                         @endforelse
-
                     </tbody>
-
                 </table>
-
             </div>
-
         </div>
-
     </flux:modal>
 </div>

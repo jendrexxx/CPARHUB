@@ -432,11 +432,7 @@ class HrDecisionModal extends Component
         $validUntil = $incidentDate->month <= 6
             ? $incidentDate->copy()->month(6)->endOfMonth()
             : $incidentDate->copy()->month(12)->endOfMonth();
-        /*
-    |--------------------------------------------------------------------------
-    | OLD VALUE
-    |--------------------------------------------------------------------------
-    */
+
         $oldValue = [
             'result_no' => $this->result_no,
             'discipline_ids' => json_decode(

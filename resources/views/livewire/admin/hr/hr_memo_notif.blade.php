@@ -40,17 +40,13 @@
             </div>
 
             {{-- TABLE --}}
-             <div class="w-full overflow-x-auto rounded-lg border border-zinc-200 dark:border-zinc-700">
+            <div class="w-full overflow-x-auto rounded-lg border border-zinc-200 dark:border-zinc-700">
                 <table class="w-full text-sm">
 
                     {{-- TABLE HEADER --}}
                     <thead class="bg-zinc-50 dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-700">
 
                         <tr>
-
-                            <th class="px-4 py-3 text-center font-semibold">
-                                Type
-                            </th>
 
                             <th class="px-4 py-3 text-center font-semibold">
                                 Request No.
@@ -91,33 +87,22 @@
 
                         <tr class="hover:bg-zinc-50 dark:hover:bg-zinc-800 transition text-center">
 
-                            {{-- RECORD TYPE --}}
-                            <td class="px-4 py-4">
-
-                                @if ($record->record_type === 'CPAR')
-
-                                <flux:badge
-                                    color="blue"
-                                    icon="document-text">
-                                    CPAR
-                                </flux:badge>
-
-                                @else
-
-                                <flux:badge
-                                    color="purple"
-                                    icon="document-text">
-                                    RESULT
-                                </flux:badge>
-
-                                @endif
-
-                            </td>
-
                             {{-- RECORD NO --}}
                             <td class="px-4 py-4 whitespace-nowrap">
-                                <div class="font-semibold text-zinc-900 dark:text-white">
-                                    {{ $record->record_no }}
+                                <div class="flex flex-col items-center gap-1">
+                                    <div class="font-semibold text-zinc-900 dark:text-white">
+                                        {{ $record->record_no }}
+                                    </div>
+
+                                    @if ($record->record_type === 'CPAR')
+                                    <flux:badge color="blue">
+                                        CPAR
+                                    </flux:badge>
+                                    @else
+                                    <flux:badge color="purple">
+                                        RESULT
+                                    </flux:badge>
+                                    @endif
                                 </div>
                             </td>
 
@@ -148,9 +133,20 @@
                             </td>
 
                             <td class="px-4 py-4 text-center">
-                                <span class="text-zinc-600 dark:text-zinc-400">
-                                    {{ $record->priority_name }}
-                                </span>
+                                @php
+                                $priority = strtoupper(trim($record->priority_name ?? ''));
+
+                                $priorityColor = match ($priority) {
+                                'NORMAL' => 'blue',
+                                'HIGH' => 'orange',
+                                'URGENT' => 'red',
+                                default => 'zinc',
+                                };
+                                @endphp
+
+                                <flux:badge color="{{ $priorityColor }}">
+                                    {{ $priority ?: 'N/A' }}
+                                </flux:badge>
                             </td>
 
 

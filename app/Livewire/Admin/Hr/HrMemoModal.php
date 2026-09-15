@@ -171,7 +171,7 @@ class HrMemoModal extends Component
             ->get();
         //memo details
         $this->assigned_to = $open_memo->assigned_to;
-        $this->memo_no = $open_memo->memo_no ?? $this->memo_no;
+        $this->memo_no = $open_memo->memo_no ?? '$this->memo_no';
         $this->memo_date = $open_memo->memo_date ?? now()->format('m-d-Y');
         $this->memo_subject = $open_memo->subject;
         $this->memo_content = $open_memo->memo_content;
