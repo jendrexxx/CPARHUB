@@ -402,27 +402,22 @@ class ResultRespondForm extends Component
 
             DB::table('audit_logs')->insert([
                 'user_reported_by' => $this->employeeName,
-
                 'user_reported' => is_array($this->assigned_to)
                     ? json_encode($this->assigned_to)
                     : $this->assigned_to,
-
                 'action' => 'RESULT RESPONSE SUBMITTED',
-
                 'old_value' => !empty($changedOldValue)
                     ? json_encode(
                         $changedOldValue,
                         JSON_UNESCAPED_UNICODE
                     )
                     : null,
-
                 'new_value' => !empty($changedNewValue)
                     ? json_encode(
                         $changedNewValue,
                         JSON_UNESCAPED_UNICODE
                     )
                     : null,
-
                 'status_changed_by' => is_array($this->assigned_to)
                     ? json_encode($this->assigned_to)
                     : $this->assigned_to,
@@ -447,7 +442,7 @@ class ResultRespondForm extends Component
         $this->dispatch(
             'toast',
             type: 'success',
-            message: 'CPAR response submitted successfully.'
+            message: 'RESULT response submitted successfully.'
         );
 
         $this->dispatch(

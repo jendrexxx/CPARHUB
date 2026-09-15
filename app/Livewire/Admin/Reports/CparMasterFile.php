@@ -196,11 +196,6 @@ class CparMasterFile extends Component
 
         $cpars = $records->paginate($this->perPage);
 
-        return view(
-            'livewire.admin.reports.cpar_master_file',
-            [
-                'cpars' => $cpars,
-            ]
-        )->layout('layouts.app');
+        return view('livewire.admin.reports.cpar_master_file',['cpars' => $cpars,])->layout('layouts.app');
     }
 }

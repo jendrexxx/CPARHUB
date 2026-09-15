@@ -12,77 +12,61 @@
                 <flux:heading size="lg">
                     Acknowledgment Concern
                 </flux:heading>
-
                 <flux:text>
                     Please review the details of this concern and confirm your acknowledgment.
                 </flux:text>
             </div>
-
-
-            {{-- Table --}}
             <div class="w-full overflow-x-auto rounded-lg border border-zinc-200 dark:border-zinc-700">
-
                 <table class="w-full text-sm text-center">
-
-                    {{-- TABLE HEADER --}}
                     <thead class="bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 text-xs tracking-wider">
-
                         <tr>
-
-                            <th class="px-4 py-3">
+                            <th class="px-4 py-3 text-center">
                                 Type
                             </th>
 
-                            <th class="px-4 py-3">
+                            <th class="px-4 py-3 text-center">
                                 Request No.
                             </th>
 
-                            <th class="px-4 py-3">
+                            <th class="px-4 py-3 text-center">
                                 Reported By
                             </th>
 
-                            <th class="px-4 py-3">
+                            <th class="px-4 py-3 text-center">
                                 Date Reported
                             </th>
 
-                            <th class="px-4 py-3">
+                            <th class="px-4 py-3 text-center">
                                 Assigned To
                             </th>
 
-                            <th class="px-4 py-3">
-                                Priority
+                            <th class="px-4 py-3 text-center">
+                                Priority level
                             </th>
 
-                            <th class="px-4 py-3">
+                            <th class="px-4 py-3 text-center">
                                 Documents
                             </th>
 
-                            <th class="px-4 py-3">
+                            <th class="px-4 py-3 text-center">
                                 Status
                             </th>
 
-                            <th class="px-4 py-3">
+                            <th class="px-4 py-3 text-center">
                                 Action
                             </th>
 
                         </tr>
 
                     </thead>
-
-
                     {{-- TABLE BODY --}}
                     <tbody class="divide-y divide-zinc-200 dark:divide-zinc-700">
-
                         @forelse ($acknowledgment_requests as $request)
-
-                        <tr
-                            wire:key="acknowledgment-{{ $request->record_type }}-{{ $request->assignment_id }}">
+                        <tr wire:key="acknowledgment-{{ $request->record_type }}-{{ $request->assignment_id }}">
 
                             {{-- TYPE --}}
                             <td class="px-4 py-3">
-
                                 @if ($request->record_type === 'CPAR')
-
                                 <span
                                     class="inline-flex items-center rounded-full
                                                    bg-red-100 text-red-700
@@ -90,33 +74,25 @@
                                                    px-2.5 py-1 text-xs font-semibold">
                                     CPAR
                                 </span>
-
                                 @elseif ($request->record_type === 'RESULT')
-
                                 <span
                                     class="inline-flex items-center rounded-full
                                                    bg-purple-100 text-purple-700
                                                    dark:bg-purple-950 dark:text-purple-400
                                                    px-2.5 py-1 text-xs font-semibold">
-                                    RESULT ERROR
+                                    RESULT
                                 </span>
-
                                 @endif
-
                             </td>
 
                             {{-- REQUEST NO --}}
                             <td class="px-4 py-3 font-medium text-zinc-900 dark:text-zinc-100">
-
                                 {{ $request->record_no }}
-
                             </td>
 
                             {{-- REPORTED BY --}}
                             <td class="px-4 py-3 text-zinc-700 dark:text-zinc-300">
-
                                 {{ $request->reported_by }}
-
                             </td>
 
 
@@ -346,30 +322,19 @@
                             </td>
 
                         </tr>
-
-
                         @empty
-
                         <tr>
-
                             <td
                                 colspan="10"
                                 class="px-4 py-10 text-center text-zinc-500 dark:text-zinc-400">
                                 No acknowledgment requests found.
                             </td>
-
                         </tr>
-
                         @endforelse
-
                     </tbody>
-
                 </table>
-
             </div>
-
         </div>
-
     </flux:modal>
 
 </div>

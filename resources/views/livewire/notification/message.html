@@ -2,15 +2,10 @@
 
     <div class="notification-stack">
 
-        {{-- =========================================================
-            USER NOTIFICATION
-        ========================================================== --}}
-        @if ($request_count > 0 || $assigned_count > 0 || $nte_cpar > 0)
-
+        @if ($request_count > 0 ||$assigned_count > 0 ||$nte_cpar > 0)
         <div class="notification-container">
-
-            <div class="notification-toast"
-                aria-label="User Notifications">
+            <a class="notification-toast"
+                aria-label="Open CPAR Notifications">
 
                 <div class="notification-content">
 
@@ -29,24 +24,30 @@
                         <div class="notification-message">
 
                             @if ($request_count > 0)
+
                             <div>
                                 {{ $request_count }}
                                 reported concern{{ $request_count > 1 ? 's' : '' }}
                             </div>
+
                             @endif
 
                             @if ($assigned_count > 0)
+
                             <div>
                                 {{ $assigned_count }}
                                 assigned concern{{ $assigned_count > 1 ? 's' : '' }}
                             </div>
+
                             @endif
 
                             @if ($nte_cpar > 0)
+
                             <div>
                                 {{ $nte_cpar }}
                                 Notice to Explain{{ $nte_cpar > 1 ? 's' : '' }}
                             </div>
+
                             @endif
 
                         </div>
@@ -60,18 +61,15 @@
 
                 </div>
 
-            </div>
-
+            </a>
         </div>
-
         @endif
 
         @if ($cpar_count > 0 || $result_count > 0 || $acknowledgment_count > 0)
-
         <div class="notification-container">
 
-            <div class="notification-toast"
-                aria-label="Department Head Notifications">
+            <a class="notification-toast"
+                aria-label="Open Department Head Notifications">
 
                 <div class="notification-content">
 
@@ -89,7 +87,10 @@
 
                         <div class="notification-message">
 
-                            @if ($cpar_count > 0 || $result_count > 0)
+                            @if (
+                            $cpar_count > 0 ||
+                            $result_count > 0
+                            )
 
                             <div>
                                 {{ $cpar_count + $result_count }}
@@ -118,27 +119,16 @@
 
                 </div>
 
-            </div>
+            </a>
 
         </div>
-
         @endif
 
-
-        {{-- =========================================================
-            HR NOTIFICATION
-        ========================================================== --}}
-        @if (
-        $hr_request_count > 0 ||
-        $acknowledged_cpar > 0 ||
-        $hr_decision_count > 0 ||
-        $memo_count > 0
-        )
-
+        @if ($hr_request_count > 0 || $acknowledged_cpar > 0 || $hr_decision_count > 0 || $memo_count > 0)
         <div class="notification-container">
 
-            <div class="notification-toast"
-                aria-label="HR Notifications">
+            <a class="notification-toast"
+                aria-label="Open HR Notifications">
 
                 <div class="notification-content">
 
@@ -166,21 +156,17 @@
                             @endif
 
                             @if ($acknowledged_cpar > 0)
-
                             <div>
                                 {{ $acknowledged_cpar }}
                                 Acknowledgement{{ $acknowledged_cpar > 1 ? 's' : '' }}
                             </div>
-
                             @endif
 
                             @if ($hr_decision_count > 0)
-
                             <div>
                                 {{ $hr_decision_count }}
                                 Decision{{ $hr_decision_count > 1 ? 's' : '' }}
                             </div>
-
                             @endif
 
                             @if ($memo_count > 0)
@@ -203,22 +189,16 @@
 
                 </div>
 
-            </div>
+            </a>
 
         </div>
-
         @endif
 
-
-        {{-- =========================================================
-            LABORATORY NOTIFICATION
-        ========================================================== --}}
         @if ($lab_request_count > 0)
-
         <div class="notification-container">
 
-            <div class="notification-toast"
-                aria-label="Laboratory Notifications">
+            <a class="notification-toast"
+                aria-label="Open Laboratory Notifications">
 
                 <div class="notification-content">
 
@@ -252,18 +232,12 @@
 
                 </div>
 
-            </div>
+            </a>
 
         </div>
-
         @endif
 
     </div>
-
-
-    {{-- =========================================================
-        STYLE
-    ========================================================== --}}
     <style>
         .notification-stack {
 
@@ -283,25 +257,12 @@
 
             gap: 10px;
 
-            /*
-            |--------------------------------------------------------------------------
-            | IMPORTANT
-            |--------------------------------------------------------------------------
-            | Notification will NOT block or receive clicks.
-            */
-            pointer-events: none;
-
         }
-
 
         .notification-container {
-
             width: 100%;
-
-            pointer-events: none;
-
+            pointer-events: auto;
         }
-
 
         .notification-toast {
 
@@ -309,12 +270,7 @@
 
             width: 100%;
 
-            /*
-            |--------------------------------------------------------------------------
-            | TRANSPARENT BACKGROUND
-            |--------------------------------------------------------------------------
-            */
-            background: rgba(153, 27, 27, 0.80);
+            background: #dc2626;
 
             color: #ffffff;
 
@@ -322,33 +278,18 @@
 
             padding: 13px 14px;
 
+            cursor: pointer;
+
             user-select: none;
 
-            /*
-            |--------------------------------------------------------------------------
-            | IMPORTANT
-            |--------------------------------------------------------------------------
-            | No cursor pointer and no click events.
-            */
-            cursor: default;
-
-            pointer-events: none;
-
-            /*
-            |--------------------------------------------------------------------------
-            | GLASS / TRANSPARENCY EFFECT
-            |--------------------------------------------------------------------------
-            */
-            backdrop-filter: blur(5px);
-
-            -webkit-backdrop-filter: blur(5px);
+            text-decoration: none;
 
             box-shadow:
-                0 4px 14px rgba(220, 38, 38, 0.30);
+                0 4px 14px rgba(220, 38, 38, 0.45);
 
             transition:
-                opacity 0.15s ease,
-                background 0.15s ease;
+                transform 0.15s ease,
+                box-shadow 0.15s ease;
 
             animation:
                 notificationBlink 1.2s infinite,
@@ -356,12 +297,21 @@
 
         }
 
+        .notification-toast:hover {
 
-        /*
-        |--------------------------------------------------------------------------
-        | CONTENT
-        |--------------------------------------------------------------------------
-        */
+            transform: translateX(-5px);
+
+            box-shadow:
+                0 6px 20px rgba(220, 38, 38, 0.60);
+
+        }
+
+        .notification-toast:active {
+
+            transform:
+                translateX(-2px) scale(0.99);
+
+        }
 
         .notification-content {
 
@@ -372,7 +322,6 @@
             gap: 12px;
 
         }
-
 
         .notification-icon {
 
@@ -388,7 +337,7 @@
 
             justify-content: center;
 
-            background: rgba(255, 255, 255, 0.95);
+            background: #ffffff;
 
             border-radius: 50%;
 
@@ -397,7 +346,6 @@
             flex-shrink: 0;
 
         }
-
 
         .notification-text {
 
@@ -427,7 +375,7 @@
 
             font-weight: 500;
 
-            color: rgba(255, 255, 255, 0.95);
+            color: #ffffff;
 
             line-height: 1.5;
 
@@ -439,7 +387,6 @@
             margin-top: 2px;
 
         }
-
 
         .notification-arrow {
 
@@ -461,29 +408,30 @@
 
             0% {
 
-                background: rgba(220, 38, 38, 0.72);
+                background: #dc2626;
 
                 box-shadow:
-                    0 4px 14px rgba(220, 38, 38, 0.25);
+                    0 4px 14px rgba(220, 38, 38, 0.45);
 
             }
 
             50% {
 
-                background: rgba(153, 27, 27, 0.84);
+                background: #991b1b;
 
                 box-shadow:
-                    0 0 0 6px rgba(220, 38, 38, 0.10),
-                    0 6px 20px rgba(220, 38, 38, 0.35);
+                    0 0 0 6px rgba(220, 38, 38, 0.18),
+
+                    0 6px 20px rgba(220, 38, 38, 0.65);
 
             }
 
             100% {
 
-                background: rgba(220, 38, 38, 0.72);
+                background: #dc2626;
 
                 box-shadow:
-                    0 4px 14px rgba(220, 38, 38, 0.25);
+                    0 4px 14px rgba(220, 38, 38, 0.45);
 
             }
 
@@ -535,5 +483,4 @@
 
         }
     </style>
-
 </div>

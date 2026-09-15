@@ -500,13 +500,10 @@
                 </div>
 
                 @endif
-
-                {{-- REPLACE MEMO --}}
                 <flux:input
                     type="file"
                     label="Replace Memo Attachment"
                     wire:model="memo_attachment" />
-
             </div>
 
         </div>

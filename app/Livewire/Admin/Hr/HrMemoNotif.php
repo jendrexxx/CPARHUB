@@ -153,6 +153,12 @@ class HrMemoNotif extends Component
                 '=',
                 'd.assignment_id'
             )
+            ->join(
+                'priority_levels as k',
+                'a.priority_level',
+                '=',
+                'k.id'
+            )
             ->select(
                 // Record
                 'a.id as record_id',
@@ -170,8 +176,7 @@ class HrMemoNotif extends Component
                 DB::raw("
                 CONCAT(i.first_name, ' ', i.last_name)
                 AS employee_name
-            "),
-
+                "),
                 // Investigation
                 DB::raw("NULL as identified_cause"),
                 DB::raw("NULL as provided_solution"),
@@ -187,10 +192,8 @@ class HrMemoNotif extends Component
                 // Department / Status
                 'g.department_name',
                 'h.status_name',
-
-                // IMPORTANT:
-                // Must match CPAR's k.priority_name column
-                DB::raw("NULL as priority_name")
+                // Priority
+                'k.priority_name'
             )
             ->where('b.status_id', 40)
             ->where('b.record_type', 10)

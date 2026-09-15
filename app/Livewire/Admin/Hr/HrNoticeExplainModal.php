@@ -174,7 +174,7 @@ class HrNoticeExplainModal extends Component
             'nte_no'        => 'required|string',
             'nte_attachment' => 'required|file|mimes:pdf|max:10240',
         ]);
-
+        
         DB::transaction(function () {
             DB::table('cpar_assignments')
                 ->where('id', $this->assignment_id)

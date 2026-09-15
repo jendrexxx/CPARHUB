@@ -2,7 +2,7 @@
     {{-- HEADER --}}
     <div>
         <h2 class="text-2xl font-bold text-zinc-900 dark:text-white">
-            CPAR Reports
+            Reports
         </h2>
 
         <p class="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
@@ -248,7 +248,7 @@
                     </th>
 
                     <th class="whitespace-nowrap px-4 py-3 text-center font-semibold">
-                        Date Open
+                        Date Reported
                     </th>
 
                     <th class="whitespace-nowrap px-4 py-3 text-center font-semibold">

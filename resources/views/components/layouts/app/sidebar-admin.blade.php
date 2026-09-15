@@ -14,27 +14,11 @@
 
     <div class="min-h-screen">
 
-        {{-- ========================================================= --}}
-        {{-- NAVBAR --}}
-        {{-- ========================================================= --}}
         <nav class="sticky top-0 z-50 w-full border-b border-gray-200 bg-white">
-
-            {{-- FULL WIDTH --}}
             <div class="w-full px-4 sm:px-6 lg:px-8">
-
                 <div class="flex h-16 w-full items-center">
-
-                    {{-- ================================================= --}}
-                    {{-- LEFT SIDE --}}
-                    {{-- LOGO + NAVIGATION --}}
-                    {{-- ================================================= --}}
                     <div class="flex min-w-0 items-center">
-
-                        {{-- ================================================= --}}
-                        {{-- LOGO --}}
-                        {{-- ================================================= --}}
                         <div class="shrink-0">
-
                             <a
                                 href="{{ route('user_dashboard') }}"
                                 wire:navigate
@@ -48,18 +32,8 @@
                             </a>
 
                         </div>
-
-
-                        {{-- ================================================= --}}
-                        {{-- DESKTOP NAVIGATION --}}
-                        {{-- ================================================= --}}
                         <div class="ml-6 hidden md:flex items-center">
-
                             <div class="flex items-center gap-1">
-
-                                {{-- ================================================= --}}
-                                {{-- USER DASHBOARD --}}
-                                {{-- ================================================= --}}
                                 @if(auth()->user()->can('View User Dashboard'))
 
                                 <a
@@ -82,10 +56,6 @@
 
                                 @endif
 
-
-                                {{-- ================================================= --}}
-                                {{-- DEPARTMENT HEAD --}}
-                                {{-- ================================================= --}}
                                 @if(auth()->user()->can('View Department Dashboard'))
 
                                 <a
@@ -108,10 +78,6 @@
 
                                 @endif
 
-
-                                {{-- ================================================= --}}
-                                {{-- HR DASHBOARD --}}
-                                {{-- ================================================= --}}
                                 @if(auth()->user()->can('View HR Dashboard'))
 
                                 <a
@@ -134,10 +100,7 @@
 
                                 @endif
 
-                                @if(
-                                auth()->user()->can('View Lab Supervisor') ||
-                                auth()->user()->can('View PGL Supervisor')
-                                )
+                                @if(auth()->user()->can('View Lab Supervisor') || auth()->user()->can('View PGL Supervisor'))
                                 <a
                                     href="{{ route('lab_supervisor') }}"
                                     wire:navigate
@@ -152,12 +115,7 @@
                                 </a>
                                 @endif
 
-
-                                {{-- ================================================= --}}
-                                {{-- ADMIN DASHBOARD --}}
-                                {{-- ================================================= --}}
                                 @if(auth()->user()->can('View Admin Dashboard'))
-
                                 <a
                                     href="{{ route('admin_dashboard') }}"
                                     wire:navigate
@@ -175,7 +133,6 @@
                                     </span>
 
                                 </a>
-
                                 @endif
 
                                 @if(auth()->user()->can('View CPAR Master File'))
@@ -198,10 +155,7 @@
                                 </a>
                                 @endif
 
-                                {{-- REPORTS --}}
                                 @if(auth()->user()->can('View CPAR Reports'))
-                                @if(auth()->user()->can('View CPAR Reports'))
-
                                 <a
                                     href="{{ route('cpar-report') }}"
                                     wire:navigate
@@ -219,9 +173,6 @@
                                     </span>
 
                                 </a>
-
-                                @endif
-
                                 @endif
 
                                 @if(auth()->user()->can('View Employees'))
@@ -246,12 +197,7 @@
 
                                 @endif
 
-
-                                {{-- ================================================= --}}
-                                {{-- SYSTEM SETUP --}}
-                                {{-- ================================================= --}}
                                 @if(auth()->user()->can('View System Setup'))
-
                                 <a
                                     href="{{ route('system_setup') }}"
                                     wire:navigate
@@ -269,20 +215,11 @@
                                     </span>
 
                                 </a>
-
                                 @endif
 
                             </div>
-
                         </div>
-
                     </div>
-
-
-                    {{-- ================================================= --}}
-                    {{-- RIGHT SIDE --}}
-                    {{-- USER PROFILE --}}
-                    {{-- ================================================= --}}
                     <div class="ml-auto hidden md:flex items-center">
 
                         <div class="relative group">
@@ -429,11 +366,6 @@
                         </div>
 
                     </div>
-
-
-                    {{-- ================================================= --}}
-                    {{-- MOBILE BUTTON --}}
-                    {{-- ================================================= --}}
                     <div class="ml-auto flex md:hidden">
 
                         <button
@@ -450,15 +382,8 @@
                         </button>
 
                     </div>
-
                 </div>
-
             </div>
-
-
-            {{-- ========================================================= --}}
-            {{-- MOBILE NAVIGATION --}}
-            {{-- ========================================================= --}}
             <div
                 x-data="{ open: false }"
                 x-on:toggle-mobile-menu.window="open = !open"
@@ -727,25 +652,14 @@
                 </div>
 
             </div>
-
         </nav>
 
-
-        {{-- ========================================================= --}}
-        {{-- MAIN CONTENT / LIVEWIRE SLOT --}}
-        {{-- ========================================================= --}}
-        <main class="min-h-screen">
-
+        <main>
             {{ $slot }}
-
         </main>
 
     </div>
 
-
-    {{-- ========================================================= --}}
-    {{-- SCRIPTS --}}
-    {{-- ========================================================= --}}
     @fluxScripts
     @livewireScripts
 

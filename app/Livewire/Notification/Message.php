@@ -124,22 +124,6 @@ class Message extends Component
                 ->join('cpar_investigations as j', 'b.id', '=', 'j.assigned_id')
                 ->where('b.status_id', 20)
                 ->where('b.record_type', 5)
-                ->whereNotExists(function ($query) {
-
-                    $query->select(DB::raw(1))
-                        ->from('cpar_assignments as b2')
-                        ->whereColumn(
-                            'b2.cpar_id',
-                            'b.cpar_id'
-                        )
-                        ->where('b2.status_id', 20)
-                        ->where('b2.record_type', 5)
-                        ->whereColumn(
-                            'b2.id',
-                            '>',
-                            'b.id'
-                        );
-                })
                 ->count();
 
             $hrAcknowledgedResultCount = DB::table('cpar_assignments as b')
@@ -151,22 +135,6 @@ class Message extends Component
                 )
                 ->where('b.status_id', 20)
                 ->where('b.record_type', 10)
-                ->whereNotExists(function ($query) {
-
-                    $query->select(DB::raw(1))
-                        ->from('cpar_assignments as b2')
-                        ->whereColumn(
-                            'b2.result_id',
-                            'b.result_id'
-                        )
-                        ->where('b2.status_id', 20)
-                        ->where('b2.record_type', 10)
-                        ->whereColumn(
-                            'b2.id',
-                            '>',
-                            'b.id'
-                        );
-                })
                 ->count();
 
             $this->acknowledged_cpar = $hrAcknowledgedCparCount + $hrAcknowledgedResultCount;
@@ -184,7 +152,7 @@ class Message extends Component
                     '=',
                     'i.id'
                 )
-                ->whereIn('b.status_id', [25, 30])
+                ->whereIn('b.status_id', [20, 25, 30])
                 ->where('b.record_type', 5)
                 ->count();
 
@@ -201,14 +169,12 @@ class Message extends Component
                     '=',
                     'i.id'
                 )
-                ->whereIn('d.status_id', [25, 30])
+                ->whereIn('d.status_id', [20, 25, 30])
                 ->where('d.record_type', 10)
                 ->where('i.branch_id', $this->branch_id)
                 ->count();
 
-            $this->hr_decision_count =
-                $hrDecisionCparCount +
-                $hrDecisionResultCount;
+            $this->hr_decision_count = $hrDecisionCparCount + $hrDecisionResultCount;
 
             $memoCparCount = DB::table('cpar_request_forms as a')
                 ->join(
@@ -246,13 +212,10 @@ class Message extends Component
                 ->where('i.branch_id', $this->branch_id)
                 ->count();
 
-            $this->memo_count =
-                $memoCparCount +
-                $memoResultCount;
+            $this->memo_count = $memoCparCount + $memoResultCount;
         }
 
         if ($this->user_role === 'PGL SUPERVISOR') {
-
             $labCparCount = DB::table('cpar_request_forms as a')
                 ->join(
                     'cpar_assignments as b',
@@ -299,7 +262,6 @@ class Message extends Component
                 ->where('b.status_id', 35)
                 ->where('b.record_type', 5)
                 ->count();
-
             $labResultCount = DB::table('result_error_forms as a')
                 ->join(
                     'cpar_assignments as b',

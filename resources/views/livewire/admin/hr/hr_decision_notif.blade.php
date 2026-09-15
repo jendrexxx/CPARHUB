@@ -48,7 +48,7 @@
                 <table class="w-full text-sm">
 
                     {{-- Table Header --}}
-                    <thead class="bg-zinc-50 dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-700">
+                    <thead class="bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 text-xs tracking-wider">
 
                         <tr>
 
@@ -99,28 +99,25 @@
                             class="hover:bg-zinc-50 dark:hover:bg-zinc-800 transition text-center">
 
                             {{-- Type --}}
-                            <td class="px-4 py-4 whitespace-nowrap">
-
+                            <td class="px-4 py-3">
                                 @if ($record->record_type === 'CPAR')
-
-                                <flux:badge
-                                    color="red"
-                                    icon="document-text">
+                                <span
+                                    class="inline-flex items-center rounded-full
+                                                   bg-red-100 text-red-700
+                                                   dark:bg-red-950 dark:text-red-400
+                                                   px-2.5 py-1 text-xs font-semibold">
                                     CPAR
-                                </flux:badge>
-
-                                @else
-
-                                <flux:badge
-                                    color="purple"
-                                    icon="document-text">
-                                    RESULT ERROR
-                                </flux:badge>
-
+                                </span>
+                                @elseif ($record->record_type === 'RESULT')
+                                <span
+                                    class="inline-flex items-center rounded-full
+                                                   bg-purple-100 text-purple-700
+                                                   dark:bg-purple-950 dark:text-purple-400
+                                                   px-2.5 py-1 text-xs font-semibold">
+                                    RESULT
+                                </span>
                                 @endif
-
                             </td>
-
 
                             {{-- Request No. --}}
                             <td class="px-4 py-4 whitespace-nowrap">

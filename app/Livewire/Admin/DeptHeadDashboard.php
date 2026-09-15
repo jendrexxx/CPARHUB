@@ -77,6 +77,7 @@ class DeptHeadDashboard extends Component
             ->where('d.record_type', 10)
             ->where('d.dept_head_assigned', $this->id)
             ->count();
+            
         $this->acknowledgment_count = $cparCount + $resultCount;
     }
 

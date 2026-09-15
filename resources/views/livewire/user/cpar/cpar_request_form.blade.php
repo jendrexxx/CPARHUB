@@ -59,15 +59,19 @@
                 </flux:select>
 
                 <flux:input
-                    wire:model="complain_name" value="{{ $complain_name }}"
-                    label="Complainant Name" :readonly="$complain_name_disabled" />
+                    wire:model.live="complain_name"
+                    value="{{ $complain_name }}"
+                    label="Complainant Name"
+                    :readonly="$complain_name_disabled"
+                    class="uppercase"
+                    x-on:input="$el.value = $el.value.toUpperCase()" />
             </div>
 
             {{-- Concern Description --}}
             <flux:textarea
                 label="Concern Description"
                 wire:model="concern_description"
-                rows="5" />
+                rows="5" class="uppercase" />
 
             {{-- Attachment --}}
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -107,7 +111,7 @@
                         placeholder="Select Priority">
                         @foreach ($priority_level as $priority)
                         <flux:select.option value="{{ $priority->id }}">
-                             {{ $priority->priority_name }}
+                            {{ $priority->priority_name }}
                         </flux:select.option>
                         @endforeach
                     </flux:select>

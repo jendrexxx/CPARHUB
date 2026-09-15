@@ -53,15 +53,7 @@ class HrAcknowledgeNotif extends Component
             )
             ->where('b.status_id', 20)
             ->where('b.record_type', 5)
-            ->where('i.branch_id', $this->branch_id)
-            ->whereNotExists(function ($query) {
-                $query->select(DB::raw(1))
-                    ->from('cpar_assignments as b2')
-                    ->whereColumn('b2.cpar_id', 'b.cpar_id')
-                    ->where('b2.status_id', 20)
-                    ->where('b2.record_type', 5)
-                    ->whereColumn('b2.id', '>', 'b.id');
-            });
+            ->where('i.branch_id', $this->branch_id);
 
         $result = DB::table('result_error_forms as a')
             ->join('cpar_assignments as b', 'a.id', '=', 'b.result_id')
@@ -93,15 +85,7 @@ class HrAcknowledgeNotif extends Component
             )
             ->where('b.status_id', 20)
             ->where('b.record_type', 10)
-            ->where('i.branch_id', $this->branch_id)
-            ->whereNotExists(function ($query) {
-                $query->select(DB::raw(1))
-                    ->from('cpar_assignments as b2')
-                    ->whereColumn('b2.result_id', 'b.result_id')
-                    ->where('b2.status_id', 20)
-                    ->where('b2.record_type', 10)
-                    ->whereColumn('b2.id', '>', 'b.id');
-            });
+            ->where('i.branch_id', $this->branch_id);
 
         $this->acknowledgment_requests = $cpar
             ->unionAll($result)

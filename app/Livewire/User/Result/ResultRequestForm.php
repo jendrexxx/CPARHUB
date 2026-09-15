@@ -3,6 +3,7 @@
 namespace App\Livewire\User\Result;
 
 use App\Models\cpar_assignments;
+use App\Models\cpar_attachments;
 use App\Models\priority_level;
 use App\Models\result_error_data_informations;
 use App\Models\result_error_form;
@@ -27,7 +28,7 @@ class ResultRequestForm extends Component
     public $source_of_information = '', $branch_id = '', $id = '', $department_name = '', $department_id = '', $dept_head_assigned = '';
     public $employees = [];
     public $priority_level = [];
-    public $priority = '';
+    public $priority = '', $concern_attachment = '';
 
     public function mount()
     {
@@ -119,6 +120,7 @@ class ResultRequestForm extends Component
             'complain_name' => 'required',
             'priority' => 'required'
         ]);
+
         $result = result_error_form::create([
             'result_no' => $this->result_no,
             'employee_no' => $this->employee_no,
@@ -146,6 +148,8 @@ class ResultRequestForm extends Component
             'record_type'           => 10,
             'created_by'            => Auth::id(),
         ]);
+        
+        
 
         return redirect()->route('user_dashboard')->with('toast', ['type' => 'success', 'message' => 'Result Concern submitted successfully',]);
     }

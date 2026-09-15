@@ -46,11 +46,10 @@
 
                         <flux:input
                             label="Date Reported"
-                            wire:model="date_reported"
+                            value="{{ $date_reported ? $date_reported->format('m-d-Y') : '' }}"
                             type="text"
                             readonly
                             class="opacity-60 cursor-not-allowed bg-zinc-100 dark:bg-zinc-800" />
-
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-2 gap-4">

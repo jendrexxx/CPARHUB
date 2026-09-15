@@ -40,8 +40,7 @@
             </div>
 
             {{-- TABLE --}}
-            <div class="overflow-x-auto rounded-xl border border-zinc-200 dark:border-zinc-700">
-
+             <div class="w-full overflow-x-auto rounded-lg border border-zinc-200 dark:border-zinc-700">
                 <table class="w-full text-sm">
 
                     {{-- TABLE HEADER --}}
@@ -66,7 +65,7 @@
                             </th>
 
                             <th class="px-4 py-3 text-center font-semibold">
-                                Disciplinary History
+                                Priority level
                             </th>
 
                             <th class="px-4 py-3 text-center font-semibold">
@@ -287,10 +286,7 @@
                     </tbody>
 
                 </table>
-
             </div>
-
         </div>
-
     </flux:modal>
 </div>

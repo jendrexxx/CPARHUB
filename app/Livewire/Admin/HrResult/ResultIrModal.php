@@ -31,7 +31,7 @@ class ResultIrModal extends Component
     public $identified_cause = '', $provided_solution = '', $recommendation = '', $ir_attachment = '';
     public $action_taken_by = '', $dept_head_remarks = '', $user_id = '';
     public bool $hasNTERequest = false;
-    public $nte_attachment = '', $nte_no = '', $ir_request_id = '';
+    public $nte_attachment = '', $nte_no = '', $ir_request_id = '', $date_reported_display = '';
 
     protected $listeners = [
         'nte-result' => 'open'
@@ -142,7 +142,7 @@ class ResultIrModal extends Component
         $this->employee_assigned_to = $result_acknowledge->employee_assigned_to;
         $this->result_id   = $result_acknowledge->result_id;
         $this->result_no = $result_acknowledge->result_no;
-        $this->date_reported = Carbon::parse($result_acknowledge->date_reported)->format('m-d-Y');
+        $this->date_reported = Carbon::parse($result_acknowledge->date_reported);
         $this->reported_by = $result_acknowledge->reported_by;
         $this->test_procedure = $result_acknowledge->test_procedure;
         $this->patient_name = $result_acknowledge->patient_name;
@@ -208,7 +208,7 @@ class ResultIrModal extends Component
                 'nte_attachment' => $nteAttachmentPath,
                 'status'        => 'RESULT NTE',
                 'issued_at'     => $this->date_reported,
-                'due_date'      => Carbon::parse($this->date_reported)->addDays(5),
+                'due_date'      => $this->date_reported->addDays(5),
                 'created_by'    => auth()->id(),
                 'created_at'    => now(),
                 'updated_at'    => now(),

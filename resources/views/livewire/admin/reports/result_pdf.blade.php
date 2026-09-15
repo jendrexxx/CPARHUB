@@ -669,9 +669,7 @@
 
                         <br>
 
-                        @if (!empty($result_data->date_completed))
-                        {{ \Carbon\Carbon::parse($result_data->date_completed)->format('m-d-Y') }}
-                        @endif
+                        {{ $result_data->date_completed ?? '' }}
 
                     </td>
 

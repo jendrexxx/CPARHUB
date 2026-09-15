@@ -1,14 +1,11 @@
 <div>
 
-    {{-- =========================================================
-        FULL PAGE LOADING
-    ========================================================== --}}
     <div
         wire:loading
         wire:target="loadDashboard,branch_id"
         class="fixed inset-0 z-[9999] flex items-center justify-center
                bg-white/90 dark:bg-zinc-950/90 backdrop-blur-sm"
-    >
+        >
         <div class="flex flex-col items-center gap-4">
 
             {{-- Spinner --}}
@@ -29,10 +26,6 @@
         </div>
     </div>
 
-
-    {{-- =========================================================
-        DASHBOARD CONTENT
-    ========================================================== --}}
     <div wire:init="loadDashboard">
 
         {{-- HEADER --}}
@@ -74,10 +67,6 @@
 
         @include('toast')
 
-
-        {{-- =====================================================
-            CARDS
-        ====================================================== --}}
         <div class="p-3 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
 
             {{-- REPORTED CONCERN --}}
@@ -253,7 +242,5 @@
         <livewire:admin.hr_result.result_ir_modal />
         <livewire:admin.hr_result.hr_decision_modal />
         <livewire:admin.hr_result.hr_memo_modal />
-
     </div>
-
 </div>

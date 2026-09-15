@@ -29,7 +29,7 @@ class HrDecisionModal extends Component
     public $decisionCategories = [], $disciplinaryCategories = [], $offenseLevels = [];
     public $selectedCategories = [null], $selectedOffenseLevels = [''], $selectedHRDecisions = [''];
     public $isNoDisciplinaryAction = false;
-    public $nte_no = '', $hr_decision_remarks ='', $management_remarks = '';
+    public $nte_no = '', $hr_decision_remarks = '', $management_remarks = '';
     protected $listeners = [
         'open-decision-result' => 'open_decision'
     ];
@@ -427,7 +427,8 @@ class HrDecisionModal extends Component
             'assignment_id',
             $this->id
         )->first();
-        $incidentDate = Carbon::parse($this->date_reported);
+        $incidentDate = Carbon::createFromFormat('m-d-Y', $this->date_reported);
+
         $validUntil = $incidentDate->month <= 6
             ? $incidentDate->copy()->month(6)->endOfMonth()
             : $incidentDate->copy()->month(12)->endOfMonth();
