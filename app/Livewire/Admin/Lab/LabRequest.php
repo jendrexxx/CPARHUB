@@ -232,7 +232,7 @@ class LabRequest extends Component
                 ->where('assignment_id', $this->id)
                 ->first();
 
-            $statusId = (int) $selectedDecision === 1 ? 55 : 40;
+            $statusId = (int) $selectedDecision === 1 ? 50 : 40;
 
             $verificationStatus = (int) $selectedDecision === 1
                 ? 'VERIFIED - NO DISCIPLINARY ACTION'
@@ -282,7 +282,7 @@ class LabRequest extends Component
         $this->dispatch(
             'toast',
             type: 'success',
-            message: 'CPAR successfully verified by laboratory.'
+            message: 'Others successfully verified by laboratory.'
         );
 
         $this->dispatch(
@@ -343,6 +343,13 @@ class LabRequest extends Component
                     'updated_at' => now(),
                 ]);
 
+            DB::table('cpar_employee_disciplinary_records')
+                ->where('assignment_id', $this->id)
+                ->update([
+                    'status'  => 'DRAFT',
+                    'updated_at' => now(),
+                ]);
+
             // AUDIT LOG
             DB::table('audit_logs')->insert([
                 'user_reported_by'       => $this->employeeName,
@@ -367,11 +374,9 @@ class LabRequest extends Component
             type: 'success',
             message: 'CPAR has been returned to HR.'
         );
-
         // Close modal
         $this->dispatch('modal-close', name: 'LABModal');
         $this->dispatch('modal-close', name: 'LABrequest');
-
         // Refresh laboratory records/count
         $this->dispatch('refreshLABRecords');
         $this->dispatch('refreshLABCount');

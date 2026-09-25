@@ -50,7 +50,20 @@ class ResultRequestForm extends Component
         $this->data = result_error_data_informations::all();
         $this->quality = result_error_quality_accuracies::all();
         $this->technical = result_error_technical_equipments::all();
-        $this->result_complain = result_complain_categories::select('id', 'complain_name')->get();
+        if (auth()->user()->hasAnyRole(['USER'])) {
+            $this->result_complain = result_complain_categories::select(
+                'id',
+                'complain_name'
+            )
+                ->where('complain_name', 'EMPLOYEE')
+                ->get();
+        } else {
+            $this->result_complain = result_complain_categories::select(
+                'id',
+                'complain_name'
+            )
+                ->get();
+        }
         $this->priority_level = priority_level::select('id', 'priority_name')->get();
         // Get Employee category ID
         $employeeCategory = result_complain_categories::where('complain_name', 'Employee')->first();
@@ -100,7 +113,6 @@ class ResultRequestForm extends Component
     public function updatedDeptHeadAssigned($value = '')
     {
         $employee = $this->employees->firstWhere('id', $value);
-
         if ($employee) {
             $this->department_name = $employee->department_name;
             $this->department_id = $employee->department_id;

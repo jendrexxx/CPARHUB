@@ -77,7 +77,9 @@
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div>
                     <flux:field>
-                        <flux:label>Attachment</flux:label>
+                        <flux:label>
+                            Concern Attachment <span class="text-zinc-500">(Optional)</span>
+                        </flux:label>
                         <input
                             wire:key="attachment-input"
                             type="file"

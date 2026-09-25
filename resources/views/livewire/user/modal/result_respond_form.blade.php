@@ -244,7 +244,8 @@
                         label="Identified Cause"
                         wire:model="identified_cause"
                         rows="5"
-                        placeholder="Enter the identified cause..." />
+                        placeholder="ENTER THE IDENTIFIED CAUSE..."
+                        class="uppercase" />
 
 
                     {{-- PROVIDED SOLUTION --}}
@@ -252,7 +253,8 @@
                         label="Provided Solution"
                         wire:model="provided_solution"
                         rows="5"
-                        placeholder="Enter the provided solution..." />
+                        placeholder="ENTER THE PROVIDED SOLUTION..."
+                        class="uppercase" />
 
 
                     {{-- RECOMMENDATION --}}
@@ -260,8 +262,8 @@
                         label="Recommendation"
                         wire:model="recommendation"
                         rows="5"
-                        placeholder="Enter recommendation..." />
-
+                        placeholder="ENTER RECOMMENDATION..."
+                        class="uppercase" />
 
                     {{-- IR ATTACHMENT --}}
                     <div>

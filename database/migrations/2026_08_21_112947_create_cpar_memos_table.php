@@ -17,8 +17,9 @@ return new class extends Migration
             $table->string('result_id')->nullable();
             $table->string('assignment_id')->nullable();
             $table->string('memo_no')->unique();
-            $table->string('memo_date');
             $table->string('subject')->nullable();
+            $table->string('memo_date');
+            $table->text('memo_re')->nullable();
             $table->longText('memo_content')->nullable();
             $table->text('memo_attachment')->nullable();
             $table->string('status')->default('DRAFT');

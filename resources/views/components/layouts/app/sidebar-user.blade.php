@@ -131,10 +131,8 @@
 
                             @endif
 
-
                             {{-- RESULT CONCERN --}}
-                            @if(auth()->user()->can('View Result Concern Form'))
-
+                            @if(auth()->user()->can('View Result Concern Form') && !auth()->user()->hasRole('USER'))
                             <a
                                 href="{{ route('user.result.result_request_form') }}"
                                 wire:navigate
@@ -147,9 +145,7 @@
                                     Result Concern
                                 </span>
                             </a>
-
                             @endif
-
 
                             {{-- OTHER CONCERN --}}
                             @if(auth()->user()->can('View CPAR Request Form'))
@@ -372,7 +368,7 @@
                     </a>
                     @endif
 
-                    @if(auth()->user()->can('View Result Concern Form'))
+                    @if(auth()->user()->can('View Result Concern Form') && !auth()->user()->hasRole('USER'))
                     <a
                         href="{{ route('user.result.result_request_form') }}"
                         wire:navigate

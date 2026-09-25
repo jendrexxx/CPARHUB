@@ -260,7 +260,6 @@ class HrDecisionModal extends Component
 
     protected function validateHRDecision()
     {
-
         $this->validate([
 
             'selectedCategories' => [

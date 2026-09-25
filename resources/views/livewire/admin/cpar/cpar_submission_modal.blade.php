@@ -96,7 +96,7 @@
                         </div>
                         <flux:textarea
                             label="Remarks"
-                            wire:model="remarks" />
+                            wire:model="remarks" class="uppercase" />
                     </div>
 
                 </div>
@@ -110,19 +110,19 @@
                             label="Identified Cause"
                             wire:model="identified_cause"
                             readonly
-                            class="opacity-60 cursor-not-allowed bg-zinc-100 dark:bg-zinc-800" />
+                            class="opacity-60 cursor-not-allowed bg-zinc-100 dark:bg-zinc-800 uppercase" />
 
                         <flux:textarea
                             label="Provided Solution"
                             wire:model="provided_solution"
                             readonly
-                            class="opacity-60 cursor-not-allowed bg-zinc-100 dark:bg-zinc-800" />
+                            class="opacity-60 cursor-not-allowed bg-zinc-100 dark:bg-zinc-800 uppercase" />
 
                         <flux:textarea
                             label="Recommendation"
                             wire:model="recommendation"
                             readonly
-                            class="opacity-60 cursor-not-allowed bg-zinc-100 dark:bg-zinc-800" />
+                            class="opacity-60 cursor-not-allowed bg-zinc-100 dark:bg-zinc-800 uppercase" />
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <flux:input
                                 label="Action Taken By"

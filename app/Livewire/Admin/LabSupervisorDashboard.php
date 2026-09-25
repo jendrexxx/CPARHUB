@@ -9,6 +9,7 @@ use Livewire\Attributes\Layout;
 #[Layout('components.layouts.app')]
 class LabSupervisorDashboard extends Component
 {
+    public $assigned_count = '';
     public $cpar_request_count = '';
     public $offenseTab = 'ALL';
     public $offenseCategories = [];
@@ -33,6 +34,27 @@ class LabSupervisorDashboard extends Component
             ->orderBy('id')
             ->get();
         $this->loadLABCount();
+        $this->loadAssignedCount();
+    }
+
+    public function loadAssignedCount()
+    {
+        // CPAR count
+        $cparCount = DB::table('cpar_request_forms as a')
+            ->join('cpar_assignments as b', 'a.id', '=', 'b.cpar_id')
+            ->join('employees as c', 'b.assigned_to', '=', 'c.id')
+            ->where('b.status_id', '!=', 50)
+            ->where('b.record_type', 5)
+            ->count(DB::raw('DISTINCT a.id'));
+        // Result Error count
+        $resultCount = DB::table('result_error_forms as a')
+            ->join('cpar_assignments as b', 'a.id', '=', 'b.result_id')
+            ->join('employees as c', 'b.assigned_to', '=', 'c.id')
+            ->where('b.status_id', '!=', 50)
+            ->where('b.record_type', 10)
+            ->count(DB::raw('DISTINCT a.id'));
+        // Combined count
+        $this->assigned_count = $cparCount + $resultCount;
     }
 
     public function loadLABCount()
@@ -56,7 +78,6 @@ class LabSupervisorDashboard extends Component
             ->join('cpar_statuses as h', 'b.status_id', '=', 'h.id')
             ->where('b.status_id', 35)
             ->count();
-
         // Combined count
         $this->cpar_request_count = $cparCount + $resultCount;
     }

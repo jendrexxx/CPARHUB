@@ -40,7 +40,7 @@ class ResultCancel extends Component
         DB::table('cpar_assignments')
             ->where('id', $this->cancelId)
             ->update([
-                'status_id' => 60,
+                'status_id' => 55,
                 'remarks'   => $this->cancelReason,
                 'updated_at' => now(),
             ]);

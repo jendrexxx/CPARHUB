@@ -35,7 +35,6 @@ class HrNotif extends Component
         $this->loadHRRecords();
     }
 
-
     public function loadHRRecords()
     {
         $cpar = DB::table('cpar_request_forms as a')

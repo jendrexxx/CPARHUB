@@ -29,7 +29,7 @@ class HrDecisionModal extends Component
     public $decisionCategories = [], $disciplinaryCategories = [], $offenseLevels = [];
     public $selectedCategories = [null], $selectedOffenseLevels = [''], $selectedHRDecisions = [''];
     public $isNoDisciplinaryAction = false;
-    public $nte_no = '', $hr_decision_remarks = '', $management_remarks = '';
+    public $nte_no = '', $hr_decision_remarks = '', $management_remarks = '', $employee_id = '';
     protected $listeners = [
         'open-decision-result' => 'open_decision'
     ];
@@ -145,6 +145,7 @@ class HrDecisionModal extends Component
                 'g.priority_name',
                 DB::raw("CONCAT(h.first_name, ' ', h.last_name) AS employee_assigned_to"),
                 'h.employee_no as employee_no_assigned',
+                'h.id as employee_id',
                 'i.identified_cause',
                 'i.provided_solution',
                 'i.recommendation',
@@ -233,6 +234,7 @@ class HrDecisionModal extends Component
         $this->tat = $result->tat;
         $this->ir_request_id = $result->ir_request_id;
         $this->management_remarks = $result->management_remarks;
+        $this->employee_id = $result->employee_id;
         // Basic information
         $this->selectedCategories = json_decode(
             $result->discipline_ids ?? '[]',
@@ -423,95 +425,310 @@ class HrDecisionModal extends Component
 
     protected function saveDisciplinaryRecord($status)
     {
-        $oldRecord = cpar_employee_disciplinary_records::where(
-            'assignment_id',
-            $this->id
-        )->first();
-        $incidentDate = Carbon::createFromFormat('m-d-Y', $this->date_reported);
+        DB::beginTransaction();
 
-        $validUntil = $incidentDate->month <= 6
-            ? $incidentDate->copy()->month(6)->endOfMonth()
-            : $incidentDate->copy()->month(12)->endOfMonth();
+        try {
 
-        $oldValue = [
-            'result_no' => $this->result_no,
-            'discipline_ids' => json_decode(
-                $oldRecord?->discipline_ids ?? '[]',
-                true
-            ),
-            'offense_ids' => json_decode(
-                $oldRecord?->offense_ids ?? '[]',
-                true
-            ),
-            'decision_ids' => json_decode(
-                $oldRecord?->decision_ids ?? '[]',
-                true
-            ),
-            'hr_decision_remarks' => $oldRecord?->remarks,
-            'decision_status' => $oldRecord?->status,
-            'status' => $oldRecord?->status ?? 'FOR REVIEW',
-        ];
+            $dateReported = trim($this->date_reported ?? '');
 
-        /*
-    |--------------------------------------------------------------------------
-    | SAVE HR DECISION
-    |--------------------------------------------------------------------------
-    */
+            if (empty($dateReported)) {
+                throw new \Exception('Date reported is required.');
+            }
 
-        cpar_employee_disciplinary_records::updateOrCreate(
-            [
-                'assignment_id' => $this->id,
-            ],
-            [
-                'discipline_ids' => json_encode(
-                    $this->selectedCategories
-                ),
-                'offense_ids' => json_encode(
-                    $this->selectedOffenseLevels
-                ),
-                'decision_ids' => json_encode(
-                    $this->selectedHRDecisions
-                ),
-                'incident_date' => $incidentDate->format('Y-m-d'),
-                'valid_until' => $validUntil->format('Y-m-d'),
-                'remarks' => $this->hr_decision_remarks,
-                'status' => $status,
-                'created_by' => auth()->id(),
-            ]
-        );
-        /*
-    |--------------------------------------------------------------------------
-    | AUDIT LOG
-    |--------------------------------------------------------------------------
-    */
+            try {
+                if (preg_match('/^\d{2}-\d{2}-\d{4}$/', $dateReported)) {
+                    $currentDate = Carbon::createFromFormat(
+                        'm-d-Y',
+                        $dateReported
+                    )->startOfDay();
+                } else {
+                    $currentDate = Carbon::parse(
+                        $dateReported
+                    )->startOfDay();
+                }
+            } catch (\Throwable $e) {
+                throw new \Exception(
+                    'Invalid date reported format: ' . $dateReported
+                );
+            }
 
-        DB::table('audit_logs')->insert([
-            'user_reported_by' => $this->employeeName,
-            'user_reported' => is_array($this->assigned_to)
-                ? json_encode($this->assigned_to)
-                : $this->assigned_to,
-            'action' => 'HR DECISION RESULT',
-            'old_value' => json_encode(
-                $oldValue,
-                JSON_UNESCAPED_UNICODE
-            ),
-            'new_value' => json_encode([
+            $cparRecords = DB::table('cpar_request_forms as a')
+                ->join(
+                    'cpar_assignments as b',
+                    'a.id',
+                    '=',
+                    'b.cpar_id'
+                )
+                ->join(
+                    'cpar_investigations as c',
+                    'b.id',
+                    '=',
+                    'c.assigned_id'
+                )
+                ->join(
+                    'departments as g',
+                    'a.department_id',
+                    '=',
+                    'g.id'
+                )
+                ->join(
+                    'cpar_statuses as h',
+                    'b.status_id',
+                    '=',
+                    'h.id'
+                )
+                ->join(
+                    'employees as i',
+                    'b.assigned_to',
+                    '=',
+                    'i.id'
+                )
+                ->join(
+                    'priority_levels as k',
+                    'a.priority_level',
+                    '=',
+                    'k.id'
+                )
+                ->join(
+                    'cpar_employee_disciplinary_records as m',
+                    'b.id',
+                    '=',
+                    'm.assignment_id'
+                )
+                ->select(
+                    'b.id as assignment_id',
+                    'a.cpar_no as record_no',
+                    DB::raw("'CPAR' as record_type"),
+                    'a.date_open as record_date',
+                    'b.assigned_to',
+                    'm.id as disciplinary_id',
+                    'm.incident_date',
+                    'm.valid_until',
+                    'm.status'
+                )
+                ->where(
+                    'b.assigned_to',
+                    $this->employee_id
+                )
+                ->where(
+                    'm.status',
+                    'FINAL'
+                );
+
+            $resultRecords = DB::table('result_error_forms as a')
+                ->join(
+                    'cpar_assignments as b',
+                    'a.id',
+                    '=',
+                    'b.result_id'
+                )
+                ->join(
+                    'cpar_investigations as c',
+                    'b.id',
+                    '=',
+                    'c.assigned_id'
+                )
+                ->join(
+                    'departments as g',
+                    'a.department_id',
+                    '=',
+                    'g.id'
+                )
+                ->join(
+                    'cpar_statuses as h',
+                    'b.status_id',
+                    '=',
+                    'h.id'
+                )
+                ->join(
+                    'employees as i',
+                    'b.assigned_to',
+                    '=',
+                    'i.id'
+                )
+                ->join(
+                    'priority_levels as k',
+                    'a.priority_level',
+                    '=',
+                    'k.id'
+                )
+                ->join(
+                    'cpar_employee_disciplinary_records as m',
+                    'b.id',
+                    '=',
+                    'm.assignment_id'
+                )
+                ->select(
+                    'b.id as assignment_id',
+                    'a.result_no as record_no',
+                    DB::raw("'RESULT' as record_type"),
+                    'a.date_reported as record_date',
+                    'b.assigned_to',
+                    'm.id as disciplinary_id',
+                    'm.incident_date',
+                    'm.valid_until',
+                    'm.status'
+                )
+                ->where(
+                    'b.assigned_to',
+                    $this->employee_id
+                )
+                ->where(
+                    'm.status',
+                    'FINAL'
+                );
+
+            $db_records = $cparRecords
+                ->unionAll($resultRecords)
+                ->get();
+
+            $previousRecords = $db_records
+                ->filter(function ($record) {
+                    return (int) $record->assignment_id
+                        !== (int) $this->id;
+                })
+                ->sortByDesc(function ($record) {
+                    return $record->record_date
+                        ?? $record->incident_date;
+                })
+                ->values();
+
+            $previousRecord = $previousRecords->first();
+
+            $offenseCount = 1;
+            $validUntil = null;
+
+            if (!$previousRecord) {
+
+                $offenseCount = 1;
+
+                $validUntil = $currentDate
+                    ->copy()
+                    ->addMonthsNoOverflow(6);
+            } else {
+
+                $oldValidUntil = null;
+
+                if (!empty($previousRecord->valid_until)) {
+                    try {
+                        $oldValidUntil = Carbon::parse(
+                            $previousRecord->valid_until
+                        )->startOfDay();
+                    } catch (\Throwable $e) {
+                        $oldValidUntil = null;
+                    }
+                }
+
+                if (!$oldValidUntil) {
+
+                    $offenseCount = 1;
+
+                    $validUntil = $currentDate
+                        ->copy()
+                        ->addMonthsNoOverflow(6);
+                } elseif ($currentDate->lte($oldValidUntil)) {
+
+                    $offenseCount = $previousRecords->count() + 1;
+
+                    $validUntil = $oldValidUntil;
+                } else {
+
+                    $offenseCount = 1;
+
+                    $validUntil = $currentDate
+                        ->copy()
+                        ->addMonthsNoOverflow(6);
+                }
+            }
+
+            $oldRecord = DB::table(
+                'cpar_employee_disciplinary_records'
+            )
+                ->where(
+                    'assignment_id',
+                    $this->id
+                )
+                ->first();
+
+            $oldValue = [
                 'result_no' => $this->result_no,
-                'assigned_id' => $this->id,
-                'discipline_ids' => $this->selectedCategories,
-                'offense_ids' => $this->selectedOffenseLevels,
-                'decision_ids' => $this->selectedHRDecisions,
-                'incident_date' => $incidentDate->format('Y-m-d'),
-                'valid_until' => $validUntil->format('Y-m-d'),
-                'hr_decision_remarks' => $this->hr_decision_remarks,
-                'decision_status' => $status,
-                'status' => 'HR DECISION RESULT',
-            ], JSON_UNESCAPED_UNICODE),
-            'status_changed_by' => $this->user_id,
-            'date' => now(),
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
+                'discipline_ids' => json_decode(
+                    $oldRecord?->discipline_ids ?? '[]',
+                    true
+                ),
+                'offense_ids' => json_decode(
+                    $oldRecord?->offense_ids ?? '[]',
+                    true
+                ),
+                'decision_ids' => json_decode(
+                    $oldRecord?->decision_ids ?? '[]',
+                    true
+                ),
+                'incident_date' => $oldRecord?->incident_date,
+                'valid_until' => $oldRecord?->valid_until,
+                'hr_decision_remarks' => $oldRecord?->remarks,
+                'decision_status' => $oldRecord?->status,
+                'status' => $oldRecord?->status ?? 'FOR REVIEW',
+            ];
+
+            cpar_employee_disciplinary_records::updateOrCreate(
+                [
+                    'assignment_id' => $this->id,
+                ],
+                [
+                    'discipline_ids' => json_encode(
+                        $this->selectedCategories
+                    ),
+                    'offense_ids' => json_encode(
+                        $this->selectedOffenseLevels
+                    ),
+                    'decision_ids' => json_encode(
+                        $this->selectedHRDecisions
+                    ),
+                    'incident_date' => $currentDate->format('Y-m-d'),
+                    'valid_until' => $validUntil->format('Y-m-d'),
+                    'remarks' => $this->hr_decision_remarks,
+                    'status' => $status,
+                    'created_by' => auth()->id(),
+                ]
+            );
+
+            DB::table('audit_logs')->insert([
+                'user_reported_by' => $this->employeeName,
+                'user_reported' => is_array($this->assigned_to)
+                    ? json_encode($this->assigned_to)
+                    : $this->assigned_to,
+                'action' => 'HR DECISION RESULT',
+                'old_value' => json_encode(
+                    $oldValue,
+                    JSON_UNESCAPED_UNICODE
+                ),
+                'new_value' => json_encode([
+                    'result_no' => $this->result_no,
+                    'assigned_id' => $this->id,
+                    'discipline_ids' => $this->selectedCategories,
+                    'offense_ids' => $this->selectedOffenseLevels,
+                    'decision_ids' => $this->selectedHRDecisions,
+                    'incident_date' => $currentDate->format('Y-m-d'),
+                    'valid_until' => $validUntil->format('Y-m-d'),
+                    'offense_number' => $offenseCount,
+                    'hr_decision_remarks' => $this->hr_decision_remarks,
+                    'decision_status' => $status,
+                    'status' => 'HR DECISION RESULT',
+                ], JSON_UNESCAPED_UNICODE),
+                'status_changed_by' => $this->employee_id,
+                'date' => now(),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+
+            DB::commit();
+        } catch (\Throwable $e) {
+
+            DB::rollBack();
+
+            throw $e;
+        }
     }
 
     public function render()

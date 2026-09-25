@@ -53,7 +53,20 @@ class CparRequestForm extends Component
         $this->date_opened = now()->format('M d, Y');
         $this->cpar_no = $this->generateCparNo();
         $this->source_origin = cpar_source_origins::select('id', 'source_name')->get();
-        $this->cpar_complain = cpar_complain_categories::select('id', 'complain_name')->get();
+        if (auth()->user()->hasAnyRole(['USER'])) {
+            $this->cpar_complain = cpar_complain_categories::select(
+                'id',
+                'complain_name'
+            )
+                ->where('complain_name', 'EMPLOYEE')
+                ->get();
+        } else {
+            $this->cpar_complain = cpar_complain_categories::select(
+                'id',
+                'complain_name'
+            )
+                ->get();
+        }
         $this->cpar_concern = cpar_concern_categories::select('id', 'concern_name')->get();
         $this->priority_level = priority_level::select('id', 'priority_name')->get();
         $resultsCategory = cpar_concern_categories::where('concern_name', 'Results')->first();
@@ -188,7 +201,7 @@ class CparRequestForm extends Component
         $this->reset_form();
         return redirect()
             ->route('user_dashboard')
-            ->with('toast', ['type' => 'success', 'message' => 'CPAR application submitted successfully!',]);
+            ->with('toast', ['type' => 'success', 'message' => 'OTHERS application submitted successfully!',]);
     }
 
     public function updatedComplainCategoryId($value = '')

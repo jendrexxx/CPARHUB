@@ -23,7 +23,6 @@
     <livewire:common.custom-table
         :model="'App\Models\Employee'"
         refreshEvent="refreshEmployees"
-        addRoute="employee-create"
         addLabel="Employee"
         :columns="[
             'employee_no'=>'Employee No',

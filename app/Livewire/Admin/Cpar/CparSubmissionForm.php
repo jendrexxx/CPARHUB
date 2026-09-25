@@ -67,23 +67,20 @@ class CparSubmissionForm extends Component
                 'a.result_no as record_no',
                 'a.reported_by',
                 'a.date_reported as record_date',
-
                 DB::raw("'RESULT' as record_type"),
-
                 'd.id as assignment_id',
                 'd.assigned_to',
                 'd.status_id',
-
                 'i.employee_no',
                 'i.first_name',
                 'i.last_name',
                 'i.dept_head',
-
                 'g.department_name',
                 'h.status_name'
             )
             ->where('d.status_id', 15)
-            ->where('d.record_type', 10);
+            ->where('d.record_type', 10)
+            ->where('i.dept_head', $this->employee_no);
 
         $this->acknowledgment_requests = $cpar
             ->unionAll($result)

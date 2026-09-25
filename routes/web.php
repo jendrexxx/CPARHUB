@@ -9,7 +9,9 @@ use App\Livewire\Admin\HrHeadDashboard;
 use App\Livewire\Admin\LabSupervisorDashboard;
 use App\Livewire\Admin\Reports\CparMasterFile;
 use App\Livewire\Admin\Reports\CparReports;
+use App\Livewire\Admin\Reports\ExcelAll;
 use App\Livewire\Admin\Reports\Pdf;
+use App\Livewire\Admin\Reports\PdfAll;
 use App\Livewire\Admin\Reports\ResultPdf;
 use App\Livewire\System\Setup;
 use App\Livewire\User\UserDashboard;
@@ -18,8 +20,6 @@ use Livewire\Volt\Volt;
 use App\Livewire\System\Users;
 use App\Livewire\User\Cpar\CparRequestForm;
 use App\Livewire\User\Result\ResultRequestForm;
-
-Route::view('dashboard', 'dashboard')->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware(['auth'])->group(function () {
     Route::redirect('settings', 'settings/profile');
@@ -40,7 +40,9 @@ Route::middleware(['auth', 'verified', 'session.timeout'])->group(function () {
 
     Route::get('/cpar/{assignment_id}/pdf', [Pdf::class, 'pdf'])->name('cpar.pdf');
     Route::get('/result/{assignment_id}/pdf', [ResultPdf::class, 'result'])->name('result.pdf');
-
+    Route::get('/pdf', [PdfAll::class, 'pdf'])->name('pdf');
+    Route::get('/export/excel', [ExcelAll::class, 'excel'])
+        ->name('excel');
 });
 
 Route::middleware(['auth', 'verified', 'session.timeout'])->group(function () {

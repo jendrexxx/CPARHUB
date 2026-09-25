@@ -26,12 +26,12 @@ class Employees extends Component
         try {
 
             $response = Http::timeout(5)
+                ->connectTimeout(3)
                 ->withHeaders([
                     'X-API-KEY1' => env('API_KEY1'),
                     'X-API-KEY2' => env('API_KEY2'),
                 ])
-                ->get('http://127.0.0.1:8000/api/api_testing');
-
+                ->get('https://apiv1.pmclhrhub.com/api/dashportal/dashdata');
             if ($response->successful()) {
 
                 $employees = $response->json()['data'];
@@ -58,7 +58,7 @@ class Employees extends Component
                             'regularization_date' => $emp['regularization_date'] ?? null,
                             'probationary_date' => $emp['probationary_date'] ?? null,
 
-                            'dept_head' => $emp['dept_head'] ?? null,
+                            'dept_head' => $emp['dept_head_id'] ?? null,
 
                             'branch_id' => $emp['branch_id'] ?? null,
                             'branch_name' => $emp['branch_name'] ?? null,

@@ -1,13 +1,10 @@
-<div>
+<div class="memo-print-root">
     <flux:modal
         name="memo-result"
         class="w-[120%] max-w-[1500px] mt-6 top-0 z-50">
 
         <div class="space-y-6">
 
-            {{-- ===================================================== --}}
-            {{-- HEADER --}}
-            {{-- ===================================================== --}}
             <div>
                 <flux:heading size="lg">
                     Employee Memo
@@ -20,15 +17,8 @@
 
             <flux:separator />
 
-
-            {{-- ===================================================== --}}
-            {{-- RESULT + INVESTIGATION --}}
-            {{-- ===================================================== --}}
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
-                {{-- ================================================= --}}
-                {{-- RESULT INFORMATION --}}
-                {{-- ================================================= --}}
                 <div class="space-y-5">
 
                     <div>
@@ -112,10 +102,6 @@
                         readonly
                         class="opacity-60 cursor-not-allowed bg-zinc-100 dark:bg-zinc-800" />
 
-
-                    {{-- ================================================= --}}
-                    {{-- RESULT ERROR / CONCERN --}}
-                    {{-- ================================================= --}}
                     <div class="space-y-3">
 
                         <flux:label>
@@ -292,10 +278,6 @@
 
                 </div>
 
-
-                {{-- ================================================= --}}
-                {{-- RESULT RESPONSE / INVESTIGATION --}}
-                {{-- ================================================= --}}
                 <div class="space-y-5">
 
                     <div>
@@ -569,10 +551,6 @@
 
             </div>
 
-
-            {{-- ===================================================== --}}
-            {{-- HR DECISION --}}
-            {{-- ===================================================== --}}
             <flux:separator />
 
             <div class="space-y-5">
@@ -677,10 +655,6 @@
 
             </div>
 
-
-            {{-- ===================================================== --}}
-            {{-- MANAGEMENT --}}
-            {{-- ===================================================== --}}
             @if (!empty($management_remarks))
 
             <flux:separator />
@@ -709,91 +683,528 @@
 
             @endif
 
-
-            {{-- ===================================================== --}}
-            {{-- MEMO DETAILS --}}
-            {{-- ===================================================== --}}
             <flux:separator />
 
-            <div class="space-y-5">
+            <div class="space-y-6">
 
-                <div>
+                {{-- HEADER --}}
+                <div class="print-hidden">
                     <flux:label class="text-xl font-bold">
                         Memo Details
                     </flux:label>
 
-                    <flux:text class="mt-1">
+                    <flux:text class="mt-1 text-zinc-500">
                         Prepare the employee memo based on the approved HR decision.
                     </flux:text>
                 </div>
 
+                <div>
 
-                {{-- MEMO NO + DATE --}}
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div
+                        class="rounded-xl border border-zinc-200 bg-white p-6
+                         dark:border-zinc-700 dark:bg-zinc-900">
 
-                    <flux:input
-                        label="Memo No."
-                        wire:model="memo_no"
-                        readonly
-                        class="opacity-60 cursor-not-allowed bg-zinc-100 dark:bg-zinc-800" />
+                        {{-- SUBJECT --}}
+                        <div class="flex items-center">
 
-                    <flux:input
-                        label="Date"
-                        wire:model="memo_date"
-                        readonly
-                        class="opacity-60 cursor-not-allowed bg-zinc-100 dark:bg-zinc-800" />
+                            <div class="w-28 shrink-0 font-semibold">
+                                Subject:
+                            </div>
 
-                </div>
+                            <div class="flex-1">
 
+                                <flux:input
+                                    wire:model="memo_subject"
+                                    placeholder="Enter subject..."
+                                    @input="$el.value = $el.value.toUpperCase()"
+                                    class="uppercase" />
 
-                {{-- SUBJECT --}}
-                <flux:input
-                    label="Subject"
-                    wire:model="memo_subject"
-                    placeholder="Enter memo subject..." />
+                            </div>
 
-
-                {{-- CONTENT + PRINT --}}
-                <div class="space-y-3">
-                    <div class="flex items-end gap-3">
-
-                        <div class="flex-1">
-                            <flux:textarea
-                                id="memo_content"
-                                label="Content"
-                                wire:model="memo_content"
-                                rows="10"
-                                placeholder="Enter memo content..." />
                         </div>
 
-                        <div class="shrink-0">
-                            <flux:button
-                                type="button"
-                                variant="primary"
-                                icon="printer"
-                                wire:click="printResultMemo">
-                                Print
-                            </flux:button>
+                        {{-- DATE --}}
+                        <div class="mt-4 flex items-center">
+
+                            <div class="w-28 shrink-0 font-semibold">
+                                Date:
+                            </div>
+
+                            <div class="flex-1">
+
+                                <flux:input
+                                    wire:model="memo_date"
+                                    readonly
+                                    class="cursor-not-allowed bg-zinc-100 dark:bg-zinc-800" />
+
+                            </div>
+
+                        </div>
+
+                        {{-- TO --}}
+                        <div class="mt-4 flex items-center">
+
+                            <div class="w-28 shrink-0 font-semibold">
+                                To:
+                            </div>
+
+                            <div class="flex-1">
+
+                                <flux:input
+                                    wire:model="full_name"
+                                    readonly
+                                    class="cursor-not-allowed bg-zinc-100 dark:bg-zinc-800" />
+
+                            </div>
+
+                        </div>
+
+                        {{-- FROM --}}
+                        <div class="mt-4 flex items-center">
+
+                            <div class="w-28 shrink-0 font-semibold">
+                                From:
+                            </div>
+
+                            <div class="flex-1">
+
+                                <flux:input
+                                    wire:model="from"
+                                    readonly
+                                    class="cursor-not-allowed bg-zinc-100 dark:bg-zinc-800" />
+
+                            </div>
+
+                        </div>
+
+                        {{-- RE --}}
+                        <div class="mt-4 flex items-center">
+
+                            <div class="w-28 shrink-0 font-semibold">
+                                RE:
+                            </div>
+
+                            <div class="flex-1">
+
+                                <flux:input
+                                    wire:model="memo_re"
+                                    placeholder="Enter memo reference..."
+                                    class="uppercase" />
+
+                            </div>
+
+                        </div>
+
+                        {{-- MEMO CONTENT --}}
+                        <div class="mt-6">
+
+                            <flux:textarea
+                                id="memo_content"
+                                label="Memo Content"
+                                wire:model.live="memo_content"
+                                rows="18"
+                                class="uppercase"
+                                placeholder="Enter memo content..." />
+
+                        </div>
+
+                        {{-- SIGNATORY --}}
+                        <div class="mt-6">
+
+                            <div class="mb-2 text-sm font-semibold">
+                                Signatory
+                            </div>
+
+                            <flux:input
+                                wire:model="signatory"
+                                readonly
+                                class="cursor-not-allowed bg-zinc-100 dark:bg-zinc-800" />
+
+                        </div>
+
+                        {{-- CONFORME --}}
+                        <div class="mt-8">
+
+                            <div class="mb-8 text-sm font-semibold">
+                                CONFORME:
+                            </div>
+
+                            <div
+                                class="w-80 border-b border-zinc-900 pb-1 dark:border-zinc-100">
+                                {{ $full_name }}
+                            </div>
+
+                            <div class="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
+                                {{ $position_name }}
+                            </div>
+
                         </div>
 
                     </div>
+
+                    <div class="mt-6 flex justify-end gap-2 print-hidden">
+                        <flux:button
+                            type="button"
+                            icon="printer"
+                            onclick="printMemo({{ $assignment_id }})">
+                            Print Memo
+                        </flux:button>
+                    </div>
+
                 </div>
 
-                {{-- MEMO ATTACHMENT --}}
-                <div class="space-y-3">
+                <style>
+                    .memo-print-wrapper {
+                        display: none;
+                    }
 
-                    <flux:label>
+                    @media print {
+
+                        @page {
+                            size: A4;
+                            margin: 12mm 15mm 12mm 15mm;
+                        }
+
+                        body * {
+                            visibility: hidden !important;
+                        }
+
+                        .memo-print-wrapper,
+                        .memo-print-wrapper * {
+                            visibility: visible !important;
+                        }
+
+                        .memo-print-wrapper {
+                            display: block !important;
+
+                            position: absolute !important;
+
+                            top: 0 !important;
+                            left: 0 !important;
+
+                            width: 180mm !important;
+                            max-width: 180mm !important;
+
+                            margin: 0 !important;
+                            padding: 0 !important;
+
+                            background: white !important;
+                        }
+
+                        .memo-form {
+                            display: block !important;
+
+                            width: 180mm !important;
+                            max-width: 180mm !important;
+
+                            margin: 0 !important;
+                            padding: 0 !important;
+
+                            background: white !important;
+                            color: black !important;
+
+                            font-family: Arial, Helvetica, sans-serif !important;
+                            font-size: 10pt !important;
+                            line-height: 1.25 !important;
+                        }
+
+                        /* =========================
+           LOGO
+           ========================= */
+
+                        .memo-logo-result {
+                            display: block !important;
+                            width: 100% !important;
+                            max-width: 100% !important;
+                            margin: 0 0 0px 55px !important;
+                            padding: 0 !important;
+                            text-align: center !important;
+                        }
+
+                        .memo-logo-result img {
+                            display: inline-block !important;
+                            width: 300px !important;
+                            max-width: 300px !important;
+                            height: auto !important;
+                            margin: 0 !important;
+                            padding: 0 !important;
+                            object-fit: contain !important;
+                            vertical-align: top !important;
+                        }
+
+                        /* =========================
+           MEMO FIELDS
+           ========================= */
+
+                        .memo-field {
+                            display: grid !important;
+
+                            grid-template-columns: 75px 1fr !important;
+                            column-gap: 10px !important;
+
+                            align-items: start !important;
+
+                            width: 100% !important;
+
+                            margin: 0 0 7px 0 !important;
+                            padding: 0 !important;
+
+                            break-inside: avoid !important;
+                            page-break-inside: avoid !important;
+                        }
+
+                        .memo-label {
+                            display: block !important;
+
+                            width: auto !important;
+                            min-width: 0 !important;
+
+                            margin: 0 !important;
+                            padding: 0 !important;
+
+                            font-weight: 700 !important;
+                            font-size: 10pt !important;
+                            line-height: 1.25 !important;
+
+                            color: black !important;
+
+                            white-space: nowrap !important;
+                        }
+
+                        .memo-input {
+                            display: block !important;
+
+                            width: 100% !important;
+                            min-width: 0 !important;
+                            min-height: 0 !important;
+
+                            margin: 0 !important;
+                            padding: 0 !important;
+
+                            border: 0 !important;
+                            border-radius: 0 !important;
+
+                            background: transparent !important;
+                            color: black !important;
+
+                            font-size: 10pt !important;
+                            line-height: 1.25 !important;
+
+                            text-transform: uppercase !important;
+
+                            word-break: normal !important;
+                            overflow-wrap: break-word !important;
+                        }
+
+                        /* =========================
+           MEMO CONTENT
+           ========================= */
+
+                        .memo-content {
+                            display: block !important;
+
+                            width: 100% !important;
+
+                            margin: 18px 0 0 0 !important;
+                            padding: 0 !important;
+
+                            break-inside: avoid !important;
+                            page-break-inside: avoid !important;
+                        }
+
+                        .memo-content-label {
+                            display: block !important;
+
+                            margin: 0 0 6px 0 !important;
+                            padding: 0 !important;
+
+                            font-weight: 700 !important;
+                            font-size: 10pt !important;
+                            line-height: 1.25 !important;
+
+                            color: black !important;
+                        }
+
+                        .memo-content .memo-input {
+                            display: block !important;
+
+                            width: 100% !important;
+
+                            margin: 0 !important;
+                            padding: 0 !important;
+
+                            line-height: 1.3 !important;
+
+                            white-space: pre-wrap !important;
+
+                            text-transform: uppercase !important;
+
+                            word-break: normal !important;
+                            overflow-wrap: break-word !important;
+                        }
+
+                        /* =========================
+           SIGNATORY
+           ========================= */
+
+                        .memo-signatory {
+                            display: block !important;
+
+                            width: 100% !important;
+
+                            margin: 20px 0 0 0 !important;
+                            padding: 0 !important;
+
+                            break-inside: avoid !important;
+                            page-break-inside: avoid !important;
+                        }
+
+                        .memo-signatory .memo-label {
+                            margin: 0 0 6px 0 !important;
+                        }
+
+                        .memo-signatory .memo-input {
+                            width: 100% !important;
+                        }
+
+                        /* =========================
+           CONFORME
+           ========================= */
+
+                        .memo-conforme {
+                            display: block !important;
+
+                            width: 100% !important;
+
+                            margin: 28px 0 0 0 !important;
+                            padding: 0 !important;
+
+                            break-inside: avoid !important;
+                            page-break-inside: avoid !important;
+                        }
+
+                        .memo-conforme-label {
+                            display: block !important;
+
+                            margin: 0 0 25px 0 !important;
+                            padding: 0 !important;
+
+                            font-weight: 700 !important;
+                            font-size: 10pt !important;
+
+                            color: black !important;
+                        }
+
+                        .memo-signature {
+                            display: block !important;
+
+                            width: 245px !important;
+
+                            margin: 0 !important;
+                            padding: 0 0 2px 0 !important;
+
+                            border-bottom: 1px solid black !important;
+
+                            font-weight: 700 !important;
+                            font-size: 10pt !important;
+
+                            color: black !important;
+                        }
+
+                        .memo-position {
+                            display: block !important;
+
+                            width: 245px !important;
+
+                            margin-top: 3px !important;
+                            padding: 0 !important;
+
+                            font-size: 10pt !important;
+
+                            color: black !important;
+                        }
+
+                        /* =========================
+           PAGE BREAK CONTROL
+           ========================= */
+
+                        .memo-logo-result,
+                        .memo-field,
+                        .memo-content,
+                        .memo-signatory,
+                        .memo-conforme {
+                            break-inside: avoid !important;
+                            page-break-inside: avoid !important;
+                        }
+
+                        /* =========================
+           FORCE PRINT COLORS
+           ========================= */
+
+                        .memo-print-wrapper,
+                        .memo-print-wrapper * {
+                            color: black !important;
+                            background: white !important;
+
+                            box-sizing: border-box !important;
+                        }
+                    }
+
+                    .memo-text-field1 {
+                        margin: 0 !important;
+                        padding: 0 !important;
+
+                        width: 100% !important;
+
+                        text-align: left !important;
+                        text-indent: 0 !important;
+
+                        white-space: pre-wrap !important;
+                        overflow-wrap: break-word !important;
+                        word-break: normal !important;
+
+                        font-family: Arial, Helvetica, sans-serif !important;
+                        font-size: 10pt !important;
+                        line-height: 1.3 !important;
+                    }
+
+                    @media print {
+                        .memo-text-field1 {
+                            margin: 0 !important;
+                            padding: 0 !important;
+
+                            width: 100% !important;
+                            max-width: 100% !important;
+
+                            text-align: left !important;
+                            text-indent: 0 !important;
+
+                            white-space: pre-wrap !important;
+                            overflow-wrap: break-word !important;
+                            word-break: normal !important;
+
+                            line-height: 1.3 !important;
+                        }
+                    }
+                </style>
+
+
+                {{-- MEMO ATTACHMENT --}}
+                <div
+                    id="memo-attachment"
+                    class="rounded-xl border border-zinc-200 bg-white p-5
+                 dark:border-zinc-700 dark:bg-zinc-900">
+
+                    <flux:label class="mb-4 text-base font-semibold">
                         Memo Attachment
                     </flux:label>
-
 
                     {{-- CURRENT ATTACHMENT --}}
                     @if ($current_memo_attachment)
 
-                    <div
-                        class="flex items-center justify-between rounded-lg
-                                   border border-zinc-200 bg-zinc-50 px-4 py-3
-                                   dark:border-zinc-700 dark:bg-zinc-800">
+                    <div class="mb-4 flex items-center justify-between rounded-lg
+                        border border-zinc-200 bg-zinc-50 px-4 py-3
+                        dark:border-zinc-700 dark:bg-zinc-800">
 
                         <div class="flex min-w-0 items-center gap-3">
 
@@ -809,15 +1220,12 @@
                                 <flux:text
                                     size="sm"
                                     class="text-zinc-500">
-
                                     Memo document is already uploaded.
-
                                 </flux:text>
 
                             </div>
 
                         </div>
-
 
                         <flux:button
                             size="sm"
@@ -841,23 +1249,16 @@
                         wire:model="memo_attachment"
                         accept="application/pdf" />
 
-
                     @error('memo_attachment')
-
                     <span class="text-sm text-red-600">
                         {{ $message }}
                     </span>
-
                     @enderror
 
                 </div>
 
             </div>
 
-
-            {{-- ===================================================== --}}
-            {{-- FOOTER BUTTONS --}}
-            {{-- ===================================================== --}}
             <flux:separator />
 
             <div class="flex justify-end items-center gap-3">
@@ -922,97 +1323,124 @@
 
     </flux:modal>
 
-    @script
-    <script>
-        $wire.on('print-memo-result', ({
-            content
-        }) => {
+    <div
+        id="memo-print-{{ $assignment_id }}"
+        class="memo-print-wrapper">
 
-            if (!content || !content.trim()) {
-                return;
-            }
+        <div class="memo-form">
 
-            const printWindow = window.open(
-                '',
-                '_blank',
-                'width=900,height=700'
-            );
+            <div class="memo-logo-result">
+                <img
+                    src="{{ asset('logo/premierelaboratory_cover.jpg') }}"
+                    alt="Premiere Medical Logo"
+                    class="mx-auto h-auto">
+            </div>
 
-            if (!printWindow) {
-                alert('Please allow pop-ups to print the memo.');
-                return;
-            }
-
-            const escapeHtml = (text) => {
-                const div = document.createElement('div');
-                div.textContent = text;
-                return div.innerHTML;
-            };
-
-            printWindow.document.open();
-
-            printWindow.document.write(`
-            <!DOCTYPE html>
-            <html>
-            <head>
-                <meta charset="UTF-8">
-
-                <title>Employee Memo</title>
-
-                <style>
-                    @page {
-                        size: A4;
-                        margin: 20mm;
-                    }
-
-                    * {
-                        box-sizing: border-box;
-                    }
-
-                    body {
-                        margin: 0;
-                        padding: 0;
-
-                        font-family: Arial, sans-serif;
-                        font-size: 14px;
-                        line-height: 1.6;
-
-                        color: #000;
-                        background: #fff;
-
-                        white-space: pre-wrap;
-                        overflow-wrap: break-word;
-                        word-wrap: break-word;
-                    }
-
-                    .memo-content {
-                        width: 100%;
-                    }
-                </style>
-            </head>
-
-            <body>
-                <div class="memo-content">
-                    ${escapeHtml(content)}
+            <!-- <div class="memo-field">
+                <div class="memo-label">
+                    SUBJECT:
                 </div>
-            </body>
-            </html>
-        `);
 
-            printWindow.document.close();
+                <div class="memo-input">
+                    {{ strtoupper($memo_subject ?? '') }}
+                </div>
+            </div> -->
 
-            // Wait for the print document to finish loading
-            printWindow.onload = () => {
+            <div class="memo-field">
+                <div class="memo-label">
+                    DATE:
+                </div>
 
-                printWindow.focus();
+                <div class="memo-input">
+                    {{ $memo_date ?? '' }}
+                </div>
+            </div>
 
-                setTimeout(() => {
-                    printWindow.print();
-                }, 300);
-            };
+            <div class="memo-field">
+                <div class="memo-label">
+                    TO:
+                </div>
 
-        });
+                <div class="memo-input">
+                    {{ $full_name ?? '' }}
+                </div>
+            </div>
+
+            <div class="memo-field">
+                <div class="memo-label">
+                    FROM:
+                </div>
+
+                <div class="memo-input">
+                    {{ $from ?? '' }}
+                </div>
+            </div>
+
+            <div class="memo-field">
+                <div class="memo-label">
+                    RE:
+                </div>
+
+                <div class="memo-input">
+                    {{ strtoupper($memo_re ?? '') }}
+                </div>
+            </div>
+
+            <div class="memo-content">
+
+                <div class="memo-text-field1">{{ strtoupper($memo_content ?? '') }}</div>
+
+            </div>
+
+            <div class="memo-signatory">
+
+                <div class="memo-label">
+                    SIGNATORY:
+                </div>
+
+                <div class="memo-input">
+                    {{ $signatory ?? '' }}
+                </div>
+
+            </div>
+
+            <div class="memo-conforme">
+
+                <div class="memo-conforme-label">
+                    CONFORME:
+                </div>
+
+                <div class="memo-signature">
+                    {{ $full_name ?? '' }}
+                </div>
+
+                <div class="memo-position">
+                    {{ $position_name ?? '' }}
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+
+    <script>
+        function printMemo(memoId) {
+            const memo = document.getElementById('memo-print-' + memoId);
+
+            if (!memo) {
+                console.error('Memo print element not found:', memoId);
+                return;
+            }
+
+            document.body.classList.add('result-memo-printing');
+
+            window.print();
+
+            setTimeout(() => {
+                document.body.classList.remove('result-memo-printing');
+            }, 500);
+        }
     </script>
-    @endscript
 
 </div>

@@ -236,8 +236,9 @@
                         label="Identified Cause"
                         wire:model="identified_cause"
                         rows="5"
-                        placeholder="Enter the identified cause..."
-                        class="opacity-60 cursor-not-allowed bg-zinc-100 dark:bg-zinc-800" />
+                        placeholder="ENTER THE IDENTIFIED CAUSE..."
+                        disabled
+                        class="uppercase opacity-60 cursor-not-allowed bg-zinc-100 dark:bg-zinc-800" />
 
 
                     {{-- PROVIDED SOLUTION --}}
@@ -245,8 +246,9 @@
                         label="Provided Solution"
                         wire:model="provided_solution"
                         rows="5"
-                        placeholder="Enter the provided solution..."
-                        class="opacity-60 cursor-not-allowed bg-zinc-100 dark:bg-zinc-800" />
+                        placeholder="ENTER THE PROVIDED SOLUTION..."
+                        disabled
+                        class="uppercase opacity-60 cursor-not-allowed bg-zinc-100 dark:bg-zinc-800" />
 
 
                     {{-- RECOMMENDATION --}}
@@ -254,9 +256,9 @@
                         label="Recommendation"
                         wire:model="recommendation"
                         rows="5"
-                        placeholder="Enter recommendation..."
-                        class="opacity-60 cursor-not-allowed bg-zinc-100 dark:bg-zinc-800" />
-
+                        placeholder="ENTER RECOMMENDATION..."
+                        disabled
+                        class="uppercase opacity-60 cursor-not-allowed bg-zinc-100 dark:bg-zinc-800" />
 
                     {{-- IR ATTACHMENT --}}
                     @if($existing_ir_attachment)
@@ -341,9 +343,12 @@
 
                         {{-- REMARKS --}}
                         <div class="mt-4">
-                            <flux:textarea label="Dept Head Remarks" wire:model="dept_head_remarks" rows="4"
+                            <flux:textarea
+                                label="Dept Head Remarks"
+                                wire:model="dept_head_remarks"
+                                rows="4"
                                 readonly
-                                class="opacity-60 cursor-not-allowed bg-zinc-100 dark:bg-zinc-800" />
+                                class="uppercase opacity-60 cursor-not-allowed bg-zinc-100 dark:bg-zinc-800" />
                         </div>
 
                     </div>

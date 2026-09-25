@@ -174,7 +174,6 @@ class HrReassign extends Component
             $this->status_name = '';
             $this->new_assignees = [];
         }
-
         $this->modal('reassign-cpar')->show();
     }
 

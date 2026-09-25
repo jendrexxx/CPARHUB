@@ -13,6 +13,30 @@
     </div>
     @include('toast')
     <div class="p-3 grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
+        <flux:modal.trigger name="LABAssignedModal">
+            <div class="group flex h-full w-full items-center gap-4 p-5
+                bg-white dark:bg-zinc-900
+                rounded-2xl border border-gray-200 dark:border-zinc-700
+                shadow-sm cursor-pointer
+                transition-all duration-200
+                hover:-translate-y-1 hover:shadow-lg">
+                <div class="flex h-12 w-12 shrink-0 items-center justify-center
+                    rounded-xl bg-yellow-100 text-yellow-600
+                    group-hover:bg-yellow-500 group-hover:text-white
+                    transition-colors duration-200">
+                    <flux:icon.clipboard-document-list class="w-6 h-6" />
+                </div>
+                <div class="min-w-0">
+                    <div class="text-2xl font-bold text-gray-900 dark:text-white">
+                        {{ $assigned_count }}
+                    </div>
+
+                    <div class="text-sm font-medium text-gray-600 dark:text-gray-400">
+                        Re-Assigned Concern
+                    </div>
+                </div>
+            </div>
+        </flux:modal.trigger>
         <flux:modal.trigger name="LABModal">
             <div
                 class="group flex h-full w-full items-center gap-4 p-5
@@ -41,8 +65,8 @@
             </div>
         </flux:modal.trigger>
     </div>
-    {{-- FILTERS --}}
     <livewire:admin.lab.lab_notif />
+    <livewire:admin.lab.lab_assigned />
     <livewire:admin.lab.lab_request />
     <livewire:admin.lab.lab_result />
     <livewire:admin.lab.tabs />

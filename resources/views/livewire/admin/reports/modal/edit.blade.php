@@ -1,17 +1,174 @@
 <div>
+    <style>
+        [x-cloak] {
+            display: none !important;
+        }
+    </style>
+
     <flux:modal name="master-file-modal" class="w-full max-w-7xl">
-        <div class="mb-6">
-            <h2 class="text-xl font-semibold text-gray-900 dark:text-white">
-                CPAR Master File
-            </h2>
-            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                View and manage complete CPAR master records.
-            </p>
-        </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div
+            x-data="{ step: 1 }"
+            class="space-y-6">
 
-            <div class="space-y-5">
+            <div class="mb-6">
+                <h2 class="text-xl font-semibold text-gray-900 dark:text-white">
+                    RESULT/OTHERS Master File
+                </h2>
+
+                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                    View and manage complete RESULT/OTHERS master records.
+                </p>
+            </div>
+
+            <div class="flex items-center justify-between border-b border-gray-200 pb-5 dark:border-gray-700">
+
+                <div class="flex flex-1 items-center">
+
+                    <div class="flex items-center">
+                        <div
+                            class="flex h-9 w-9 items-center justify-center rounded-full text-sm font-semibold"
+                            :class="step >= 1
+                                ? 'bg-red-800 text-white'
+                                : 'border border-gray-300 text-gray-500'">
+                            1
+                        </div>
+
+                        <span
+                            class="ml-2 hidden text-sm font-medium md:block"
+                            :class="step >= 1 ? 'text-red-800' : 'text-gray-500'">
+                            Employee
+                        </span>
+                    </div>
+
+                    <div
+                        class="mx-3 h-px flex-1"
+                        :class="step > 1 ? 'bg-red-800' : 'bg-gray-300'"></div>
+
+                    <div class="flex items-center">
+                        <div
+                            class="flex h-9 w-9 items-center justify-center rounded-full text-sm font-semibold"
+                            :class="step >= 2
+                                ? 'bg-red-800 text-white'
+                                : 'border border-gray-300 text-gray-500'">
+                            2
+                        </div>
+
+                        <span
+                            class="ml-2 hidden text-sm font-medium md:block"
+                            :class="step >= 2 ? 'text-red-800' : 'text-gray-500'">
+                            Assignment
+                        </span>
+                    </div>
+
+                    <div
+                        class="mx-3 h-px flex-1"
+                        :class="step > 2 ? 'bg-red-800' : 'bg-gray-300'"></div>
+
+                    <div class="flex items-center">
+                        <div
+                            class="flex h-9 w-9 items-center justify-center rounded-full text-sm font-semibold"
+                            :class="step >= 3
+                                ? 'bg-red-800 text-white'
+                                : 'border border-gray-300 text-gray-500'">
+                            3
+                        </div>
+
+                        <span
+                            class="ml-2 hidden text-sm font-medium md:block"
+                            :class="step >= 3 ? 'text-red-800' : 'text-gray-500'">
+                            Investigation
+                        </span>
+                    </div>
+
+                    <div
+                        class="mx-3 h-px flex-1"
+                        :class="step > 3 ? 'bg-red-800' : 'bg-gray-300'"></div>
+
+                    <div class="flex items-center">
+                        <div
+                            class="flex h-9 w-9 items-center justify-center rounded-full text-sm font-semibold"
+                            :class="step >= 4
+                                ? 'bg-red-800 text-white'
+                                : 'border border-gray-300 text-gray-500'">
+                            4
+                        </div>
+
+                        <span
+                            class="ml-2 hidden text-sm font-medium md:block"
+                            :class="step >= 4 ? 'text-red-800' : 'text-gray-500'">
+                            Dept Head
+                        </span>
+                    </div>
+
+                    <div
+                        class="mx-3 h-px flex-1"
+                        :class="step > 4 ? 'bg-red-800' : 'bg-gray-300'"></div>
+
+                    <div class="flex items-center">
+                        <div
+                            class="flex h-9 w-9 items-center justify-center rounded-full text-sm font-semibold"
+                            :class="step >= 5
+                                ? 'bg-red-800 text-white'
+                                : 'border border-gray-300 text-gray-500'">
+                            5
+                        </div>
+
+                        <span
+                            class="ml-2 hidden text-sm font-medium md:block"
+                            :class="step >= 5 ? 'text-red-800' : 'text-gray-500'">
+                            HR Decision
+                        </span>
+                    </div>
+
+                    <div
+                        class="mx-3 h-px flex-1"
+                        :class="step > 5 ? 'bg-red-800' : 'bg-gray-300'"></div>
+
+                    <div class="flex items-center">
+                        <div
+                            class="flex h-9 w-9 items-center justify-center rounded-full text-sm font-semibold"
+                            :class="step >= 6
+                                ? 'bg-red-800 text-white'
+                                : 'border border-gray-300 text-gray-500'">
+                            6
+                        </div>
+
+                        <span
+                            class="ml-2 hidden text-sm font-medium md:block"
+                            :class="step >= 6 ? 'text-red-800' : 'text-gray-500'">
+                            Management
+                        </span>
+                    </div>
+
+                    <div
+                        class="mx-3 h-px flex-1"
+                        :class="step > 6 ? 'bg-red-800' : 'bg-gray-300'"></div>
+
+                    <div class="flex items-center">
+                        <div
+                            class="flex h-9 w-9 items-center justify-center rounded-full text-sm font-semibold"
+                            :class="step >= 7
+                                ? 'bg-red-800 text-white'
+                                : 'border border-gray-300 text-gray-500'">
+                            7
+                        </div>
+
+                        <span
+                            class="ml-2 hidden text-sm font-medium md:block"
+                            :class="step >= 7 ? 'text-red-800' : 'text-gray-500'">
+                            Memo
+                        </span>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div
+                x-show="step === 1"
+                x-cloak
+                class="space-y-5">
 
                 <div>
                     <flux:label class="text-xl font-bold">
@@ -23,20 +180,19 @@
                     </flux:text>
                 </div>
 
-                {{-- CPAR NO + DATE --}}
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
 
                     <flux:input
                         label="CPAR No."
                         wire:model="cpar_no"
                         readonly
-                        class="opacity-60 cursor-not-allowed bg-zinc-100 dark:bg-zinc-800" />
+                        class="cursor-not-allowed bg-zinc-100 opacity-60 dark:bg-zinc-800" />
 
                     <flux:input
                         label="Date Open"
                         wire:model="date_open"
                         readonly
-                        class="opacity-60 cursor-not-allowed bg-zinc-100 dark:bg-zinc-800" />
+                        class="cursor-not-allowed bg-zinc-100 opacity-60 dark:bg-zinc-800" />
 
                 </div>
 
@@ -53,16 +209,14 @@
                     @endforeach
                 </flux:select>
 
-                {{-- REPORTED BY + SOURCE --}}
                 <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
 
-                    {{-- Reported By --}}
                     <flux:select
                         label="Reported By"
                         wire:model.live="reported_by"
                         placeholder="Select Reported By">
-
                         @foreach ($employees as $employee)
+
                         @php
                         $fullName = trim(
                         $employee->first_name . ' ' . $employee->last_name
@@ -74,11 +228,10 @@
                             wire:key="reported-by-{{ $employee->id }}">
                             {{ $fullName }}
                         </flux:select.option>
-                        @endforeach
 
+                        @endforeach
                     </flux:select>
 
-                    {{-- Branch --}}
                     <flux:select
                         label="Branch"
                         wire:model.live="branch_id"
@@ -90,19 +243,16 @@
                             {{ $item->branch_name }}
                         </flux:select.option>
                         @endforeach
-
                     </flux:select>
 
                 </div>
 
-                {{-- COMPLAINANT --}}
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
 
                     <flux:select
                         label="Complainant Category"
                         wire:model.live="complain_name"
                         placeholder="Select Complainant Category">
-
                         @foreach ($cpar_complain as $complain)
                         <flux:select.option
                             value="{{ $complain->complain_name }}"
@@ -116,13 +266,12 @@
                         label="Complainant Name"
                         wire:model="complainant_name"
                         :disabled="$complain_name_disabled"
-                        class="opacity-60 cursor-not-allowed bg-zinc-100 dark:bg-zinc-800" />
+                        class="cursor-not-allowed bg-zinc-100 opacity-60 dark:bg-zinc-800" />
 
                 </div>
 
-                {{-- CONCERN --}}
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {{-- Concern Category --}}
+                <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+
                     <flux:select
                         label="Concern Category"
                         wire:model.live="concern_name"
@@ -137,7 +286,6 @@
                         @endforeach
                     </flux:select>
 
-                    {{-- Priority --}}
                     <flux:select
                         label="Priority"
                         wire:model.live="priority"
@@ -153,14 +301,15 @@
                     </flux:select>
 
                 </div>
-                {{-- EMPLOYEE + DEPARTMENT --}}
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+                <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+
                     <flux:select
                         label="Reported Employee"
                         wire:model.live="employee_id"
                         placeholder="Select Reported Employee">
-
                         @foreach ($employees as $employee)
+
                         @php
                         $fullName = trim(
                         $employee->first_name . ' ' . $employee->last_name
@@ -172,93 +321,79 @@
                             wire:key="reported-employee-{{ $employee->id }}">
                             {{ $fullName }}
                         </flux:select.option>
-                        @endforeach
 
+                        @endforeach
                     </flux:select>
+
                     <flux:input
                         label="Department"
                         wire:model="department_name"
                         readonly
-                        class="opacity-60 cursor-not-allowed bg-zinc-100 dark:bg-zinc-800" />
+                        class="cursor-not-allowed bg-zinc-100 opacity-60 dark:bg-zinc-800" />
+
                 </div>
-
-                <flux:textarea
-                    label="Assigned Remarks"
-                    wire:model="assigned_remarks"
-                    rows="3" />
-
-                <flux:select
-                    label="Status"
-                    wire:model.live="status_id"
-                    placeholder="Select Status">
-
-                    @foreach ($status as $item)
-                    <flux:select.option
-                        value="{{ $item->id }}"
-                        wire:key="status-{{ $item->id }}">
-                        {{ $item->status_name }}
-                    </flux:select.option>
-                    @endforeach
-                </flux:select>
 
                 <flux:textarea
                     label="Concern Description"
                     wire:model="concern_description"
-                    rows="3" />
-                <div>
-                    <flux:label class="text-xl font-bold">
-                        Notice to Explain
-                    </flux:label>
+                    rows="5" />
 
-                    <flux:text class="mt-1">
-                        Review and update the NTE attachment.
-                    </flux:text>
-                </div>
-                <flux:input
-                    label="NTE No."
-                    wire:model="nte_no"
-                    readonly
-                    class="opacity-60 cursor-not-allowed bg-zinc-100 dark:bg-zinc-800" />
-
-                {{-- CURRENT NTE ATTACHMENT --}}
-                @if ($current_nte_attachment)
-
-                <div>
-
-                    <flux:label>
-                        Current NTE Attachment
-                    </flux:label>
-
-                    <div class="mt-2 flex items-center justify-between rounded-lg border border-gray-200 bg-gray-50 px-4 py-3 dark:border-gray-700 dark:bg-zinc-800">
-
-                        <span class="truncate text-sm text-gray-700 dark:text-gray-300">
-                            {{ basename($current_nte_attachment) }}
-                        </span>
-
-                        <a
-                            href="{{ Storage::url($current_nte_attachment) }}"
-                            target="_blank"
-                            download
-                            class="ml-4 inline-flex items-center rounded-lg bg-gray-900 px-3 py-2 text-xs font-medium text-white hover:bg-gray-700 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-200">
-
-                            Download
-
-                        </a>
-
-                    </div>
-
-                </div>
-
-                @endif
-
-                {{-- REPLACE NTE --}}
-                <flux:input
-                    type="file"
-                    label="Replace NTE Attachment"
-                    wire:model="nte_attachment" />
             </div>
 
-            <div class="space-y-5">
+            <div
+                x-show="step === 2"
+                x-cloak
+                class="space-y-5">
+
+                <div class="border-b border-gray-200 pb-4 dark:border-gray-700">
+
+                    <h3 class="font-semibold">
+                        Assignment
+                    </h3>
+
+                    <p class="text-sm text-gray-500 dark:text-gray-400">
+                        Select the employee responsible for handling this CPAR.
+                    </p>
+
+                </div>
+
+                <div class="flex items-end gap-3">
+                    <div class="flex-1">
+                        <flux:select
+                            label="Assign To"
+                            wire:model="assigned_to"
+                            placeholder="-- Select Employee --">
+                            @foreach ($employees as $employee)
+
+                            @php
+                            $fullName = trim(
+                            $employee->first_name . ' ' . $employee->last_name
+                            );
+                            @endphp
+
+                            <flux:select.option
+                                value="{{ $employee->id }}"
+                                wire:key="assigned-to-{{ $employee->id }}">
+                                {{ $fullName }}
+                            </flux:select.option>
+
+                            @endforeach
+                        </flux:select>
+                    </div>
+                </div>
+
+                <flux:textarea
+                    label="Remarks"
+                    wire:model="assigned_remarks"
+                    placeholder="Enter assignment remarks..."
+                    rows="5" />
+
+            </div>
+
+            <div
+                x-show="step === 3"
+                x-cloak
+                class="space-y-5">
 
                 <div>
                     <flux:label class="text-xl font-bold">
@@ -273,17 +408,17 @@
                 <flux:textarea
                     label="Identified Cause"
                     wire:model="identified_cause"
-                    rows="4" />
+                    rows="5" />
 
                 <flux:textarea
                     label="Provided Solution"
                     wire:model="provided_solution"
-                    rows="4" />
+                    rows="5" />
 
                 <flux:textarea
                     label="Recommendation"
                     wire:model="recommendation"
-                    rows="4" />
+                    rows="5" />
 
                 <div class="space-y-5">
 
@@ -296,7 +431,7 @@
                             Review and update the IR attachment.
                         </flux:text>
                     </div>
-                    {{-- CURRENT IR ATTACHMENT --}}
+
                     @if ($current_ir_attachment)
 
                     <div>
@@ -316,9 +451,7 @@
                                 target="_blank"
                                 download
                                 class="ml-4 inline-flex items-center rounded-lg bg-gray-900 px-3 py-2 text-xs font-medium text-white hover:bg-gray-700 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-200">
-
                                 Download
-
                             </a>
 
                         </div>
@@ -327,7 +460,6 @@
 
                     @endif
 
-                    {{-- REPLACE IR --}}
                     <flux:input
                         type="file"
                         label="Replace IR Attachment"
@@ -335,13 +467,13 @@
 
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
 
                     <flux:input
                         label="Action Taken By"
                         wire:model="action_taken_by"
                         readonly
-                        class="opacity-60 cursor-not-allowed bg-zinc-100 dark:bg-zinc-800" />
+                        class="cursor-not-allowed bg-zinc-100 opacity-60 dark:bg-zinc-800" />
 
                     <flux:input
                         label="Date Completed"
@@ -355,93 +487,182 @@
                         wire:model="tat"
                         readonly
                         class="cursor-not-allowed bg-zinc-100 opacity-60 dark:bg-zinc-800" />
+
                 </div>
-                <flux:textarea
-                    label="Dept Head Remarks"
-                    wire:model="head_remarks"
-                    rows="4" />
+
             </div>
 
-        </div>
-
-        {{-- HR DECISION + MEMO --}}
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-
-            {{-- HR DECISION --}}
-            <div class="space-y-5">
+            <div
+                x-show="step === 4"
+                x-cloak
+                class="space-y-5">
 
                 <div>
                     <flux:label class="text-xl font-bold">
-                        HR Decision
+                        Department Head Remarks
                     </flux:label>
 
                     <flux:text class="mt-1">
-                        Review and update the HR decision details.
+                        Review and update the remarks provided by the Department Head.
                     </flux:text>
                 </div>
 
-                {{-- DECISION CATEGORY --}}
-                <flux:select
-                    label="Decision Category"
-                    wire:model.live="selectedHRDecisions"
-                    placeholder="Select Decision Category">
-                    @foreach ($decision as $decisionCategory)
-                    <flux:select.option
-                        value="{{ $decisionCategory->id }}"
-                        wire:key="decision-category-{{ $decisionCategory->id }}">
-                        {{ $decisionCategory->decision_name }}
-                    </flux:select.option>
-                    @endforeach
-                </flux:select>
-
-                {{-- DISCIPLINARY CATEGORY --}}
-                <flux:select
-                    label="Disciplinary Category"
-                    wire:model="selectedCategories"
-                    placeholder="Select Disciplinary Category">
-                    @foreach ($disciplinaryCategories as $category)
-                    <flux:select.option value="{{ $category->id }}"
-                        wire:key="disciplinary-category-{{ $category->id }}">
-                        {{ $category->category_name ?? '-' }}
-                    </flux:select.option>
-
-                    @endforeach
-
-                </flux:select>
-
-                {{-- OFFENSE LEVEL --}}
-                <flux:select
-                    label="Offense Level"
-                    wire:model="selectedOffenseLevels"
-                    placeholder="Select Offense Level">
-
-                    @foreach ($offenseLevels as $offense)
-
-                    <flux:select.option value="{{ $offense->id }}">
-                        {{ $offense->offense_name ?? $offense->name ?? '-' }}
-                    </flux:select.option>
-
-                    @endforeach
-
-                </flux:select>
-
-                {{-- HR DECISION REMARKS --}}
                 <flux:textarea
-                    label="HR Decision Remarks"
-                    wire:model="hr_decision_remarks"
-                    rows="4" />
-
-                {{-- MANAGEMENT REMARKS --}}
-                <flux:textarea
-                    label="Management Remarks"
-                    wire:model="management_remarks"
-                    rows="4" />
+                    label="Dept Head Remarks"
+                    wire:model="head_remarks"
+                    rows="10" />
 
             </div>
 
+            <div
+                x-show="step === 5"
+                x-cloak
+                class="space-y-6">
 
-            {{-- MEMO --}}
-            <div class="space-y-5">
+                <div>
+                    <flux:label class="text-xl font-bold">
+                        NTE and HR Decision
+                    </flux:label>
+
+                    <flux:text class="mt-1">
+                        Review the Notice to Explain and HR decision details.
+                    </flux:text>
+                </div>
+
+                <div class="space-y-5">
+
+                    <flux:input
+                        label="NTE No."
+                        wire:model="nte_no"
+                        readonly
+                        class="cursor-not-allowed bg-zinc-100 opacity-60 dark:bg-zinc-800" />
+
+                    @if ($current_nte_attachment)
+
+                    <div>
+
+                        <flux:label>
+                            Current NTE Attachment
+                        </flux:label>
+
+                        <div class="mt-2 flex items-center justify-between rounded-lg border border-gray-200 bg-gray-50 px-4 py-3 dark:border-gray-700 dark:bg-zinc-800">
+
+                            <span class="truncate text-sm text-gray-700 dark:text-gray-300">
+                                {{ basename($current_nte_attachment) }}
+                            </span>
+
+                            <a
+                                href="{{ Storage::url($current_nte_attachment) }}"
+                                target="_blank"
+                                download
+                                class="ml-4 inline-flex items-center rounded-lg bg-gray-900 px-3 py-2 text-xs font-medium text-white hover:bg-gray-700 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-200">
+                                Download
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                    @endif
+
+                    <flux:input
+                        type="file"
+                        label="Replace NTE Attachment"
+                        wire:model="nte_attachment" />
+
+                </div>
+
+                <div class="border-t border-gray-200 pt-6 dark:border-gray-700">
+
+                    <div class="mb-5">
+                        <flux:label class="text-xl font-bold">
+                            HR Decision
+                        </flux:label>
+
+                        <flux:text class="mt-1">
+                            Review and update the HR decision details.
+                        </flux:text>
+                    </div>
+
+                    <div class="space-y-5">
+
+                        <flux:select
+                            label="Decision Category"
+                            wire:model.live="selectedHRDecisions"
+                            placeholder="Select Decision Category">
+                            @foreach ($decision as $decisionCategory)
+                            <flux:select.option
+                                value="{{ $decisionCategory->id }}"
+                                wire:key="decision-category-{{ $decisionCategory->id }}">
+                                {{ $decisionCategory->decision_name }}
+                            </flux:select.option>
+                            @endforeach
+                        </flux:select>
+
+                        <flux:select
+                            label="Disciplinary Category"
+                            wire:model="selectedCategories"
+                            placeholder="Select Disciplinary Category">
+                            @foreach ($disciplinaryCategories as $category)
+                            <flux:select.option
+                                value="{{ $category->id }}"
+                                wire:key="disciplinary-category-{{ $category->id }}">
+                                {{ $category->category_name ?? '-' }}
+                            </flux:select.option>
+                            @endforeach
+                        </flux:select>
+
+                        <flux:select
+                            label="Offense Level"
+                            wire:model="selectedOffenseLevels"
+                            placeholder="Select Offense Level">
+                            @foreach ($offenseLevels as $offense)
+                            <flux:select.option
+                                value="{{ $offense->id }}"
+                                wire:key="offense-level-{{ $offense->id }}">
+                                {{ $offense->offense_name ?? $offense->name ?? '-' }}
+                            </flux:select.option>
+                            @endforeach
+                        </flux:select>
+
+                        <flux:textarea
+                            label="HR Decision Remarks"
+                            wire:model="hr_decision_remarks"
+                            rows="5" />
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div
+                x-show="step === 6"
+                x-cloak
+                class="space-y-5">
+
+                <div>
+                    <flux:label class="text-xl font-bold">
+                        Management Remarks
+                    </flux:label>
+
+                    <flux:text class="mt-1">
+                        Review and update the final management remarks.
+                    </flux:text>
+                </div>
+
+                <flux:textarea
+                    label="Management Remarks"
+                    wire:model="management_remarks"
+                    rows="10"
+                    placeholder="Enter management remarks..." />
+
+            </div>
+
+            <div
+                x-show="step === 7"
+                x-cloak
+                class="space-y-5">
 
                 <div>
                     <flux:label class="text-xl font-bold">
@@ -453,24 +674,34 @@
                     </flux:text>
                 </div>
 
-                {{-- MEMO NO + DATE --}}
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <flux:input label="Memo No." wire:model="memo_no" readonly class="opacity-60 cursor-not-allowed bg-zinc-100 dark:bg-zinc-800" />
-                    <flux:input type="text" label="Memo Date" readonly class="opacity-60 cursor-not-allowed bg-zinc-100 dark:bg-zinc-800" wire:model="memo_date" />
+                <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+
+                    <flux:input
+                        label="Memo No."
+                        wire:model="memo_no"
+                        readonly
+                        class="cursor-not-allowed bg-zinc-100 opacity-60 dark:bg-zinc-800" />
+
+                    <flux:input
+                        type="text"
+                        label="Memo Date"
+                        wire:model="memo_date"
+                        readonly
+                        class="cursor-not-allowed bg-zinc-100 opacity-60 dark:bg-zinc-800" />
+
                 </div>
 
-                {{-- SUBJECT --}}
                 <flux:input
                     label="Subject"
-                    wire:model="memo_subject" />
+                    wire:model="memo_subject"
+                    class="uppercase"
+                    oninput="this.value = this.value.toUpperCase()" />
 
-                {{-- CONTENT --}}
                 <flux:textarea
                     label="Memo Content"
                     wire:model="memo_content"
-                    rows="6" />
+                    rows="10" />
 
-                {{-- CURRENT MEMO ATTACHMENT --}}
                 @if ($current_memo_attachment)
 
                 <div>
@@ -490,9 +721,7 @@
                             target="_blank"
                             download
                             class="ml-4 inline-flex items-center rounded-lg bg-gray-900 px-3 py-2 text-xs font-medium text-white hover:bg-gray-700 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-200">
-
                             Download
-
                         </a>
 
                     </div>
@@ -500,39 +729,66 @@
                 </div>
 
                 @endif
+
                 <flux:input
                     type="file"
                     label="Replace Memo Attachment"
                     wire:model="memo_attachment" />
+
+            </div>
+
+            <div class="flex items-center justify-between border-t border-gray-200 pt-6 dark:border-gray-700">
+
+                <div>
+
+                    <flux:button
+                        type="button"
+                        variant="ghost"
+                        x-show="step > 1"
+                        x-on:click="step--">
+                        Back
+                    </flux:button>
+
+                </div>
+
+                <div class="flex items-center gap-3">
+
+                    <flux:button
+                        type="button"
+                        variant="ghost"
+                        x-show="step === 1"
+                        x-on:click="$dispatch('modal-close', { name: 'master-file-modal' })">
+                        Cancel
+                    </flux:button>
+
+                    <flux:button
+                        type="button"
+                        variant="primary"
+                        x-show="step < 7"
+                        x-on:click="step++">
+                        Next
+                    </flux:button>
+
+                    <flux:button
+                        type="button"
+                        variant="primary"
+                        x-show="step === 7"
+                        wire:click="update"
+                        wire:loading.attr="disabled">
+                        <span wire:loading.remove wire:target="update">
+                            Finish
+                        </span>
+
+                        <span wire:loading wire:target="update">
+                            Updating...
+                        </span>
+                    </flux:button>
+
+                </div>
+
             </div>
 
         </div>
-        {{-- FOOTER --}}
-        <div class="flex items-center justify-end gap-4 border-t border-gray-200 pt-6 dark:border-gray-700">
 
-            <flux:button
-                variant="ghost"
-                x-on:click="$dispatch('modal-close', { name: 'master-file-modal' })">
-
-                Cancel
-
-            </flux:button>
-
-            <flux:button
-                variant="primary"
-                wire:click="update"
-                wire:loading.attr="disabled">
-
-                <span wire:loading.remove wire:target="update">
-                    Save Changes
-                </span>
-
-                <span wire:loading wire:target="update">
-                    Updating...
-                </span>
-
-            </flux:button>
-
-        </div>
     </flux:modal>
 </div>

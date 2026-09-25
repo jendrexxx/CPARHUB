@@ -4,16 +4,13 @@
         wire:loading
         wire:target="loadDashboard,branch_id"
         class="fixed inset-0 z-[9999] flex items-center justify-center
-               bg-white/90 dark:bg-zinc-950/90 backdrop-blur-sm"
-        >
+               bg-white/90 dark:bg-zinc-950/90 backdrop-blur-sm">
         <div class="flex flex-col items-center gap-4">
 
-            {{-- Spinner --}}
             <div
                 class="h-14 w-14 animate-spin rounded-full
                        border-4 border-zinc-200
-                       border-t-red-800"
-            ></div>
+                       border-t-red-800"></div>
 
             <div class="text-base font-semibold text-zinc-700 dark:text-zinc-200">
                 Loading HR Dashboard...
@@ -28,7 +25,6 @@
 
     <div wire:init="loadDashboard">
 
-        {{-- HEADER --}}
         <div class="flex items-center justify-between gap-4">
 
             <div>
@@ -41,21 +37,16 @@
                 </p>
             </div>
 
-
-            {{-- BRANCH --}}
             <div class="w-64">
 
                 <flux:select
                     label="Branch"
-                    wire:model.live="branch_id"
-                >
+                    wire:model.live="branch_id">
 
                     @foreach ($branches as $branch)
-
-                        <option value="{{ $branch->id }}">
-                            {{ $branch->branch_name }}
-                        </option>
-
+                    <option value="{{ $branch->id }}">
+                        {{ $branch->branch_name }}
+                    </option>
                     @endforeach
 
                 </flux:select>
@@ -64,12 +55,10 @@
 
         </div>
 
-
         @include('toast')
 
         <div class="p-3 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
 
-            {{-- REPORTED CONCERN --}}
             <flux:modal.trigger name="CPARHRModal">
 
                 <div
@@ -78,15 +67,13 @@
                            rounded-2xl border border-gray-200 dark:border-zinc-700
                            shadow-sm cursor-pointer
                            transition-all duration-200
-                           hover:-translate-y-1 hover:shadow-lg"
-                >
+                           hover:-translate-y-1 hover:shadow-lg">
 
                     <div
                         class="flex h-12 w-12 shrink-0 items-center justify-center
                                rounded-xl bg-yellow-100 text-yellow-600
                                group-hover:bg-yellow-500 group-hover:text-white
-                               transition-colors duration-200"
-                    >
+                               transition-colors duration-200">
                         <flux:icon.clipboard-document-list class="w-6 h-6" />
                     </div>
 
@@ -106,8 +93,6 @@
 
             </flux:modal.trigger>
 
-
-            {{-- ACKNOWLEDGMENT --}}
             <flux:modal.trigger name="CPARAcknowledgeModal">
 
                 <div
@@ -116,15 +101,13 @@
                            rounded-2xl border border-gray-200 dark:border-zinc-700
                            shadow-sm cursor-pointer
                            transition-all duration-200
-                           hover:-translate-y-1 hover:shadow-lg"
-                >
+                           hover:-translate-y-1 hover:shadow-lg">
 
                     <div
                         class="flex h-12 w-12 shrink-0 items-center justify-center
                                rounded-xl bg-blue-100 text-blue-600
                                group-hover:bg-blue-500 group-hover:text-white
-                               transition-colors duration-200"
-                    >
+                               transition-colors duration-200">
                         <flux:icon.paper-airplane class="w-6 h-6" />
                     </div>
 
@@ -144,8 +127,6 @@
 
             </flux:modal.trigger>
 
-
-            {{-- HR DECISION --}}
             <flux:modal.trigger name="HRDecisionModal">
 
                 <div
@@ -154,16 +135,14 @@
                            rounded-2xl border border-gray-200 dark:border-zinc-700
                            shadow-sm cursor-pointer
                            transition-all duration-200
-                           hover:-translate-y-1 hover:shadow-lg"
-                >
+                           hover:-translate-y-1 hover:shadow-lg">
 
                     <div
                         class="flex h-12 w-12 shrink-0 items-center justify-center
                                rounded-xl bg-blue-100 text-blue-600
                                transition-all duration-200
                                group-hover:bg-blue-500 group-hover:text-white
-                               group-hover:scale-105"
-                    >
+                               group-hover:scale-105">
                         <flux:icon.scale class="h-6 w-6" />
                     </div>
 
@@ -183,8 +162,6 @@
 
             </flux:modal.trigger>
 
-
-            {{-- MEMO --}}
             <flux:modal.trigger name="HRMemoModal">
 
                 <div
@@ -193,16 +170,14 @@
                            rounded-2xl border border-gray-200 dark:border-zinc-700
                            shadow-sm cursor-pointer
                            transition-all duration-200
-                           hover:-translate-y-1 hover:shadow-lg"
-                >
+                           hover:-translate-y-1 hover:shadow-lg">
 
                     <div
                         class="flex h-12 w-12 shrink-0 items-center justify-center
                                rounded-xl bg-blue-100 text-blue-600
                                transition-all duration-200
                                group-hover:bg-blue-500 group-hover:text-white
-                               group-hover:scale-105"
-                    >
+                               group-hover:scale-105">
                         <flux:icon.document-text class="h-6 w-6" />
                     </div>
 
@@ -224,23 +199,48 @@
 
         </div>
 
-        <!-- cpar -->
-        <livewire:admin.tabs.hr_tabs :branch_id="$branch_id" :key="'hr-tabs-'.$branch_id" lazy/>
+        <livewire:admin.tabs.hr_tabs
+            :branch_id="$branch_id"
+            :key="'hr-tabs-'.$branch_id"
+            lazy />
+
         <livewire:admin.hr.hr_acknowledge_modal />
         <livewire:admin.hr.hr_notice_explain_modal />
         <livewire:admin.hr.hr_decision_modal />
         <livewire:admin.hr.hr_memo_modal />
         <livewire:admin.hr.hr_ir_request />
         <livewire:user.modal.cpar_edit />
-        <livewire:admin.hr.hr_notif :branch_id="$branch_id" :key="'hr-notif-'.$branch_id" lazy/>
-        <livewire:admin.hr.hr_reassign :branch_id="$branch_id" :key="'hr-assign-'.$branch_id" lazy/>
-        <livewire:admin.hr.hr_acknowledge_notif :branch_id="$branch_id" :key="'hr-acknowledge-notif-'.$branch_id" lazy/>
-        <livewire:admin.hr.hr_decision_notif :branch_id="$branch_id" :key="'hr-decision-notif-'.$branch_id" lazy />
-        <livewire:admin.hr.hr_memo_notif :branch_id="$branch_id" :key="'hr-memo-notif-'.$branch_id" lazy/>
-        <!-- result -->
+        <livewire:admin.hr.hr_notif
+            :branch_id="$branch_id"
+            :key="'hr-notif-'.$branch_id"
+            lazy />
+
+        <livewire:admin.hr.hr_reassign
+            :branch_id="$branch_id"
+            :key="'hr-assign-'.$branch_id"
+            lazy />
+
+        <livewire:admin.hr.hr_acknowledge_notif
+            :branch_id="$branch_id"
+            :key="'hr-acknowledge-notif-'.$branch_id"
+            lazy />
+
+        <livewire:admin.hr.hr_decision_notif
+            :branch_id="$branch_id"
+            :key="'hr-decision-notif-'.$branch_id"
+            lazy />
+
+        <livewire:admin.hr.hr_memo_notif
+            :branch_id="$branch_id"
+            :key="'hr-memo-notif-'.$branch_id"
+            lazy />
+
         <livewire:admin.result.hr_re-assign />
         <livewire:admin.hr_result.result_ir_modal />
         <livewire:admin.hr_result.hr_decision_modal />
         <livewire:admin.hr_result.hr_memo_modal />
+        <livewire:admin.hr.hr_offense_tbl />
+
     </div>
+
 </div>

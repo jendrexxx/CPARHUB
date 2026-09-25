@@ -21,10 +21,6 @@
                     <thead class="bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 text-xs tracking-wider">
                         <tr>
                             <th class="px-4 py-3 text-center">
-                                Type
-                            </th>
-
-                            <th class="px-4 py-3 text-center">
                                 Request No.
                             </th>
 
@@ -64,30 +60,29 @@
                         @forelse ($acknowledgment_requests as $request)
                         <tr wire:key="acknowledgment-{{ $request->record_type }}-{{ $request->assignment_id }}">
 
-                            {{-- TYPE --}}
-                            <td class="px-4 py-3">
-                                @if ($request->record_type === 'CPAR')
-                                <span
-                                    class="inline-flex items-center rounded-full
-                                                   bg-red-100 text-red-700
-                                                   dark:bg-red-950 dark:text-red-400
-                                                   px-2.5 py-1 text-xs font-semibold">
-                                    CPAR
-                                </span>
-                                @elseif ($request->record_type === 'RESULT')
-                                <span
-                                    class="inline-flex items-center rounded-full
-                                                   bg-purple-100 text-purple-700
-                                                   dark:bg-purple-950 dark:text-purple-400
-                                                   px-2.5 py-1 text-xs font-semibold">
-                                    RESULT
-                                </span>
-                                @endif
-                            </td>
-
                             {{-- REQUEST NO --}}
-                            <td class="px-4 py-3 font-medium text-zinc-900 dark:text-zinc-100">
-                                {{ $request->record_no }}
+                            <td class="px-4 py-4 whitespace-nowrap">
+                                <div class="flex flex-col items-center gap-1">
+                                    <div class="font-semibold text-zinc-900 dark:text-white">
+                                        {{ $request->record_no }}
+                                    </div>
+
+                                    <div class="mt-1 text-center">
+                                        @if ($request->record_type === 'CPAR')
+                                        <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-[10px] font-semibold
+                                            bg-red-100 text-red-700
+                                            dark:bg-red-950 dark:text-red-400">
+                                            CPAR
+                                        </span>
+                                        @else
+                                        <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-[10px] font-semibold
+                                            bg-blue-100 text-blue-700
+                                            dark:bg-blue-950 dark:text-blue-400">
+                                            RESULT
+                                        </span>
+                                        @endif
+                                    </div>
+                                </div>
                             </td>
 
                             {{-- REPORTED BY --}}
@@ -325,7 +320,7 @@
                         @empty
                         <tr>
                             <td
-                                colspan="10"
+                                colspan="9"
                                 class="px-4 py-10 text-center text-zinc-500 dark:text-zinc-400">
                                 No acknowledgment requests found.
                             </td>

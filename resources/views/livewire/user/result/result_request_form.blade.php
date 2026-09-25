@@ -230,19 +230,23 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                     <flux:field>
-                        <flux:label>Concern Attachment</flux:label>
+                        <flux:label>
+                            Concern Attachment <span class="text-zinc-500">(Optional)</span>
+                        </flux:label>
+
                         <input
                             wire:key="attachment-input"
                             type="file"
                             wire:model="concern_attachment"
                             class="block w-full text-sm text-zinc-900 dark:text-zinc-100
-                            border border-zinc-300 dark:border-zinc-700 rounded-lg
-                            cursor-pointer bg-zinc-50 dark:bg-zinc-800
-                            focus:outline-none file:mr-4 file:py-2 file:px-4
-                            file:rounded-lg file:border-0 file:bg-zinc-200
-                            dark:file:bg-zinc-700 file:text-sm file:font-medium
-                            hover:file:bg-zinc-300 dark:hover:file:bg-zinc-600" />
-                        <flux:error name="attachment" />
+            border border-zinc-300 dark:border-zinc-700 rounded-lg
+            cursor-pointer bg-zinc-50 dark:bg-zinc-800
+            focus:outline-none file:mr-4 file:py-2 file:px-4
+            file:rounded-lg file:border-0 file:bg-zinc-200
+            dark:file:bg-zinc-700 file:text-sm file:font-medium
+            hover:file:bg-zinc-300 dark:hover:file:bg-zinc-600" />
+
+                        <flux:error name="concern_attachment" />
                     </flux:field>
                 </div>
                 <flux:input

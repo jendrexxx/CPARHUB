@@ -238,7 +238,7 @@
                         wire:model="identified_cause"
                         rows="5"
                         placeholder="Enter the identified cause..."
-                        class="opacity-60 cursor-not-allowed bg-zinc-100 dark:bg-zinc-800" />
+                        class="opacity-60 cursor-not-allowed bg-zinc-100 dark:bg-zinc-800 uppercase" />
 
 
                     {{-- PROVIDED SOLUTION --}}
@@ -247,7 +247,7 @@
                         wire:model="provided_solution"
                         rows="5"
                         placeholder="Enter the provided solution..."
-                        class="opacity-60 cursor-not-allowed bg-zinc-100 dark:bg-zinc-800" />
+                        class="opacity-60 cursor-not-allowed bg-zinc-100 dark:bg-zinc-800 uppercase" />
 
 
                     {{-- RECOMMENDATION --}}
@@ -256,7 +256,7 @@
                         wire:model="recommendation"
                         rows="5"
                         placeholder="Enter recommendation..."
-                        class="opacity-60 cursor-not-allowed bg-zinc-100 dark:bg-zinc-800" />
+                        class="opacity-60 cursor-not-allowed bg-zinc-100 dark:bg-zinc-800 uppercase" />
 
                     {{-- COMPLETION DETAILS --}}
                     <div class="border-t border-zinc-200 dark:border-zinc-700 pt-5">
@@ -285,12 +285,12 @@
 
                         {{-- CONCERN DESCRIPTION --}}
                         <div class="mt-4">
-                        <flux:textarea
-                            label="Concern Description"
-                            wire:model="concern_description"
-                            rows="5"
-                            readonly
-                            class="opacity-60 cursor-not-allowed bg-zinc-100 dark:bg-zinc-800" />
+                            <flux:textarea
+                                label="Concern Description"
+                                wire:model="concern_description"
+                                rows="5"
+                                readonly
+                                class="opacity-60 cursor-not-allowed bg-zinc-100 dark:bg-zinc-800" />
                         </div>
 
                         {{-- ASSIGNED TO / DEPARTMENT --}}
@@ -310,10 +310,111 @@
 
 
                         {{-- REMARKS --}}
-                        <div class="mt-4">
-                            <flux:textarea label="Dept Head Remarks" wire:model="dept_head_remarks" rows="4"
+                        <div class="mt-4 space-y-4">
+
+                            <flux:textarea
+                                label="Dept Head Remarks"
+                                wire:model="dept_head_remarks"
+                                rows="4"
                                 readonly
-                                class="opacity-60 cursor-not-allowed bg-zinc-100 dark:bg-zinc-800" />
+                                class="cursor-not-allowed bg-zinc-100 uppercase opacity-60 dark:bg-zinc-800" />
+
+                            @if ($nte_id)
+                            <div class="rounded-xl border border-zinc-200 p-4 dark:border-zinc-700">
+                                <div class="space-y-4">
+
+                                    <div>
+                                        <flux:heading size="sm">
+                                            Notice to Explain (NTE)
+                                        </flux:heading>
+
+                                        <flux:text class="mt-1">
+                                            Upload the NTE document in PDF format.
+                                        </flux:text>
+                                    </div>
+
+                                    @if ($response_attachment)
+                                    <div class="flex items-center justify-between rounded-lg border border-zinc-200 bg-zinc-50 px-4 py-3 dark:border-zinc-700 dark:bg-zinc-800">
+
+                                        <div class="flex items-center gap-3">
+                                            <flux:icon.document-text class="size-5 shrink-0 text-red-600" />
+
+                                            <div class="min-w-0">
+                                                <flux:text class="font-medium">
+                                                    Current Attachment
+                                                </flux:text>
+
+                                                <flux:text size="sm" class="text-zinc-500">
+                                                    Notice to Explain PDF is already uploaded.
+                                                </flux:text>
+                                            </div>
+                                        </div>
+
+                                        <flux:button
+                                            size="sm"
+                                            variant="ghost"
+                                            icon="eye"
+                                            href="{{ Storage::url($response_attachment) }}"
+                                            target="_blank"
+                                            class="shrink-0">
+                                            View PDF
+                                        </flux:button>
+
+                                    </div>
+                                    @endif
+
+                                </div>
+                            </div>
+                            @endif
+
+                            @if ($ir_id)
+                            <div class="rounded-xl border border-zinc-200 p-4 dark:border-zinc-700">
+                                <div class="space-y-4">
+
+                                    <div>
+                                        <flux:heading size="sm">
+                                            Incident Report (IR)
+                                        </flux:heading>
+
+                                        <flux:text class="mt-1">
+                                            Upload the Incident Report document in PDF format.
+                                        </flux:text>
+                                    </div>
+
+                                    @if ($existing_ir_attachment)
+                                    <div class="flex items-center justify-between rounded-lg border border-zinc-200 bg-zinc-50 px-4 py-3 dark:border-zinc-700 dark:bg-zinc-800">
+
+                                        <div class="flex items-center gap-3">
+                                            <flux:icon.document-text class="size-5 shrink-0 text-red-600" />
+
+                                            <div class="min-w-0">
+                                                <flux:text class="font-medium">
+                                                    Current Attachment
+                                                </flux:text>
+
+                                                <flux:text size="sm" class="text-zinc-500">
+                                                    Incident Report PDF is already uploaded.
+                                                </flux:text>
+                                            </div>
+                                        </div>
+
+                                        <flux:button
+                                            size="sm"
+                                            variant="ghost"
+                                            icon="eye"
+                                            href="{{ Storage::url($existing_ir_attachment) }}"
+                                            target="_blank"
+                                            class="shrink-0">
+                                            View PDF
+                                        </flux:button>
+
+                                    </div>
+                                    @endif
+
+                                </div>
+                            </div>
+                            @endif
+
                         </div>
                     </div>
                 </div>
@@ -331,129 +432,6 @@
                 <flux:text class="mt-1">
                     Select the applicable disciplinary category, offense level, and HR action.
                 </flux:text>
-            </div>
-
-            <!-- SUPPORTING DOCUMENTS -->
-            <div class="space-y-4">
-                @if ($nte_id)
-                <div class="rounded-xl border border-zinc-200 p-4 dark:border-zinc-700">
-                    <div class="space-y-4">
-                        {{-- Header --}}
-                        <div>
-                            <flux:heading size="sm">
-                                Notice to Explain (NTE)
-                            </flux:heading>
-
-                            <flux:text class="mt-1">
-                                Upload the NTE document in PDF format.
-                            </flux:text>
-                        </div>
-                        {{-- Current NTE Attachment --}}
-                        @if ($response_attachment)
-                        <div
-                            class="flex items-center justify-between rounded-lg
-                               border border-zinc-200 bg-zinc-50 px-4 py-3
-                               dark:border-zinc-700 dark:bg-zinc-800">
-
-                            <div class="flex items-center gap-3">
-
-                                <flux:icon.document-text
-                                    class="size-5 text-red-600" />
-
-                                <div>
-
-                                    <flux:text class="font-medium">
-                                        Current Attachment
-                                    </flux:text>
-
-                                    <flux:text
-                                        size="sm"
-                                        class="text-zinc-500">
-
-                                        Notice to Explain PDF is already uploaded.
-
-                                    </flux:text>
-
-                                </div>
-
-                            </div>
-
-                            <flux:button
-                                size="sm"
-                                variant="ghost"
-                                icon="eye"
-                                href="{{ Storage::url($response_attachment) }}"
-                                target="_blank">
-                                View PDF
-                            </flux:button>
-
-                        </div>
-                        @endif
-                    </div>
-                </div>
-                @endif
-                @if ($ir_id)
-                <div class="rounded-xl border border-zinc-200 p-4 dark:border-zinc-700">
-                    <div class="space-y-4">
-                        {{-- Header --}}
-                        <div>
-                            <flux:heading size="sm">
-                                Incident Report (IR)
-                            </flux:heading>
-
-                            <flux:text class="mt-1">
-                                Upload the Incident Report document in PDF format.
-                            </flux:text>
-                        </div>
-                        {{-- Current IR Attachment --}}
-                        @if ($existing_ir_attachment)
-                        <div
-                            class="flex items-center justify-between rounded-lg
-                               border border-zinc-200 bg-zinc-50 px-4 py-3
-                               dark:border-zinc-700 dark:bg-zinc-800">
-
-                            <div class="flex items-center gap-3">
-
-                                <flux:icon.document-text
-                                    class="size-5 text-red-600" />
-
-                                <div>
-
-                                    <flux:text class="font-medium">
-                                        Current Attachment
-                                    </flux:text>
-
-                                    <flux:text
-                                        size="sm"
-                                        class="text-zinc-500">
-
-                                        Incident Report PDF is already uploaded.
-
-                                    </flux:text>
-
-                                </div>
-
-                            </div>
-
-
-                            <flux:button
-                                size="sm"
-                                variant="ghost"
-                                icon="eye"
-                                href="{{ Storage::url($existing_ir_attachment) }}"
-                                target="_blank">
-
-                                View PDF
-
-                            </flux:button>
-
-                        </div>
-                        @endif
-
-                    </div>
-
-                </div>
-                @endif
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -607,6 +585,7 @@
                 label="HR Decision Remarks"
                 wire:model="hr_decision_remarks"
                 rows="5"
+                class="uppercase"
                 placeholder="Enter HR decision remarks..." />
         </div>
         @if(!empty($management_remarks))

@@ -3,12 +3,12 @@
     {{-- HR Decision Modal --}}
     <flux:modal
         name="HRDecisionModal"
-        class="w-[120%] max-w-[1500px] mt-6 top-0 z-50">
+        class="w-full max-w-[1500px] mt-6 top-0 z-50">
 
-        <div class="space-y-6">
+        <div class="w-full space-y-6">
 
-            {{-- Header --}}
-            <div>
+            {{-- HEADER --}}
+            <div class="px-1">
                 <flux:heading size="lg">
                     HR Decision
                 </flux:heading>
@@ -20,10 +20,10 @@
 
             <flux:separator />
 
-            {{-- Search --}}
-            <div class="flex items-center gap-2">
+            {{-- SEARCH --}}
+            <div class="flex w-full flex-col gap-2 sm:flex-row sm:items-center">
 
-                <div class="flex-1">
+                <div class="w-full flex-1">
                     <flux:input
                         wire:model.live.debounce.300ms="search"
                         placeholder="Search CPAR No., Result No., employee, department..."
@@ -31,350 +31,376 @@
                 </div>
 
                 @if ($search)
+
                 <flux:button
                     variant="ghost"
                     icon="x-mark"
-                    wire:click="$set('search', '')">
+                    wire:click="$set('search', '')"
+                    class="shrink-0">
                     Clear
                 </flux:button>
+
                 @endif
 
             </div>
 
 
-            {{-- Records --}}
-            <div class="overflow-x-auto rounded-xl border border-zinc-200 dark:border-zinc-700">
+            {{-- RECORDS --}}
+            <div class="w-full overflow-hidden rounded-xl border border-zinc-200 dark:border-zinc-700">
 
-                <table class="w-full text-sm">
+                {{-- HORIZONTAL SCROLL --}}
+                <div class="w-full overflow-x-auto overscroll-x-contain">
 
-                    {{-- Table Header --}}
-                    <thead class="bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 text-xs tracking-wider">
+                    <table class="min-w-[1200px] w-full text-sm">
 
-                        <tr>
+                        {{-- TABLE HEADER --}}
+                        <thead
+                            class="bg-zinc-100 text-xs tracking-wider text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300">
 
-                            <th class="px-4 py-3 text-center font-semibold">
-                                Type
-                            </th>
+                            <tr>
 
-                            <th class="px-4 py-3 text-center font-semibold">
-                                Request No.
-                            </th>
+                                <th class="w-36 whitespace-nowrap px-4 py-3 text-center font-semibold">
+                                    Request No.
+                                </th>
 
-                            <th class="px-4 py-3 text-center font-semibold">
-                                Reported By
-                            </th>
-                            <th class="px-4 py-3 text-center font-semibold">
-                                Date Reported
-                            </th>
+                                <th class="min-w-[180px] px-4 py-3 text-center font-semibold">
+                                    Reported By
+                                </th>
 
-                            <th class="px-4 py-3 text-center">
-                                Assigned To
-                            </th>
+                                <th class="w-32 whitespace-nowrap px-4 py-3 text-center font-semibold">
+                                    Date Reported
+                                </th>
 
-                            <th class="px-4 py-3 text-center font-semibold">
-                                Priority level
-                            </th>
+                                <th class="min-w-[180px] px-4 py-3 text-center font-semibold">
+                                    Assigned To
+                                </th>
 
-                            <th class="px-4 py-3 text-center font-semibold">
-                                Offense
-                            </th>
+                                <th class="w-32 whitespace-nowrap px-4 py-3 text-center font-semibold">
+                                    Priority Level
+                                </th>
 
-                            <th class="px-4 py-3 text-center font-semibold">
-                                Documents
-                            </th>
+                                <th class="min-w-[180px] px-4 py-3 text-center font-semibold">
+                                    Documents
+                                </th>
 
-                            <th class="px-4 py-3 text-center font-semibold">
-                                Status
-                            </th>
+                                <th class="w-32 whitespace-nowrap px-4 py-3 text-center font-semibold">
+                                    Status
+                                </th>
 
-                            <th class="px-4 py-3 text-center font-semibold">
-                                Action
-                            </th>
+                                <th class="w-24 whitespace-nowrap px-4 py-3 text-center font-semibold">
+                                    Action
+                                </th>
 
-                        </tr>
+                            </tr>
 
-                    </thead>
+                        </thead>
 
 
-                    {{-- Table Body --}}
-                    <tbody class="divide-y divide-zinc-200 dark:divide-zinc-700">
+                        {{-- TABLE BODY --}}
+                        <tbody class="divide-y divide-zinc-200 dark:divide-zinc-700">
 
-                        @forelse ($hrDecisionList as $record)
+                            @forelse ($hrDecisionList as $record)
 
-                        <tr
-                            wire:key="hr-decision-{{ $record->record_type }}-{{ $record->assignment_id }}"
-                            class="hover:bg-zinc-50 dark:hover:bg-zinc-800 transition text-center">
+                            <tr
+                                wire:key="hr-decision-{{ $record->record_type }}-{{ $record->assignment_id }}"
+                                class="transition hover:bg-zinc-50 dark:hover:bg-zinc-800">
 
-                            {{-- Type --}}
-                            <td class="px-4 py-3">
-                                @if ($record->record_type === 'CPAR')
-                                <span
-                                    class="inline-flex items-center rounded-full
-                                                   bg-red-100 text-red-700
-                                                   dark:bg-red-950 dark:text-red-400
-                                                   px-2.5 py-1 text-xs font-semibold">
-                                    CPAR
-                                </span>
-                                @elseif ($record->record_type === 'RESULT')
-                                <span
-                                    class="inline-flex items-center rounded-full
-                                                   bg-purple-100 text-purple-700
-                                                   dark:bg-purple-950 dark:text-purple-400
-                                                   px-2.5 py-1 text-xs font-semibold">
-                                    RESULT
-                                </span>
-                                @endif
-                            </td>
+                                {{-- REQUEST NO --}}
+                                <td class="whitespace-nowrap px-4 py-4 text-center">
 
-                            {{-- Request No. --}}
-                            <td class="px-4 py-4 whitespace-nowrap">
+                                    <div class="flex flex-col items-center gap-1">
 
-                                <div class="font-semibold text-zinc-900 dark:text-white">
-                                    {{ $record->record_no }}
-                                </div>
+                                        <div class="font-semibold text-zinc-900 dark:text-white">
+                                            {{ $record->record_no }}
+                                        </div>
 
-                            </td>
-                            {{-- REPORTED BY --}}
-                            <td class="px-4 py-3 text-zinc-700 dark:text-zinc-300">
-                                {{ $record->reported_by }}
-                            </td>
+                                        <div class="mt-1 text-center">
+                                            @if ($record->record_type === 'CPAR')
+                                            <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-[10px] font-semibold
+                                            bg-red-100 text-red-700
+                                            dark:bg-red-950 dark:text-red-400">
+                                                CPAR
+                                            </span>
+                                            @else
+                                            <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-[10px] font-semibold
+                                            bg-blue-100 text-blue-700
+                                            dark:bg-blue-950 dark:text-blue-400">
+                                                RESULT
+                                            </span>
+                                            @endif
+                                        </div>
 
-                            {{-- DATE --}}
-                            <td class="px-4 py-3 text-zinc-700 dark:text-zinc-300">
+                                    </div>
 
-                                {{ \Carbon\Carbon::parse($record->record_date)->format('M d, Y') }}
-
-                            </td>
-
-                            {{-- Employee --}}
-                            <td class="px-4 py-4">
-                                <div class="font-medium text-zinc-900 dark:text-white">
-                                    {{ $record->employee_name ?? 'Unassigned' }}
-                                </div>
-                            </td>
-
-                            {{-- PRIORITY --}}
-                            <td class="px-4 py-3">
-
-                                @php
-                                $priorityColor = match (
-                                strtolower($record->priority_name ?? '')
-                                ) {
-                                'normal' =>
-                                'bg-green-100 text-green-700 ring-green-600/20
-                                dark:bg-green-950 dark:text-green-400',
-
-                                'high' =>
-                                'bg-orange-100 text-orange-700 ring-orange-600/20
-                                dark:bg-orange-950 dark:text-orange-400',
-
-                                'urgent' =>
-                                'bg-red-100 text-red-700 ring-red-600/20
-                                dark:bg-red-950 dark:text-red-400',
-
-                                default =>
-                                'bg-zinc-100 text-zinc-700 ring-zinc-600/20
-                                dark:bg-zinc-700 dark:text-zinc-300',
-                                };
-                                @endphp
-
-                                <span
-                                    class="inline-flex items-center gap-1.5
-                                               rounded-full px-2.5 py-1
-                                               text-xs font-semibold
-                                               ring-1 ring-inset
-                                               {{ $priorityColor }}">
-                                    {{ $record->priority_name ?? 'N/A' }}
-                                </span>
-
-                            </td>
-
-                            <td>
-
-                            </td>
-
-                            {{-- Documents --}}
-                            <td class="px-4 py-4">
-
-                                @if ($record->record_type === 'CPAR')
-
-                                <div class="flex justify-center gap-2">
-
-                                    @if (!empty($record->ir_id))
-                                    <flux:badge color="red">
-                                        Submitted IR
-                                    </flux:badge>
-                                    @endif
+                                </td>
 
 
-                                    @if (!empty($record->nte_no))
-                                    <flux:badge color="blue">
-                                        Submitted NTE
-                                    </flux:badge>
-                                    @endif
+                                {{-- REPORTED BY --}}
+                                <td class="max-w-[220px] px-4 py-4 text-center">
+
+                                    <div
+                                        class="truncate font-medium text-zinc-700 dark:text-zinc-300"
+                                        title="{{ $record->reported_by }}">
+                                        {{ $record->reported_by }}
+                                    </div>
+
+                                </td>
 
 
-                                    @if (
-                                    empty($record->ir_id) &&
-                                    empty($record->nte_no))
+                                {{-- DATE --}}
+                                <td class="whitespace-nowrap px-4 py-4 text-center text-zinc-700 dark:text-zinc-300">
+
+                                    @if ($record->record_date)
+
+                                    {{ \Carbon\Carbon::parse($record->record_date)->format('M d, Y') }}
+
+                                    @else
 
                                     <span class="text-zinc-400">
-                                        —
+                                        N/A
                                     </span>
 
                                     @endif
 
-                                </div>
+                                </td>
 
-                                @else
-                                <div class="flex justify-center gap-2">
 
-                                    @if (!empty($record->ir_id))
-                                    <flux:badge color="red">
-                                        Submitted IR
-                                    </flux:badge>
+                                {{-- ASSIGNED TO --}}
+                                <td class="max-w-[220px] px-4 py-4 text-center">
+
+                                    {{-- Employee Name --}}
+                                    <div
+                                        class="truncate font-medium text-zinc-900 dark:text-white"
+                                        title="{{ $record->employee_name ?? 'Unassigned' }}">
+                                        {{ $record->employee_name ?? 'Unassigned' }}
+                                    </div>
+
+                                    {{-- Offense History --}}
+                                    @if (!empty($record->employee_no))
+                                    <button
+                                        type="button"
+                                        wire:click="viewOffenseHistory('{{ $record->employee_no }}')"
+                                        class="mt-2 inline-flex items-center gap-1 rounded-md
+                                        bg-zinc-100 px-2 py-1 text-xs font-medium
+                                        text-zinc-600 transition
+                                        hover:bg-red-50 hover:text-red-700
+                                        dark:bg-zinc-800 dark:text-zinc-400
+                                        dark:hover:bg-red-950 dark:hover:text-red-400">
+                                        <flux:icon name="clock" class="size-3.5" />
+
+                                        {{ $offenseHistoryCounts[$record->employee_no] ?? 0 }}
+                                        Offense History
+                                    </button>
                                     @endif
 
+                                </td>
 
-                                    @if (!empty($record->nte_no))
-                                    <flux:badge color="blue">
-                                        Submitted NTE
-                                    </flux:badge>
-                                    @endif
 
-                                    @if (
-                                    empty($record->ir_id) &&
-                                    empty($record->nte_no))
+                                {{-- PRIORITY --}}
+                                <td class="whitespace-nowrap px-4 py-4 text-center">
 
-                                    <span class="text-zinc-400">
-                                        —
+                                    @php
+
+                                    $priorityColor = match (
+                                    strtolower($record->priority_name ?? '')
+                                    ) {
+
+                                    'normal' =>
+                                    'bg-green-100 text-green-700 ring-green-600/20 dark:bg-green-950 dark:text-green-400',
+
+                                    'high' =>
+                                    'bg-orange-100 text-orange-700 ring-orange-600/20 dark:bg-orange-950 dark:text-orange-400',
+
+                                    'urgent' =>
+                                    'bg-red-100 text-red-700 ring-red-600/20 dark:bg-red-950 dark:text-red-400',
+
+                                    default =>
+                                    'bg-zinc-100 text-zinc-700 ring-zinc-600/20 dark:bg-zinc-700 dark:text-zinc-300',
+
+                                    };
+
+                                    @endphp
+
+                                    <span
+                                        class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold ring-1 ring-inset {{ $priorityColor }}">
+
+                                        {{ $record->priority_name ?? 'N/A' }}
+
                                     </span>
 
-                                    @endif
-
-                                </div>
-
-                                @endif
-
-                            </td>
+                                </td>
 
 
-                            {{-- Status --}}
-                            <td class="px-4 py-4">
+                                {{-- DOCUMENTS --}}
+                                <td class="px-4 py-4 text-center">
 
-                                @if ($record->status_name === 'APPROVED')
+                                    <div class="flex flex-wrap justify-center gap-1.5">
 
-                                <flux:badge color="green">
-                                    {{ $record->status_name }}
-                                </flux:badge>
+                                        @if (!empty($record->ir_id))
 
-                                @elseif ($record->status_name === 'FOR REVIEW')
-
-                                <flux:badge color="yellow">
-                                    {{ $record->status_name }}
-                                </flux:badge>
-
-                                @else
-
-                                <flux:badge color="yellow">
-                                    {{ $record->status_name }}
-                                </flux:badge>
-
-                                @endif
-
-                            </td>
-
-
-                            {{-- Action --}}
-                            <td class="px-4 py-3 text-center">
-                                <flux:dropdown align="end">
-
-                                    <flux:button
-                                        size="sm"
-                                        variant="ghost"
-                                        icon="ellipsis-vertical"
-                                        aria-label="Actions" />
-
-                                    <flux:menu>
-
-                                        @if ($record->record_type === 'CPAR')
-
-                                        <flux:menu.item
-                                            icon="eye"
-                                            wire:click="viewCpar({{ $record->assignment_id }})">
-                                            View CPAR
-                                        </flux:menu.item>
-
-                                        @elseif ($record->record_type === 'RESULT')
-
-                                        <flux:menu.item
-                                            icon="eye"
-                                            wire:click="viewResult({{ $record->assignment_id }})">
-                                            View Result Error
-                                        </flux:menu.item>
+                                        <flux:badge color="red">
+                                            Submitted IR
+                                        </flux:badge>
 
                                         @endif
 
-                                    </flux:menu>
 
-                                </flux:dropdown>
-                            </td>
+                                        @if (!empty($record->nte_no))
 
-                        </tr>
+                                        <flux:badge color="blue">
+                                            Submitted NTE
+                                        </flux:badge>
 
-                        @empty
-
-                        <tr>
-
-                            <td
-                                colspan="8"
-                                class="px-4 py-12 text-center">
-
-                                <flux:icon
-                                    name="check-circle"
-                                    class="mx-auto size-10 text-green-500" />
-
-                                <flux:heading
-                                    size="sm"
-                                    class="mt-3">
-
-                                    @if ($search)
-
-                                    No Record Found
-
-                                    @else
-
-                                    No Records Pending for HR Decision
-
-                                    @endif
-
-                                </flux:heading>
+                                        @endif
 
 
-                                <flux:text class="mt-1 text-zinc-500">
+                                        @if (
+                                        empty($record->ir_id) &&
+                                        empty($record->nte_no)
+                                        )
 
-                                    @if ($search)
+                                        <span class="text-zinc-400">
+                                            —
+                                        </span>
 
-                                    No results found for
-                                    <strong>"{{ $search }}"</strong>.
+                                        @endif
+
+                                    </div>
+
+                                </td>
+
+
+                                {{-- STATUS --}}
+                                <td class="whitespace-nowrap px-4 py-4 text-center">
+
+                                    @if ($record->status_name === 'APPROVED')
+
+                                    <flux:badge color="green">
+                                        {{ $record->status_name }}
+                                    </flux:badge>
+
+                                    @elseif ($record->status_name === 'FOR REVIEW')
+
+                                    <flux:badge color="yellow">
+                                        {{ $record->status_name }}
+                                    </flux:badge>
 
                                     @else
 
-                                    All records have been reviewed.
+                                    <flux:badge color="yellow">
+                                        {{ $record->status_name }}
+                                    </flux:badge>
 
                                     @endif
 
-                                </flux:text>
+                                </td>
 
-                            </td>
 
-                        </tr>
+                                {{-- ACTION --}}
+                                <td class="whitespace-nowrap px-4 py-4 text-center">
 
-                        @endforelse
+                                    <flux:dropdown align="end">
 
-                    </tbody>
+                                        <flux:button
+                                            size="sm"
+                                            variant="ghost"
+                                            icon="ellipsis-vertical"
+                                            aria-label="Actions" />
 
-                </table>
+                                        <flux:menu>
+
+                                            @if ($record->record_type === 'CPAR')
+
+                                            <flux:menu.item
+                                                icon="eye"
+                                                wire:click="viewCpar({{ $record->assignment_id }})">
+                                                View CPAR
+                                            </flux:menu.item>
+
+                                            @elseif ($record->record_type === 'RESULT')
+
+                                            <flux:menu.item
+                                                icon="eye"
+                                                wire:click="viewResult({{ $record->assignment_id }})">
+                                                View Result Error
+                                            </flux:menu.item>
+
+                                            @endif
+
+
+                                            @if (!empty($record->employee_no))
+
+                                            <!-- <flux:menu.item
+                                                icon="clock"
+                                                wire:click="viewOffenseHistory('{{ $record->employee_no }}')">
+                                                View Offense History
+                                            </flux:menu.item> -->
+
+                                            @endif
+
+                                        </flux:menu>
+
+                                    </flux:dropdown>
+
+                                </td>
+
+                            </tr>
+
+
+                            @empty
+
+                            <tr>
+
+                                <td
+                                    colspan="9"
+                                    class="px-4 py-12 text-center">
+
+                                    <flux:icon
+                                        name="check-circle"
+                                        class="mx-auto size-10 text-green-500" />
+
+                                    <flux:heading
+                                        size="sm"
+                                        class="mt-3">
+
+                                        @if ($search)
+
+                                        No Record Found
+
+                                        @else
+
+                                        No Records Pending for HR Decision
+
+                                        @endif
+
+                                    </flux:heading>
+
+                                    <flux:text class="mt-1 text-zinc-500">
+
+                                        @if ($search)
+
+                                        No results found for
+                                        <strong>"{{ $search }}"</strong>.
+
+                                        @else
+
+                                        All records have been reviewed.
+
+                                        @endif
+
+                                    </flux:text>
+
+                                </td>
+
+                            </tr>
+
+                            @endforelse
+
+                        </tbody>
+
+                    </table>
+
+                </div>
 
             </div>
 

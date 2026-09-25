@@ -6,6 +6,7 @@ use App\Models\cpar_assignments;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use App\Models\employee;
+use App\Models\memo_templates;
 use Illuminate\Support\Facades\Auth;
 use App\Models\result_error_data_informations;
 use App\Models\result_error_quality_accuracies;
@@ -32,6 +33,8 @@ class HrMemoModal extends Component
     public $selectedCategories = [null], $selectedOffenseLevels = [''], $selectedHRDecisions = [''];
     public $isNoDisciplinaryAction = false;
     public $nte_no = '', $hr_decision_remarks = '', $management_remarks = '', $current_memo_attachment = '';
+    public $assigned_department = '', $decision_name = '', $full_name = '', $from = '', $signatory = '', $position_name = '';
+    public $memo_re = '';
     protected $listeners = [
         'open-memo-result' => 'open_memo'
     ];
@@ -57,6 +60,10 @@ class HrMemoModal extends Component
             ->get();
         $this->memo_no = $this->generateMemoNo();
         $this->memo_date = now()->format('m-d-Y');
+        $memo_template = memo_templates::select('From', 'Signatory')->first();
+
+        $this->from = $memo_template->From ?? '';
+        $this->signatory = $memo_template->Signatory ?? '';
     }
 
     private function generateMemoNo()
@@ -94,6 +101,17 @@ class HrMemoModal extends Component
             ->leftJoin('cpar_nte_responses as n', 'l.id', '=', 'n.nte_id')
             ->leftJoin('cpar_memos as o', 'd.id', '=', 'o.assignment_id')
             ->leftJoin('employees as p', 'a.employee_no', '=', 'p.employee_no')
+            ->leftJoin(
+                'cpar_decision_categories as q',
+                DB::raw("
+                JSON_CONTAINS(
+                    k.decision_ids,
+                    JSON_QUOTE(CAST(q.id AS CHAR))
+                )
+            "),
+                '=',
+                DB::raw('1')
+            )
             ->select(
                 'a.result_no',
                 'a.reported_by',
@@ -112,7 +130,7 @@ class HrMemoModal extends Component
                 'a.concern_description',
                 'b.source_name',
                 'c.complain_name',
-                'd.id',
+                'd.id as assignment_id',
                 'd.result_id',
                 'd.assigned_to',
                 'd.remarks',
@@ -123,9 +141,11 @@ class HrMemoModal extends Component
                 'f.department_name',
                 'f.first_name',
                 'f.last_name',
+                'f.position_name',
                 'g.priority_name',
                 DB::raw("CONCAT(h.first_name, ' ', h.last_name) AS employee_assigned_to"),
                 'h.employee_no as employee_no_assigned',
+                'h.department_name as assigned_department',
                 'i.identified_cause',
                 'i.provided_solution',
                 'i.recommendation',
@@ -154,11 +174,20 @@ class HrMemoModal extends Component
                 'o.memo_no',
                 'o.memo_date',
                 'o.subject',
+                'o.memo_re',
                 'o.memo_content',
                 'o.memo_attachment',
-                'p.department_name as reported_by_department'
+                'p.department_name as reported_by_department',
+                DB::raw("
+                GROUP_CONCAT(
+                    DISTINCT q.decision_name
+                    ORDER BY q.id
+                    SEPARATOR ', '
+                ) as decision_name
+            "),
             )
             ->where('d.id', $id)
+            ->groupBy('a.result_no', 'a.reported_by', 'a.employee_no', 'a.date_reported', 'a.test_procedure', 'a.quality_information', 'a.actual_released_date', 'a.data_information', 'a.technical_information', 'a.patient_name', 'a.complain_name', 'a.attending_physician', 'a.concern_description', 'b.source_name', 'c.complain_name', 'd.id', 'd.result_id', 'd.assigned_to', 'd.remarks', 'd.dept_head_assigned', 'd.department_id', 'e.status_name', 'f.branch_id', 'f.department_name', 'f.first_name', 'f.last_name', 'f.position_name', 'g.priority_name', 'h.first_name', 'h.last_name', 'h.employee_no', 'h.department_name', 'i.identified_cause', 'i.provided_solution', 'i.recommendation', 'i.date_completed', 'i.tat', 'i.action_taken_by', 'i.remarks', 'j.id', 'j.ir_id', 'j.ir_attachment', 'k.id', 'k.discipline_ids', 'k.offense_ids', 'k.decision_ids', 'k.status', 'k.remarks', 'k.management_remarks', 'l.id', 'l.nte_no', 'l.nte_attachment', 'n.response_attachment', 'o.memo_no', 'o.memo_date', 'o.subject', 'o.memo_re', 'o.memo_content', 'o.memo_attachment', 'p.department_name')
             ->first();
         $this->assigned_employee_no = $result->employee_no;
         $cpar_info = DB::table('employees as a')
@@ -191,21 +220,24 @@ class HrMemoModal extends Component
             ->orderBy('id', 'asc')
             ->get();
         // memo
+        $this->memo_re = $result->memo_re ?? $result->decision_name;
         $this->memo_no = $result->memo_no ?? $this->memo_no;
         $this->memo_date = $result->memo_date ?? now()->format('m-d-Y');
-        $this->memo_subject = $result->subject;
+        $this->memo_subject = $result->subject ?? $result->decision_name;
         $this->memo_content = $result->memo_content;
         $this->current_memo_attachment = $result->memo_attachment;
+        $this->full_name = $result->employee_assigned_to;
+        $this->position_name = $result->position_name;
         // IR Response 
         $this->existing_ir_attachment = $result->ir_attachment ?? '';
         // NTE Response
         $this->response_attachment = $result->response_attachment ?? '';
         $nte_request = DB::table('cpar_notice_to_explains')->where('assignment_id', $this->assignment_id)->first();
         $this->hasNTERequest = !is_null($nte_request);
-        $this->id = $result->id;
+        $this->assignment_id = $result->assignment_id;
+        $this->id = $result->assignment_id;
         $this->ir_id = $result->ir_id;
         $this->nte_no = $result->nte_no;
-        $this->employee_assigned_to = $result->employee_assigned_to;
         $this->result_id   = $result->result_id;
         $this->result_no = $result->result_no;
         $this->date_reported = Carbon::parse($result->date_reported)->format('m-d-Y');
@@ -243,6 +275,9 @@ class HrMemoModal extends Component
         $this->tat = $result->tat;
         $this->ir_request_id = $result->ir_request_id;
         $this->management_remarks = $result->management_remarks;
+        $this->employee_assigned_to = $result->employee_assigned_to;
+        $this->assigned_department = $result->assigned_department;
+        $this->decision_name = $result->decision_name;
         // Basic information
         $this->selectedCategories = json_decode(
             $result->discipline_ids ?? '[]',
@@ -258,6 +293,11 @@ class HrMemoModal extends Component
         ) ?: [''];
         $this->hr_decision_remarks = $result->decision_remarks;
         $this->modal('memo-result')->show();
+    }
+
+    public function updatedMemoSubject($value)
+    {
+        $this->memo_subject = strtoupper($value);
     }
 
     private function validateMemo()
@@ -319,6 +359,7 @@ class HrMemoModal extends Component
                 'memo_no' => $memo?->memo_no,
                 'memo_date' => $memo?->memo_date,
                 'subject' => $memo?->subject,
+                'memo_re' => $memo?->memo_re,
                 'memo_content' => $memo?->memo_content,
                 'memo_attachment' => $memo?->memo_attachment,
                 'status' => $memo?->status,
@@ -329,6 +370,7 @@ class HrMemoModal extends Component
                 'memo_no' => $this->memo_no,
                 'memo_date' => $this->memo_date,
                 'subject' => $this->memo_subject,
+                'memo_re' => $this->memo_re,
                 'memo_content' => $this->memo_content,
                 'memo_attachment' => $memoAttachment,
                 'status' => 'DRAFT',
@@ -353,6 +395,7 @@ class HrMemoModal extends Component
                 'memo_no' => $this->memo_no,
                 'memo_date' => $this->memo_date,
                 'subject' => $this->memo_subject,
+                'memo_re' => $this->memo_re,
                 'memo_content' => $this->memo_content,
                 'memo_attachment' => $memoAttachment,
                 'status' => 'DRAFT',
@@ -443,6 +486,7 @@ class HrMemoModal extends Component
                 'memo_no'          => $this->memo_no,
                 'memo_date'        => $this->memo_date,
                 'subject'          => $this->memo_subject,
+                'memo_re'          => $this->memo_re,
                 'memo_content'     => $this->memo_content,
                 'memo_attachment'  => $memoAttachment,
                 'status'           => 'ISSUED',
@@ -457,6 +501,7 @@ class HrMemoModal extends Component
                         'memo_no'          => $this->memo_no,
                         'memo_date'        => $this->memo_date,
                         'subject'          => $this->memo_subject,
+                        'memo_re'          => $this->memo_re,
                         'memo_content'     => $this->memo_content,
                         'memo_attachment'  => $memoAttachment,
                         'status'           => 'ISSUED',
@@ -471,6 +516,7 @@ class HrMemoModal extends Component
                         'memo_no'          => $this->memo_no,
                         'memo_date'        => $this->memo_date,
                         'subject'          => $this->memo_subject,
+                        'memo_re'          => $this->memo_re,
                         'memo_content'     => $this->memo_content,
                         'memo_attachment'  => $memoAttachment,
                         'status'           => 'ISSUED',
@@ -489,6 +535,7 @@ class HrMemoModal extends Component
                 'memo_no'          => $oldMemo?->memo_no,
                 'memo_date'        => $oldMemo?->memo_date,
                 'subject'          => $oldMemo?->subject,
+                'memo_re'          => $this->memo_re,
                 'memo_content'     => $oldMemo?->memo_content,
                 'memo_attachment'  => $oldMemo?->memo_attachment,
                 'memo_status'      => $oldMemo?->status,
@@ -501,6 +548,7 @@ class HrMemoModal extends Component
                 'memo_no'          => $this->memo_no,
                 'memo_date'        => $this->memo_date,
                 'subject'          => $this->memo_subject,
+                'memo_re'          => $this->memo_re,
                 'memo_content'     => $this->memo_content,
                 'memo_attachment'  => $memoAttachment,
                 'memo_status'      => 'RESULT MEMO ISSUED',
@@ -562,20 +610,6 @@ class HrMemoModal extends Component
         $this->dispatch('refreshMemoRecords');
         $this->dispatch('refreshMemoCount');
         $this->dispatch('refreshNotificationCount');
-    }
-
-    public function printResultMemo()
-    {
-        if (empty(trim($this->memo_content))) {
-            $this->dispatch('toast', [
-                'type' => 'warning',
-                'message' => 'Please enter memo content before printing.',
-            ]);
-
-            return;
-        }
-
-        $this->dispatch('print-memo-result', content: $this->memo_content);
     }
 
     public function render()

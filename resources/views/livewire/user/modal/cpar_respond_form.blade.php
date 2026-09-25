@@ -174,20 +174,22 @@
                         label="Identified Cause"
                         wire:model="identified_cause"
                         rows="4"
-                        placeholder="Enter the identified cause..." />
-
+                        placeholder="ENTER THE IDENTIFIED CAUSE..."
+                        class="uppercase" />
 
                     <flux:textarea
                         label="Provided Solution"
                         wire:model="provided_solution"
                         rows="4"
-                        placeholder="Enter the provided solution..." />
+                        placeholder="ENTER THE PROVIDED SOLUTION..."
+                        class="uppercase" />
 
                     <flux:textarea
                         label="Recommendation"
                         wire:model="recommendation"
                         rows="4"
-                        placeholder="Enter recommendation..." />
+                        placeholder="ENTER RECOMMENDATION..."
+                        class="uppercase" />
 
                     <flux:input
                         type="file"

@@ -2,9 +2,6 @@
 
     <div class="notification-stack">
 
-        {{-- =========================================================
-            USER NOTIFICATION
-        ========================================================== --}}
         @if ($request_count > 0 || $assigned_count > 0 || $nte_cpar > 0)
 
         <div class="notification-container">
@@ -124,17 +121,7 @@
 
         @endif
 
-
-        {{-- =========================================================
-            HR NOTIFICATION
-        ========================================================== --}}
-        @if (
-        $hr_request_count > 0 ||
-        $acknowledged_cpar > 0 ||
-        $hr_decision_count > 0 ||
-        $memo_count > 0
-        )
-
+        @if ($hr_request_count > 0 || $acknowledged_cpar > 0 || $hr_decision_count > 0 || $memo_count > 0)
         <div class="notification-container">
 
             <div class="notification-toast"
@@ -206,13 +193,8 @@
             </div>
 
         </div>
-
         @endif
 
-
-        {{-- =========================================================
-            LABORATORY NOTIFICATION
-        ========================================================== --}}
         @if ($lab_request_count > 0)
 
         <div class="notification-container">
@@ -260,10 +242,6 @@
 
     </div>
 
-
-    {{-- =========================================================
-        STYLE
-    ========================================================== --}}
     <style>
         .notification-stack {
 

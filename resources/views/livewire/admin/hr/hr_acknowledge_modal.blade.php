@@ -95,10 +95,7 @@
                             </div>
                         </div>
                         @endif
-
-                        <flux:textarea
-                            label="Remarks"
-                            wire:model="remarks" />
+                        <flux:textarea label="Remarks" wire:model="remarks" class="uppercase" />
                     </div>
 
                 </div>

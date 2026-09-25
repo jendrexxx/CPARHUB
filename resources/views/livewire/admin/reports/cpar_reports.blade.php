@@ -11,7 +11,6 @@
     </div>
     {{-- FILTER CARD --}}
     <div class="rounded-xl border border-zinc-200 bg-white p-4 sm:p-5 dark:border-zinc-700 dark:bg-zinc-900">
-
         {{-- FILTER GRID --}}
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {{-- SEARCH --}}
@@ -78,8 +77,8 @@
                     wire:model.live="statusFilter"
                     label="Status">
 
-                    <flux:select.option value="ALL">
-                        All Statuses
+                    <flux:select.option selected disabled value="ALL">
+
                     </flux:select.option>
 
                     @foreach ($statuses as $status)
@@ -169,216 +168,302 @@
         @endif
 
     </div>
-    {{-- TABLE CONTROLS --}}
-    <div class="flex items-center justify-between">
+    @if ($hasActiveFilters)
+    <div class="mb-4 flex justify-end gap-2">
 
-        {{-- ROWS PER PAGE --}}
-        <div class="flex items-center gap-2">
+        <a
+            href="{{ route('pdf', [
+            'search' => $search,
+            'branch_id' => $branchFilter,
+            'department_id' => $departmentFilter,
+            'status_id' => $statusFilter,
+            'category_id' => $categoryFilter,
+            'date_from' => $dateFrom,
+            'date_to' => $dateTo,
+        ]) }}"
+            target="_blank"
+            class="inline-flex items-center gap-2 rounded-lg bg-red-700 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-red-800 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="2"
+                stroke="currentColor"
+                class="h-5 w-5">
+                <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A3.375 3.375 0 0 1 11.25 4.875v-1.5A3.375 3.375 0 0 0 7.875 0H6.75A3.375 3.375 0 0 0 3.375 3.375v17.25A3.375 3.375 0 0 0 6.75 24h9.375a3.375 3.375 0 0 0 3.375-3.375v-6.375Z" />
+                <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M9 12.75h6m-6 3h6" />
+            </svg>
 
-            <span class="text-sm text-zinc-500 dark:text-zinc-400">
-                Rows per page
-            </span>
+            Export PDF
+        </a>
 
-            <flux:select
-                wire:model.live="perPage"
-                class="w-24">
-
-                <flux:select.option value="10">
-                    10
-                </flux:select.option>
-
-                <flux:select.option value="20">
-                    20
-                </flux:select.option>
-
-                <flux:select.option value="50">
-                    50
-                </flux:select.option>
-
-                <flux:select.option value="100">
-                    100
-                </flux:select.option>
-
-            </flux:select>
-
-        </div>
-
-        {{-- TOTAL RECORDS --}}
-        <div class="text-sm text-zinc-500 dark:text-zinc-400">
-
-            Total:
-            <span class="font-semibold text-zinc-900 dark:text-white">
-                {{ $cparReports->total() }}
-            </span>
-
-        </div>
+        <a
+            href="{{ route('excel', [
+            'search' => $search,
+            'branch_id' => $branchFilter,
+            'department_id' => $departmentFilter,
+            'status_id' => $statusFilter,
+            'category_id' => $categoryFilter,
+            'date_from' => $dateFrom,
+            'date_to' => $dateTo,
+        ]) }}"
+            class="inline-flex items-center gap-2 rounded-lg bg-green-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2">
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="2"
+                stroke="currentColor"
+                class="h-5 w-5">
+                <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M12 3v12m0 0 4-4m-4 4-4-4M4.5 21h15" />
+            </svg>
+            Export Excel
+        </a>
 
     </div>
-    {{-- REPORT TABLE --}}
-    <div class="overflow-x-auto rounded-xl border border-zinc-200 dark:border-zinc-700">
+    @endif
 
-        <table class="min-w-[1200px] w-full text-left text-sm">
+    <div class="overflow-x-auto rounded-xl border-zinc-200 dark:border-zinc-700">
+        {{-- TABLE CONTROLS --}}
+        <div class="flex items-center justify-between">
 
-            <thead class="border-b border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900">
+            {{-- ROWS PER PAGE --}}
+            <div class="flex items-center gap-2">
 
-                <tr>
+                <span class="text-sm text-zinc-500 dark:text-zinc-400">
+                    Rows per page
+                </span>
 
-                    <th class="whitespace-nowrap px-4 py-3 text-center font-semibold">
-                        Type
-                    </th>
+                <flux:select
+                    wire:model.live="perPage"
+                    class="w-24">
 
-                    <th class="whitespace-nowrap px-4 py-3 text-center font-semibold">
-                        Reference No.
-                    </th>
+                    <flux:select.option value="10">
+                        10
+                    </flux:select.option>
 
-                    <th class="whitespace-nowrap px-4 py-3 text-center font-semibold">
-                        Reported By
-                    </th>
+                    <flux:select.option value="20">
+                        20
+                    </flux:select.option>
 
-                    <th class="whitespace-nowrap px-4 py-3 text-center font-semibold">
-                        Reported Employee
-                    </th>
+                    <flux:select.option value="50">
+                        50
+                    </flux:select.option>
 
-                    <th class="whitespace-nowrap px-4 py-3 text-center font-semibold">
-                        Branch
-                    </th>
+                    <flux:select.option value="100">
+                        100
+                    </flux:select.option>
 
-                    <th class="whitespace-nowrap px-4 py-3 text-center font-semibold">
-                        Department
-                    </th>
+                </flux:select>
 
-                    <th class="whitespace-nowrap px-4 py-3 text-center font-semibold">
-                        Date Reported
-                    </th>
+            </div>
 
-                    <th class="whitespace-nowrap px-4 py-3 text-center font-semibold">
-                        Decision Category
-                    </th>
+            {{-- TOTAL RECORDS --}}
+            <div class="text-sm text-zinc-500 dark:text-zinc-400">
 
-                    <th class="whitespace-nowrap px-4 py-3 text-center font-semibold">
-                        Valid Until
-                    </th>
+                Total:
+                <span class="font-semibold text-zinc-900 dark:text-white">
+                    {{ $cparReports->total() }}
+                </span>
 
-                    <th class="whitespace-nowrap px-4 py-3 text-center font-semibold">
-                        Status
-                    </th>
+            </div>
 
-                    <th class="whitespace-nowrap px-4 py-3 text-center font-semibold">
-                        Actions
-                    </th>
+        </div>
+        {{-- REPORT TABLE --}}
+        @if ($hasActiveFilters)
+        <div class="overflow-x-auto rounded-xl border border-zinc-200 dark:border-zinc-700">
 
-                </tr>
+            <table class="min-w-[1200px] w-full text-left text-sm">
 
-            </thead>
+                <thead class="border-b border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900">
 
-            <tbody class="divide-y divide-zinc-200 dark:divide-zinc-700">
+                    <tr>
 
-                @forelse ($cparReports as $record)
+                        <th class="whitespace-nowrap px-4 py-3 text-center font-semibold">
+                            Type
+                        </th>
 
-                <tr class="text-center transition hover:bg-zinc-50 dark:hover:bg-zinc-800">
+                        <th class="whitespace-nowrap px-4 py-3 text-center font-semibold">
+                            Request No.
+                        </th>
 
-                    {{-- TYPE --}}
-                    <td class="whitespace-nowrap px-4 py-4">
+                        <th class="whitespace-nowrap px-4 py-3 text-center font-semibold">
+                            Reported By
+                        </th>
 
-                        @if ($record->record_type === 'CPAR')
+                        <th class="whitespace-nowrap px-4 py-3 text-center font-semibold">
+                            Reported Employee
+                        </th>
 
-                        <span
-                            class="inline-flex items-center rounded-full bg-red-100 px-2.5 py-1 text-xs font-medium text-red-700 dark:bg-red-950 dark:text-red-400">
-                            CPAR
-                        </span>
+                        <th class="whitespace-nowrap px-4 py-3 text-center font-semibold">
+                            Branch
+                        </th>
 
-                        @else
+                        <th class="whitespace-nowrap px-4 py-3 text-center font-semibold">
+                            Department
+                        </th>
 
-                        <span
-                            class="inline-flex items-center rounded-full bg-blue-100 px-2.5 py-1 text-xs font-medium text-blue-700 dark:bg-blue-950 dark:text-blue-400">
-                            RESULT
-                        </span>
+                        <th class="whitespace-nowrap px-4 py-3 text-center font-semibold">
+                            Date Reported
+                        </th>
 
-                        @endif
+                        <th class="whitespace-nowrap px-4 py-3 text-center font-semibold">
+                            Decision Category
+                        </th>
 
-                    </td>
+                        <th class="whitespace-nowrap px-4 py-3 text-center font-semibold">
+                            Valid Until
+                        </th>
 
+                        <th class="whitespace-nowrap px-4 py-3 text-center font-semibold">
+                            Status
+                        </th>
 
-                    {{-- REFERENCE NO --}}
-                    <td class="whitespace-nowrap px-4 py-4">
+                        <th class="whitespace-nowrap px-4 py-3 text-center font-semibold">
+                            Actions
+                        </th>
 
-                        <span class="font-semibold text-zinc-900 dark:text-white">
-                            {{ $record->record_no }}
-                        </span>
+                    </tr>
 
-                    </td>
+                </thead>
 
-                    {{-- REPORTED BY --}}
-                    <td class="whitespace-nowrap px-4 py-4">
+                <tbody class="divide-y divide-zinc-200 dark:divide-zinc-700">
 
-                        <span class="font-semibold text-zinc-900 dark:text-white">
-                            {{ $record->reported_by ?? '—' }}
-                        </span>
+                    @forelse ($cparReports as $record)
 
-                    </td>
+                    <tr class="text-center transition hover:bg-zinc-50 dark:hover:bg-zinc-800">
 
+                        {{-- TYPE --}}
+                        <td class="whitespace-nowrap px-4 py-4">
 
-                    {{-- EMPLOYEE --}}
-                    <td class="whitespace-nowrap px-4 py-4">
+                            @if ($record->record_type === 'CPAR')
 
-                        <span class="font-semibold text-zinc-900 dark:text-white">
-                            {{ $record->employee_name ?: '—' }}
-                        </span>
-
-                        @if ($record->employee_no)
-
-                        <div class="text-xs text-zinc-500 dark:text-zinc-400">
-                            {{ $record->employee_no }}
-                        </div>
-
-                        @endif
-
-                    </td>
-
-
-                    {{-- BRANCH --}}
-                    <td class="whitespace-nowrap px-4 py-4">
-                        {{ $record->branch_name ?? '—' }}
-                    </td>
-
-
-                    {{-- DEPARTMENT --}}
-                    <td class="whitespace-nowrap px-4 py-4">
-                        {{ $record->department_name ?? '—' }}
-                    </td>
-
-
-                    {{-- DATE OPEN --}}
-                    <td class="whitespace-nowrap px-4 py-4">
-
-                        @if ($record->date_open)
-
-                        {{ \Carbon\Carbon::parse($record->date_open)->format('M d, Y') }}
-
-                        @else
-
-                        —
-
-                        @endif
-
-                    </td>
-
-
-                    {{-- DECISION --}}
-                    <td class="px-4 py-4">
-
-                        <div class="flex flex-wrap justify-center gap-1">
-
-                            @if ($record->decision_name)
-
-                            @foreach (explode(', ', $record->decision_name) as $decision)
-
-                            <span
-                                class="inline-flex items-center rounded-full bg-red-100 px-2.5 py-1 text-xs font-medium text-red-700 dark:bg-red-950 dark:text-red-400">
-                                {{ $decision }}
+                            <span class="inline-flex items-center rounded-full bg-red-100 px-2.5 py-1 text-xs font-medium text-red-700 dark:bg-red-950 dark:text-red-400">
+                                CPAR
                             </span>
 
-                            @endforeach
+                            @else
+
+                            <span class="inline-flex items-center rounded-full bg-blue-100 px-2.5 py-1 text-xs font-medium text-blue-700 dark:bg-blue-950 dark:text-blue-400">
+                                RESULT
+                            </span>
+
+                            @endif
+
+                        </td>
+
+
+                        {{-- REFERENCE NO --}}
+                        <td class="whitespace-nowrap px-4 py-4">
+
+                            <span class="font-semibold text-zinc-900 dark:text-white">
+                                {{ $record->record_no }}
+                            </span>
+
+                        </td>
+
+
+                        {{-- REPORTED BY --}}
+                        <td class="whitespace-nowrap px-4 py-4">
+
+                            <span class="font-semibold text-zinc-900 dark:text-white">
+                                {{ $record->reported_by ?? '—' }}
+                            </span>
+
+                        </td>
+
+
+                        {{-- EMPLOYEE --}}
+                        <td class="whitespace-nowrap px-4 py-4">
+
+                            <span class="font-semibold text-zinc-900 dark:text-white">
+                                {{ $record->employee_name ?: $record->dept_head_name ?: '' }}
+                            </span>
+
+                        </td>
+
+                        {{-- BRANCH --}}
+                        <td class="whitespace-nowrap px-4 py-4">
+                            {{ $record->branch_name ?? '—' }}
+                        </td>
+
+
+                        {{-- DEPARTMENT --}}
+                        <td class="whitespace-nowrap px-4 py-4">
+                            {{ $record->department_name ?? '—' }}
+                        </td>
+
+
+                        {{-- DATE --}}
+                        <td class="whitespace-nowrap px-4 py-4">
+
+                            @if ($record->date_open)
+
+                            {{ \Carbon\Carbon::parse($record->date_open)->format('M d, Y') }}
+
+                            @else
+
+                            —
+
+                            @endif
+
+                        </td>
+
+
+                        {{-- DECISION --}}
+                        <td class="px-4 py-4">
+
+                            <div class="flex flex-wrap justify-center gap-1">
+
+                                @if ($record->decision_name)
+
+                                @foreach (explode(', ', $record->decision_name) as $decision)
+
+                                <span class="inline-flex items-center rounded-full bg-red-100 px-2.5 py-1 text-xs font-medium text-red-700 dark:bg-red-950 dark:text-red-400">
+                                    {{ $decision }}
+                                </span>
+
+                                @endforeach
+
+                                @else
+
+                                <span class="text-zinc-400">
+                                    —
+                                </span>
+
+                                @endif
+
+                            </div>
+
+                        </td>
+
+
+                        {{-- VALID UNTIL --}}
+                        <td class="whitespace-nowrap px-4 py-4">
+
+                            @if ($record->valid_until)
+
+                            @php
+                            $validUntil = \Carbon\Carbon::parse($record->valid_until);
+                            @endphp
+
+                            <span class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium
+                                    {{ $validUntil->isFuture()
+                                        ? 'bg-green-100 text-green-700 dark:bg-green-950 dark:text-green-400'
+                                        : 'bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-400' }}">
+
+                                {{ $validUntil->format('M d, Y') }}
+
+                            </span>
 
                             @else
 
@@ -388,170 +473,159 @@
 
                             @endif
 
-                        </div>
-
-                    </td>
+                        </td>
 
 
-                    {{-- VALID UNTIL --}}
-                    <td class="whitespace-nowrap px-4 py-4">
+                        {{-- STATUS --}}
+                        <td class="whitespace-nowrap px-4 py-4">
 
-                        @if ($record->valid_until)
+                            <span class="inline-flex items-center rounded-full bg-yellow-100 px-2.5 py-1 text-xs font-medium text-yellow-700 dark:bg-yellow-950 dark:text-yellow-400">
 
-                        @php
-                        $validUntil = \Carbon\Carbon::parse($record->valid_until);
-                        @endphp
+                                {{ $record->status_name ?? '—' }}
 
-                        <span
-                            class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium
-                                {{ $validUntil->isFuture()
-                                    ? 'bg-green-100 text-green-700 dark:bg-green-950 dark:text-green-400'
-                                    : 'bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-400' }}">
+                            </span>
 
-                            {{ $validUntil->format('M d, Y') }}
-
-                        </span>
-
-                        @else
-
-                        <span class="text-zinc-400">
-                            —
-                        </span>
-
-                        @endif
-
-                    </td>
+                        </td>
 
 
-                    {{-- STATUS --}}
-                    <td class="whitespace-nowrap px-4 py-4">
+                        {{-- ACTIONS --}}
+                        <td class="px-4 py-3 text-center">
 
-                        <span
-                            class="inline-flex items-center rounded-full bg-yellow-100 px-2.5 py-1 text-xs font-medium text-yellow-700 dark:bg-yellow-950 dark:text-yellow-400">
+                            <flux:dropdown align="end">
 
-                            {{ $record->status_name ?? '—' }}
+                                <flux:button
+                                    size="sm"
+                                    variant="ghost"
+                                    icon="ellipsis-vertical">
+                                </flux:button>
 
-                        </span>
+                                <flux:menu>
 
-                    </td>
+                                    @if ($record->record_type === 'CPAR')
 
+                                    <flux:menu.item
+                                        icon="document-text"
+                                        href="{{ route('cpar.pdf', $record->assignment_id) }}"
+                                        target="_blank">
 
-                    {{-- ACTIONS --}}
-                    <td class="px-4 py-3 text-center">
+                                        CPAR PDF
 
-                        <flux:dropdown align="end">
+                                    </flux:menu.item>
 
-                            <flux:button
-                                size="sm"
-                                variant="ghost"
-                                icon="ellipsis-vertical">
-                            </flux:button>
+                                    @else
 
-                            <flux:menu>
+                                    <flux:menu.item
+                                        icon="document-text"
+                                        href="{{ route('result.pdf', $record->assignment_id) }}"
+                                        target="_blank">
 
-                                @if ($record->record_type === 'CPAR')
+                                        RESULT PDF
 
-                                <flux:menu.item
-                                    icon="document-text"
-                                    href="{{ route('cpar.pdf', $record->assignment_id) }}"
-                                    target="_blank">
+                                    </flux:menu.item>
 
-                                    CPAR PDF
+                                    @endif
 
-                                </flux:menu.item>
+                                    @if (!empty($record->memo_attachment))
+                                    <flux:menu.item
+                                        icon="arrow-down-tray"
+                                        href="{{ Storage::url($record->memo_attachment) }}"
+                                        download>
+                                        Download Memo
+                                    </flux:menu.item>
+                                    @endif
 
-                                @else
+                                </flux:menu>
 
-                                {{-- RESULT PDF --}}
-                                <flux:menu.item
-                                    icon="document-text"
-                                    href="{{ route('result.pdf', $record->assignment_id) }}"
-                                    target="_blank">
+                            </flux:dropdown>
 
-                                    RESULT PDF
+                        </td>
 
-                                </flux:menu.item>
+                    </tr>
 
-                                @endif
+                    @empty
 
-                            </flux:menu>
+                    <tr>
 
-                        </flux:dropdown>
+                        <td colspan="11" class="px-4 py-12 text-center">
 
-                    </td>
+                            <div class="flex flex-col items-center justify-center">
 
-                </tr>
+                                <div class="flex h-12 w-12 items-center justify-center rounded-full bg-zinc-100 dark:bg-zinc-800">
 
-                @empty
+                                    <svg
+                                        class="h-6 w-6 text-zinc-400"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                        stroke="currentColor">
 
-                <tr>
+                                        <path
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            stroke-width="2"
+                                            d="M9 13h6m-3-3v6m9-3a9 9 0 1 1-18 0Z" />
 
-                    <td
-                        colspan="11"
-                        class="px-4 py-12 text-center">
+                                    </svg>
 
-                        <div class="flex flex-col items-center justify-center">
+                                </div>
 
-                            <div
-                                class="flex h-12 w-12 items-center justify-center rounded-full bg-zinc-100 dark:bg-zinc-800">
+                                <h3 class="mt-3 text-sm font-semibold text-zinc-900 dark:text-white">
+                                    No CPAR / RESULT Records Found
+                                </h3>
 
-                                <svg
-                                    class="h-6 w-6 text-zinc-400"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                    stroke="currentColor">
+                                <p class="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
 
-                                    <path
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        stroke-width="2"
-                                        d="M9 13h6m-3-3v6m9-3a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                                    No records match your current filters.
 
-                                </svg>
+                                </p>
 
                             </div>
 
-                            <h3
-                                class="mt-3 text-sm font-semibold text-zinc-900 dark:text-white">
+                        </td>
 
-                                No CPAR / RESULT Records Found
+                    </tr>
 
-                            </h3>
+                    @endforelse
 
-                            <p
-                                class="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
+                </tbody>
 
-                                @if ($search)
+            </table>
 
-                                No records match your search:
-                                <span class="font-medium">
-                                    "{{ $search }}"
-                                </span>
+        </div>
+        @if ($cparReports->hasPages())
+        <div class="pt-2">
+            {{ $cparReports->links() }}
+        </div>
+        @endif
+        @else
+        {{-- INITIAL STATE --}}
+        <div class="rounded-xl border border-dashed border-zinc-300 bg-zinc-50 px-6 py-16 text-center dark:border-zinc-700 dark:bg-zinc-900">
 
-                                @else
+            <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-zinc-100 dark:bg-zinc-800">
 
-                                There are currently no CPAR or RESULT records available.
+                <svg
+                    class="h-7 w-7 text-zinc-400"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor">
 
-                                @endif
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="m21 21-4.35-4.35m2.35-5.65a8 8 0 1 1-16 0 8 8 0 0 1 16 0Z" />
 
-                            </p>
+                </svg>
 
-                        </div>
+            </div>
 
-                    </td>
+            <h3 class="mt-4 text-sm font-semibold text-zinc-900 dark:text-white">
+                Search CPAR / RESULT Records
+            </h3>
 
-                </tr>
+            <p class="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
+                Enter a search term or select a filter above to display records.
+            </p>
 
-                @endforelse
-
-            </tbody>
-
-        </table>
-
+        </div>
+        @endif
     </div>
-    @if ($cparReports->hasPages())
-    <div class="pt-2">
-        {{ $cparReports->links() }}
-    </div>
-    @endif
-</div>

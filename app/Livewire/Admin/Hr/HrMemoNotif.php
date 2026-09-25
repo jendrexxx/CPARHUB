@@ -75,25 +75,26 @@ class HrMemoNotif extends Component
                 '=',
                 'd.assignment_id'
             )
+            ->leftJoin(
+                'cpar_employee_disciplinary_records as m',
+                'b.id',
+                '=',
+                'm.assignment_id'
+            )
             ->select(
-                // Record
                 'a.id as record_id',
                 'a.cpar_no as record_no',
                 'a.reported_by',
                 'a.date_open as record_date',
                 DB::raw("'CPAR' as record_type"),
-
-                // Assignment
                 'b.id as assignment_id',
                 'b.assigned_to',
-
-                // Employee
                 'i.employee_no',
                 DB::raw("
                 CONCAT(i.first_name, ' ', i.last_name)
                 AS employee_name
             "),
-                // Investigation
+
                 'c.identified_cause',
                 'c.provided_solution',
                 'c.recommendation',
@@ -101,20 +102,34 @@ class HrMemoNotif extends Component
                 'c.date_completed',
                 'c.tat',
 
-                // NTE / IR
                 'd.nte_no',
                 'j.ir_id',
 
-                // Department / Status
                 'g.department_name',
                 'h.status_name',
 
-                // Priority
-                'k.priority_name'
+                'k.priority_name',
+
+                'm.id as disciplinary_id',
+                'm.status as disciplinary_status',
+                'm.incident_date',
+                'm.valid_until',
+                DB::raw("
+                (
+                    SELECT COUNT(*)
+                    FROM cpar_employee_disciplinary_records AS dc
+                    INNER JOIN cpar_assignments AS da
+                        ON da.id = dc.assignment_id
+                    WHERE da.assigned_to = b.assigned_to
+                    AND dc.status = 'FINAL'
+                    AND da.id <= b.id
+                ) AS employee_disciplinary_count
+            ")
             )
             ->where('b.status_id', 40)
             ->where('b.record_type', 5)
             ->where('i.branch_id', $this->branch_id);
+
 
         $result = DB::table('result_error_forms as a')
             ->join(
@@ -159,25 +174,34 @@ class HrMemoNotif extends Component
                 '=',
                 'k.id'
             )
+            ->leftJoin(
+                'cpar_investigations as l',
+                'b.id',
+                '=',
+                'l.assigned_id'
+            )
+            ->leftJoin(
+                'cpar_employee_disciplinary_records as m',
+                'b.id',
+                '=',
+                'm.assignment_id'
+            )
             ->select(
-                // Record
                 'a.id as record_id',
                 'a.result_no as record_no',
                 'a.reported_by',
                 'a.date_reported as record_date',
                 DB::raw("'RESULT' as record_type"),
 
-                // Assignment
                 'b.id as assignment_id',
                 'b.assigned_to',
 
-                // Employee
                 'i.employee_no',
                 DB::raw("
                 CONCAT(i.first_name, ' ', i.last_name)
                 AS employee_name
                 "),
-                // Investigation
+
                 DB::raw("NULL as identified_cause"),
                 DB::raw("NULL as provided_solution"),
                 DB::raw("NULL as recommendation"),
@@ -185,26 +209,40 @@ class HrMemoNotif extends Component
                 DB::raw("NULL as date_completed"),
                 DB::raw("NULL as tat"),
 
-                // NTE / IR
                 'd.nte_no',
                 'j.ir_id',
 
-                // Department / Status
                 'g.department_name',
                 'h.status_name',
-                // Priority
-                'k.priority_name'
+
+                'k.priority_name',
+
+                'm.id as disciplinary_id',
+                'm.status as disciplinary_status',
+                'm.incident_date',
+                'm.valid_until',
+                DB::raw("
+                (
+                    SELECT COUNT(*)
+                    FROM cpar_employee_disciplinary_records AS dc
+                    INNER JOIN cpar_assignments AS da
+                        ON da.id = dc.assignment_id
+                    WHERE da.assigned_to = b.assigned_to
+                    AND dc.status = 'FINAL'
+                    AND da.id <= b.id
+                ) AS employee_disciplinary_count
+            ")
             )
             ->where('b.status_id', 40)
             ->where('b.record_type', 10)
             ->where('i.branch_id', $this->branch_id);
+
 
         if (!empty($this->search)) {
 
             $search = '%' . $this->search . '%';
 
             $cpar->where(function ($q) use ($search) {
-
                 $q->where('a.cpar_no', 'like', $search)
                     ->orWhere('a.reported_by', 'like', $search)
                     ->orWhere('i.employee_no', 'like', $search)
@@ -216,7 +254,6 @@ class HrMemoNotif extends Component
             });
 
             $result->where(function ($q) use ($search) {
-
                 $q->where('a.result_no', 'like', $search)
                     ->orWhere('a.reported_by', 'like', $search)
                     ->orWhere('i.employee_no', 'like', $search)
@@ -241,12 +278,12 @@ class HrMemoNotif extends Component
         $this->loadMemoRecords();
     }
 
-    public function viewMemo($id)
+    public function viewMemo($id = '')
     {
         $this->dispatch('open-memo-cpar', id: $id);
     }
 
-    public function viewResultMemo($id)
+    public function viewResultMemo($id = '')
     {
         $this->dispatch('open-memo-result', id: $id);
     }

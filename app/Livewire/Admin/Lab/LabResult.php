@@ -251,6 +251,13 @@ class LabResult extends Component
                     'updated_at' => now(),
                 ]);
 
+            DB::table('cpar_employee_disciplinary_records')
+                ->where('assignment_id', $this->id)
+                ->update([
+                    'status'  => 'DRAFT',
+                    'updated_at' => now(),
+                ]);
+
             // AUDIT LOG
             DB::table('audit_logs')->insert([
                 'user_reported_by'       => $this->employeeName,
@@ -300,7 +307,7 @@ class LabResult extends Component
             $oldRecord = DB::table('cpar_employee_disciplinary_records')
                 ->where('assignment_id', $this->id)
                 ->first();
-            $statusId = (int) $selectedDecision === 1 ? 55 : 40;
+            $statusId = (int) $selectedDecision === 1 ? 50 : 40;
             $verificationStatus = (int) $selectedDecision === 1
                 ? 'VERIFIED - NO DISCIPLINARY ACTION'
                 : 'VERIFIED - WITH DISCIPLINARY ACTION';
@@ -346,7 +353,7 @@ class LabResult extends Component
             ]);
         });
 
-        $this->dispatch('toast', type: 'success', message: 'RESULT successfully verified by laboratory.');
+        $this->dispatch('toast', type: 'success', message: 'Result successfully verified by laboratory.');
         $this->dispatch('modal-close', name: 'LABModal');
         $this->dispatch('modal-close', name: 'LABrequest');
         $this->dispatch('refreshLABRecords');

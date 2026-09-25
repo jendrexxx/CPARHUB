@@ -89,4 +89,7 @@
     <livewire:admin.result.result_assign />
     <livewire:admin.result.result_concern_form />
     <livewire:admin.result.result_concern_modal />
+
+    <!-- tbl -->
+     <livewire:admin.cpar.cpar_tbl />
 </div>

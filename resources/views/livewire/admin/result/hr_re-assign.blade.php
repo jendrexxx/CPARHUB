@@ -17,9 +17,6 @@
         {{-- MAIN CONTENT --}}
         <div class="grid grid-cols-1 gap-8 lg:grid-cols-2">
 
-            {{-- ========================================= --}}
-            {{-- LEFT : RESULT DETAILS --}}
-            {{-- ========================================= --}}
             <div>
 
                 <div class="mb-5 border-b border-zinc-200 pb-3 dark:border-zinc-700">

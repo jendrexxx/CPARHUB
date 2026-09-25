@@ -2,7 +2,6 @@
     <flux:modal
         name="HRMemoModal"
         class="w-[120%] max-w-[1500px] mt-6 top-0 z-50">
-
         <div class="space-y-6">
 
             {{-- HEADER --}}
@@ -57,10 +56,6 @@
                             </th>
 
                             <th class="px-4 py-3 text-center font-semibold">
-                                Department
-                            </th>
-
-                            <th class="px-4 py-3 text-center font-semibold">
                                 Priority level
                             </th>
 
@@ -87,6 +82,45 @@
 
                         <tr class="hover:bg-zinc-50 dark:hover:bg-zinc-800 transition text-center">
 
+                            <!-- <td class="px-4 py-4 text-center">
+                                @php
+                                $offenseCount = (int) ($record->employee_disciplinary_count ?? 0);
+                                if ($offenseCount % 100 >= 11 && $offenseCount % 100 <= 13) {
+                                    $suffix='th' ;
+                                    } else {
+                                    $suffix=match ($offenseCount % 10) {
+                                    1=> 'st',
+                                    2 => 'nd',
+                                    3 => 'rd',
+                                    default => 'th',
+                                    };
+                                    }
+
+                                    $offenseOrdinal = $offenseCount > 0
+                                    ? $offenseCount . $suffix
+                                    : '0';
+
+                                    $offenseClass = match (true) {
+                                    $offenseCount === 0 =>
+                                    'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
+
+                                    $offenseCount >= 1 && $offenseCount <= 3=>
+                                        'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400',
+
+                                        $offenseCount >= 4 =>
+                                        'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400',
+
+                                        default =>
+                                        'bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300',
+                                        };
+                                        @endphp
+
+                                        <span
+                                            class="inline-flex size-8 items-center justify-center rounded-full text-sm font-bold {{ $offenseClass }}">
+                                            {{ $offenseOrdinal }}
+                                        </span>
+                            </td> -->
+
                             {{-- RECORD NO --}}
                             <td class="px-4 py-4 whitespace-nowrap">
                                 <div class="flex flex-col items-center gap-1">
@@ -94,18 +128,23 @@
                                         {{ $record->record_no }}
                                     </div>
 
-                                    @if ($record->record_type === 'CPAR')
-                                    <flux:badge color="blue">
-                                        CPAR
-                                    </flux:badge>
-                                    @else
-                                    <flux:badge color="purple">
-                                        RESULT
-                                    </flux:badge>
-                                    @endif
+                                    <div class="mt-1 text-center">
+                                        @if ($record->record_type === 'CPAR')
+                                        <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-[10px] font-semibold
+                                            bg-red-100 text-red-700
+                                            dark:bg-red-950 dark:text-red-400">
+                                            CPAR
+                                        </span>
+                                        @else
+                                        <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-[10px] font-semibold
+                                            bg-blue-100 text-blue-700
+                                            dark:bg-blue-950 dark:text-blue-400">
+                                            RESULT
+                                        </span>
+                                        @endif
+                                    </div>
                                 </div>
                             </td>
-
 
                             {{-- EMPLOYEE --}}
                             <td class="px-4 py-4">
@@ -122,31 +161,40 @@
 
                             </td>
 
+                            {{-- PRIORITY --}}
+                            <td class="px-4 py-3">
 
-                            {{-- DEPARTMENT --}}
-                            <td class="px-4 py-4">
-
-                                <span class="text-zinc-600 dark:text-zinc-400">
-                                    {{ $record->department_name }}
-                                </span>
-
-                            </td>
-
-                            <td class="px-4 py-4 text-center">
                                 @php
-                                $priority = strtoupper(trim($record->priority_name ?? ''));
+                                $priorityColor = match (
+                                strtolower($record->priority_name ?? '')
+                                ) {
+                                'normal' =>
+                                'bg-green-100 text-green-700 ring-green-600/20
+                                dark:bg-green-950 dark:text-green-400',
 
-                                $priorityColor = match ($priority) {
-                                'NORMAL' => 'blue',
-                                'HIGH' => 'orange',
-                                'URGENT' => 'red',
-                                default => 'zinc',
+                                'high' =>
+                                'bg-orange-100 text-orange-700 ring-orange-600/20
+                                dark:bg-orange-950 dark:text-orange-400',
+
+                                'urgent' =>
+                                'bg-red-100 text-red-700 ring-red-600/20
+                                dark:bg-red-950 dark:text-red-400',
+
+                                default =>
+                                'bg-zinc-100 text-zinc-700 ring-zinc-600/20
+                                dark:bg-zinc-700 dark:text-zinc-300',
                                 };
                                 @endphp
 
-                                <flux:badge color="{{ $priorityColor }}">
-                                    {{ $priority ?: 'N/A' }}
-                                </flux:badge>
+                                <span
+                                    class="inline-flex items-center gap-1.5
+                                               rounded-full px-2.5 py-1
+                                               text-xs font-semibold
+                                               ring-1 ring-inset
+                                               {{ $priorityColor }}">
+                                    {{ $record->priority_name ?? 'N/A' }}
+                                </span>
+
                             </td>
 
 
@@ -208,27 +256,20 @@
                                         aria-label="Actions" />
 
                                     <flux:menu>
-
                                         @if ($record->record_type === 'CPAR')
-
                                         <flux:menu.item
                                             icon="eye"
                                             wire:click="viewMemo({{ $record->assignment_id }})">
-                                            View Other Memo
+                                            View Memo
                                         </flux:menu.item>
-
                                         @elseif ($record->record_type === 'RESULT')
-
                                         <flux:menu.item
                                             icon="eye"
                                             wire:click="viewResultMemo({{ $record->assignment_id }})">
-                                            View Result
+                                            View Memo
                                         </flux:menu.item>
-
                                         @endif
-
                                     </flux:menu>
-
                                 </flux:dropdown>
                             </td>
 

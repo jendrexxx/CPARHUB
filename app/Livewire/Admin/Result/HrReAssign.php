@@ -274,7 +274,6 @@ class HrReAssign extends Component
                     'status_id'     => 10,
                 ]);
             } else {
-
                 $mainResultAssignment = cpar_assignments::create([
                     'result_id'          => $this->result_id,
                     'employee_no'        => $this->employee_no,
