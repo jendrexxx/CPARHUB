@@ -132,7 +132,9 @@ class ResultRequestForm extends Component
             'test_procedure' => 'required',
             'complain_category_id' => 'required',
             'complain_name' => 'required',
-            'priority' => 'required'
+            'priority' => 'required',
+            'dept_head_assigned' => 'required',
+            'department_name'   => 'required'
         ]);
 
         $attachmentPath = null;

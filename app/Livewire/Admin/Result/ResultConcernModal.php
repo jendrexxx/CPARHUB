@@ -231,7 +231,7 @@ class ResultConcernModal extends Component
                 'updated_at'        => now(),
             ]);
         });
-        $this->dispatch('toast',type: 'success',message: 'RESULT acknowledged successfully submitted.');
+        $this->dispatch('toast',type: 'success',message: 'Result acknowledged successfully submitted.');
         $this->dispatch('modal-close', name: 'submission-cpar');
         $this->dispatch('modal-close', name: 'CPARSubmissionModal');
         $this->dispatch('refreshSubmission');

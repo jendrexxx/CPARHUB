@@ -60,10 +60,6 @@ class CparNotif extends Component
             ->where('b.status_id', 1)
             ->where('b.record_type', 5);
 
-
-        // =========================================================
-        // RESULT ERROR
-        // =========================================================
         $result = DB::table('result_error_forms as a')
             ->join(
                 'result_error_source_of_infos as b',

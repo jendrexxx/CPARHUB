@@ -8,8 +8,10 @@ use Livewire\Component;
 class LabNotif extends Component
 {
     public $cpar_reviews = [];
-    public $search = '';
-
+    public $perPage = 10;
+    public $labReviewPage = 1;
+    public $labReviewTotal = 0;
+    public $labReviewLastPage = 1;
     protected $listeners = [
         'refreshLABRecords' => 'loadLABReview',
     ];
@@ -28,48 +30,13 @@ class LabNotif extends Component
     public function loadLABReview()
     {
         $cparQuery = DB::table('cpar_request_forms as a')
-            ->leftJoin(
-                'cpar_assignments as b',
-                'a.id',
-                '=',
-                'b.cpar_id'
-            )
-            ->leftJoin(
-                'departments as g',
-                'a.department_id',
-                '=',
-                'g.id'
-            )
-            ->leftJoin(
-                'cpar_statuses as h',
-                'b.status_id',
-                '=',
-                'h.id'
-            )
-            ->leftJoin(
-                'employees as i',
-                'b.assigned_to',
-                '=',
-                'i.id'
-            )
-            ->leftJoin(
-                'cpar_employee_disciplinary_records as k',
-                'b.id',
-                '=',
-                'k.assignment_id'
-            )
-            ->leftJoin(
-                'cpar_ir_requests as m',
-                'b.id',
-                '=',
-                'm.assignment_ir_id'
-            )
-            ->leftJoin(
-                'cpar_notice_to_explains as l',
-                'm.id',
-                '=',
-                'l.assignment_id'
-            )
+            ->leftJoin('cpar_assignments as b', 'a.id', '=', 'b.cpar_id')
+            ->leftJoin('departments as g', 'a.department_id', '=', 'g.id')
+            ->leftJoin('cpar_statuses as h', 'b.status_id', '=', 'h.id')
+            ->leftJoin('employees as i', 'b.assigned_to', '=', 'i.id')
+            ->leftJoin('cpar_employee_disciplinary_records as k', 'b.id', '=', 'k.assignment_id')
+            ->leftJoin('cpar_ir_requests as m', 'b.id', '=', 'm.assignment_ir_id')
+            ->leftJoin('cpar_notice_to_explains as l', 'm.id', '=', 'l.assignment_id')
             ->leftJoin(
                 'cpar_decision_categories as n',
                 DB::raw("
@@ -87,12 +54,9 @@ class LabNotif extends Component
                 'a.reported_by',
                 DB::raw("'CPAR' as record_type"),
                 'b.id as assignment_id',
-
                 'g.department_name',
                 'h.status_name',
-
                 'i.employee_no',
-
                 DB::raw("
                 CONCAT(
                     i.first_name,
@@ -100,7 +64,6 @@ class LabNotif extends Component
                     i.last_name
                 ) AS employee_name
             "),
-
                 DB::raw("
                 GROUP_CONCAT(
                     DISTINCT n.decision_name
@@ -108,19 +71,13 @@ class LabNotif extends Component
                     SEPARATOR ', '
                 ) AS decision_name
             "),
-
                 'l.nte_no',
                 'l.nte_attachment',
-
                 'm.ir_id',
                 'm.ir_attachment',
-
-                // Identify source
                 DB::raw("'CPAR' AS source_type")
             )
-
             ->where('b.status_id', 35)
-
             ->where(function ($query) {
                 $query
                     ->where(function ($q) {
@@ -132,27 +89,20 @@ class LabNotif extends Component
                             ->where('m.ir_id', '!=', '');
                     });
             })
+            ->when(!empty($this->search), function ($query) {
+                $search = '%' . $this->search . '%';
 
-            ->when(
-                !empty($this->search),
-                function ($query) {
-
-                    $search = '%' . $this->search . '%';
-
-                    $query->where(function ($q) use ($search) {
-
-                        $q->where('a.cpar_no', 'like', $search)
-                            ->orWhere('a.reported_by', 'like', $search)
-                            ->orWhere('i.employee_no', 'like', $search)
-                            ->orWhere('i.first_name', 'like', $search)
-                            ->orWhere('i.last_name', 'like', $search)
-                            ->orWhere('g.department_name', 'like', $search)
-                            ->orWhere('l.nte_no', 'like', $search)
-                            ->orWhere('m.ir_id', 'like', $search);
-                    });
-                }
-            )
-
+                $query->where(function ($q) use ($search) {
+                    $q->where('a.cpar_no', 'like', $search)
+                        ->orWhere('a.reported_by', 'like', $search)
+                        ->orWhere('i.employee_no', 'like', $search)
+                        ->orWhere('i.first_name', 'like', $search)
+                        ->orWhere('i.last_name', 'like', $search)
+                        ->orWhere('g.department_name', 'like', $search)
+                        ->orWhere('l.nte_no', 'like', $search)
+                        ->orWhere('m.ir_id', 'like', $search);
+                });
+            })
             ->groupBy(
                 'a.id',
                 'a.cpar_no',
@@ -169,55 +119,14 @@ class LabNotif extends Component
                 'm.ir_attachment'
             );
 
-
-        /*
-    |--------------------------------------------------------------------------
-    | RESULT ERROR REVIEWS
-    |--------------------------------------------------------------------------
-    */
         $resultQuery = DB::table('result_error_forms as a')
-            ->leftJoin(
-                'cpar_assignments as b',
-                'a.id',
-                '=',
-                'b.result_id'
-            )
-            ->leftJoin(
-                'departments as g',
-                'a.department_id',
-                '=',
-                'g.id'
-            )
-            ->leftJoin(
-                'cpar_statuses as h',
-                'b.status_id',
-                '=',
-                'h.id'
-            )
-            ->leftJoin(
-                'employees as i',
-                'b.assigned_to',
-                '=',
-                'i.id'
-            )
-            ->leftJoin(
-                'cpar_employee_disciplinary_records as k',
-                'b.id',
-                '=',
-                'k.assignment_id'
-            )
-            ->leftJoin(
-                'cpar_ir_requests as m',
-                'b.id',
-                '=',
-                'm.assignment_ir_id'
-            )
-            ->leftJoin(
-                'cpar_notice_to_explains as l',
-                'm.id',
-                '=',
-                'l.assignment_id'
-            )
+            ->leftJoin('cpar_assignments as b', 'a.id', '=', 'b.result_id')
+            ->leftJoin('departments as g', 'a.department_id', '=', 'g.id')
+            ->leftJoin('cpar_statuses as h', 'b.status_id', '=', 'h.id')
+            ->leftJoin('employees as i', 'b.assigned_to', '=', 'i.id')
+            ->leftJoin('cpar_employee_disciplinary_records as k', 'b.id', '=', 'k.assignment_id')
+            ->leftJoin('cpar_ir_requests as m', 'b.id', '=', 'm.assignment_ir_id')
+            ->leftJoin('cpar_notice_to_explains as l', 'm.id', '=', 'l.assignment_id')
             ->leftJoin(
                 'cpar_decision_categories as n',
                 DB::raw("
@@ -235,12 +144,9 @@ class LabNotif extends Component
                 'a.reported_by',
                 DB::raw("'RESULT' as record_type"),
                 'b.id as assignment_id',
-
                 'g.department_name',
                 'h.status_name',
-
                 'i.employee_no',
-
                 DB::raw("
                 CONCAT(
                     i.first_name,
@@ -248,7 +154,6 @@ class LabNotif extends Component
                     i.last_name
                 ) AS employee_name
             "),
-
                 DB::raw("
                 GROUP_CONCAT(
                     DISTINCT n.decision_name
@@ -256,19 +161,13 @@ class LabNotif extends Component
                     SEPARATOR ', '
                 ) AS decision_name
             "),
-
                 'l.nte_no',
                 'l.nte_attachment',
-
                 'm.ir_id',
                 'm.ir_attachment',
-
-                // Identify source
                 DB::raw("'RESULT' AS source_type")
             )
-
             ->where('b.status_id', 35)
-
             ->where(function ($query) {
                 $query
                     ->where(function ($q) {
@@ -280,26 +179,20 @@ class LabNotif extends Component
                             ->where('m.ir_id', '!=', '');
                     });
             })
+            ->when(!empty($this->search), function ($query) {
+                $search = '%' . $this->search . '%';
 
-            ->when(
-                !empty($this->search),
-                function ($query) {
-
-                    $search = '%' . $this->search . '%';
-
-                    $query->where(function ($q) use ($search) {
-
-                        $q->where('a.result_no', 'like', $search)
-                            ->orWhere('a.reported_by', 'like', $search)
-                            ->orWhere('i.employee_no', 'like', $search)
-                            ->orWhere('i.first_name', 'like', $search)
-                            ->orWhere('i.last_name', 'like', $search)
-                            ->orWhere('g.department_name', 'like', $search)
-                            ->orWhere('l.nte_no', 'like', $search)
-                            ->orWhere('m.ir_id', 'like', $search);
-                    });
-                }
-            )
+                $query->where(function ($q) use ($search) {
+                    $q->where('a.result_no', 'like', $search)
+                        ->orWhere('a.reported_by', 'like', $search)
+                        ->orWhere('i.employee_no', 'like', $search)
+                        ->orWhere('i.first_name', 'like', $search)
+                        ->orWhere('i.last_name', 'like', $search)
+                        ->orWhere('g.department_name', 'like', $search)
+                        ->orWhere('l.nte_no', 'like', $search)
+                        ->orWhere('m.ir_id', 'like', $search);
+                });
+            })
             ->groupBy(
                 'a.id',
                 'a.result_no',
@@ -316,16 +209,29 @@ class LabNotif extends Component
                 'm.ir_attachment'
             );
 
+        $query = $cparQuery->unionAll($resultQuery);
 
-        /*
-    |--------------------------------------------------------------------------
-    | COMBINE CPAR + RESULT
-    |--------------------------------------------------------------------------
-    */
-        $this->cpar_reviews = $cparQuery
-            ->unionAll($resultQuery)
+        $allReviews = DB::query()
+            ->fromSub($query, 'lab_reviews')
             ->orderByDesc('assignment_id')
             ->get();
+
+        $this->labReviewTotal = $allReviews->count();
+
+        $this->labReviewLastPage = max(
+            1,
+            (int) ceil($this->labReviewTotal / $this->perPage)
+        );
+
+        if ($this->labReviewPage > $this->labReviewLastPage) {
+            $this->labReviewPage = $this->labReviewLastPage;
+        }
+
+        $offset = ($this->labReviewPage - 1) * $this->perPage;
+
+        $this->cpar_reviews = $allReviews
+            ->slice($offset, $this->perPage)
+            ->values();
     }
 
     public function viewDetails($assignment_id = '')

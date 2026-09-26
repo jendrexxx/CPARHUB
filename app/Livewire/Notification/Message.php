@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Notification;
 
+use App\Models\cpar_statuses;
 use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 use Illuminate\Support\Facades\Auth;
@@ -68,6 +69,7 @@ class Message extends Component
         if (!$this->employee_id) {
             return;
         }
+
         $this->loadAssignedCount();
         $this->loadNTECount();
 
@@ -117,7 +119,9 @@ class Message extends Component
                 ->distinct('a.id')
                 ->count('a.id');
 
-            $this->hr_request_count = $hrCparCount + $hrResultCount;
+            $this->hr_request_count =
+                $hrCparCount +
+                $hrResultCount;
 
             $hrAcknowledgedCparCount = DB::table('cpar_assignments as b')
                 ->join('cpar_request_forms as a', 'a.id', '=', 'b.cpar_id')
@@ -127,166 +131,92 @@ class Message extends Component
                 ->count();
 
             $hrAcknowledgedResultCount = DB::table('cpar_assignments as b')
-                ->join(
-                    'result_error_forms as a',
-                    'a.id',
-                    '=',
-                    'b.result_id'
-                )
+                ->join('result_error_forms as a', 'a.id', '=', 'b.result_id')
                 ->where('b.status_id', 20)
                 ->where('b.record_type', 10)
                 ->count();
 
-            $this->acknowledged_cpar = $hrAcknowledgedCparCount + $hrAcknowledgedResultCount;
+            $this->acknowledged_cpar =
+                $hrAcknowledgedCparCount +
+                $hrAcknowledgedResultCount;
 
             $hrDecisionCparCount = DB::table('cpar_request_forms as a')
-                ->join(
-                    'cpar_assignments as b',
-                    'a.id',
-                    '=',
-                    'b.cpar_id'
-                )
-                ->join(
-                    'employees as i',
-                    'b.assigned_to',
-                    '=',
-                    'i.id'
-                )
+                ->join('cpar_assignments as b', 'a.id', '=', 'b.cpar_id')
+                ->join('employees as i', 'b.assigned_to', '=', 'i.id')
                 ->whereIn('b.status_id', [20, 25, 30])
                 ->where('b.record_type', 5)
                 ->count();
 
             $hrDecisionResultCount = DB::table('result_error_forms as a')
-                ->join(
-                    'cpar_assignments as d',
-                    'a.id',
-                    '=',
-                    'd.result_id'
-                )
-                ->join(
-                    'employees as i',
-                    'd.assigned_to',
-                    '=',
-                    'i.id'
-                )
+                ->join('cpar_assignments as d', 'a.id', '=', 'd.result_id')
+                ->join('employees as i', 'd.assigned_to', '=', 'i.id')
                 ->whereIn('d.status_id', [20, 25, 30])
                 ->where('d.record_type', 10)
                 ->where('i.branch_id', $this->branch_id)
                 ->count();
 
-            $this->hr_decision_count = $hrDecisionCparCount + $hrDecisionResultCount;
+            $this->hr_decision_count =
+                $hrDecisionCparCount +
+                $hrDecisionResultCount;
 
             $memoCparCount = DB::table('cpar_request_forms as a')
-                ->join(
-                    'cpar_assignments as b',
-                    'a.id',
-                    '=',
-                    'b.cpar_id'
-                )
-                ->join(
-                    'employees as i',
-                    'b.assigned_to',
-                    '=',
-                    'i.id'
-                )
+                ->join('cpar_assignments as b', 'a.id', '=', 'b.cpar_id')
+                ->join('employees as i', 'b.assigned_to', '=', 'i.id')
                 ->where('b.status_id', 40)
                 ->where('b.record_type', 5)
                 ->where('i.branch_id', $this->branch_id)
                 ->count();
 
             $memoResultCount = DB::table('result_error_forms as a')
-                ->join(
-                    'cpar_assignments as b',
-                    'a.id',
-                    '=',
-                    'b.result_id'
-                )
-                ->join(
-                    'employees as i',
-                    'b.assigned_to',
-                    '=',
-                    'i.id'
-                )
+                ->join('cpar_assignments as b', 'a.id', '=', 'b.result_id')
+                ->join('employees as i', 'b.assigned_to', '=', 'i.id')
                 ->where('b.status_id', 40)
                 ->where('b.record_type', 10)
                 ->where('i.branch_id', $this->branch_id)
                 ->count();
 
-            $this->memo_count = $memoCparCount + $memoResultCount;
+            $this->memo_count =
+                $memoCparCount +
+                $memoResultCount;
         }
 
         if ($this->user_role === 'PGL SUPERVISOR') {
+
+            $status = cpar_statuses::where('id', '!=', 50)
+                ->get(['id', 'status_name']);
+
+            $statusIds = $status->pluck('id')->toArray();
+
             $labCparCount = DB::table('cpar_request_forms as a')
-                ->join(
-                    'cpar_assignments as b',
-                    'a.id',
-                    '=',
-                    'b.cpar_id'
-                )
-                ->join(
-                    'cpar_attachments as c',
-                    'a.id',
-                    '=',
-                    'c.cpar_id'
-                )
-                ->join(
-                    'cpar_source_origins as d',
-                    'a.source_id',
-                    '=',
-                    'd.id'
-                )
-                ->join(
-                    'cpar_complain_categories as e',
-                    'a.complaint_category_id',
-                    '=',
-                    'e.id'
-                )
-                ->join(
-                    'cpar_concern_categories as f',
-                    'a.concern_category_id',
-                    '=',
-                    'f.id'
-                )
-                ->join(
-                    'departments as g',
-                    'a.department_id',
-                    '=',
-                    'g.id'
-                )
-                ->join(
-                    'cpar_statuses as h',
-                    'b.status_id',
-                    '=',
-                    'h.id'
-                )
-                ->where('b.status_id', 35)
+                ->join('cpar_assignments as b', 'a.id', '=', 'b.cpar_id')
+                ->join('cpar_statuses as h', 'b.status_id', '=', 'h.id')
+                ->whereIn('h.id', $statusIds)
                 ->where('b.record_type', 5)
                 ->count();
+
             $labResultCount = DB::table('result_error_forms as a')
-                ->join(
-                    'cpar_assignments as b',
-                    'a.id',
-                    '=',
-                    'b.result_id'
-                )
-                ->join(
-                    'departments as g',
-                    'a.department_id',
-                    '=',
-                    'g.id'
-                )
-                ->join(
-                    'cpar_statuses as h',
-                    'b.status_id',
-                    '=',
-                    'h.id'
-                )
-                ->where('b.status_id', 35)
+                ->join('cpar_assignments as b', 'a.id', '=', 'b.result_id')
+                ->join('cpar_statuses as h', 'b.status_id', '=', 'h.id')
+                ->whereIn('h.id', $statusIds)
                 ->where('b.record_type', 10)
                 ->count();
 
-            $this->lab_request_count = $labCparCount + $labResultCount;
-            $this->concern_count = $this->request_count + $this->assigned_count + $this->nte_cpar + $this->cpar_count + $this->result_count + $this->acknowledgment_count + $this->hr_request_count + $this->acknowledged_cpar + $this->hr_decision_count + $this->memo_count + $this->lab_request_count;
+            $this->lab_request_count =
+                $labCparCount +
+                $labResultCount;
+
+            $this->concern_count =
+                $this->request_count +
+                $this->assigned_count +
+                $this->nte_cpar +
+                $this->cpar_count +
+                $this->result_count +
+                $this->acknowledgment_count +
+                $this->hr_request_count +
+                $this->acknowledged_cpar +
+                $this->hr_decision_count +
+                $this->memo_count +
+                $this->lab_request_count;
         }
     }
 

@@ -51,9 +51,7 @@
                     </div>
 
                     {{-- Arrow --}}
-                    <div class="notification-arrow">
-                        <flux:icon.chevron-right class="h-4 w-4" />
-                    </div>
+
 
                 </div>
 
@@ -109,9 +107,7 @@
                     </div>
 
                     {{-- Arrow --}}
-                    <div class="notification-arrow">
-                        <flux:icon.chevron-right class="h-4 w-4" />
-                    </div>
+
 
                 </div>
 
@@ -184,9 +180,7 @@
                     </div>
 
                     {{-- Arrow --}}
-                    <div class="notification-arrow">
-                        <flux:icon.chevron-right class="h-4 w-4" />
-                    </div>
+
 
                 </div>
 
@@ -225,11 +219,6 @@
 
                         </div>
 
-                    </div>
-
-                    {{-- Arrow --}}
-                    <div class="notification-arrow">
-                        <flux:icon.chevron-right class="h-4 w-4" />
                     </div>
 
                 </div>

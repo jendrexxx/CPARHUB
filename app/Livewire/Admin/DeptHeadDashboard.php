@@ -42,7 +42,7 @@ class DeptHeadDashboard extends Component
         $this->loadAcknowledgeCount();
         if (request()->query('open') === 'notifications') {
             Flux::modal('CPARModal')->show();
-        }else{
+        } else {
             Flux::modal('CPARModal')->close();
         }
     }
@@ -50,34 +50,38 @@ class DeptHeadDashboard extends Component
     public function loadHeadCount()
     {
         $resultRequestCount = DB::table('result_error_forms as a')
-            ->join('cpar_assignments as d', 'a.id', '=', 'd.result_id')
-            ->where('d.dept_head_assigned', $this->id)
-            ->where('d.record_type', 10)
-            ->where('d.status_id', 1)
+            ->leftJoin('cpar_assignments as b', 'a.id', '=', 'b.result_id')
+            ->where('b.dept_head_assigned', $this->id)
+            ->where('b.record_type', 10)
+            ->where('b.status_id', 1)
             ->count();
+
         $cparRequestCount = DB::table('cpar_request_forms as a')
-            ->join('cpar_assignments as b', 'a.id', '=', 'b.cpar_id')
+            ->leftJoin('cpar_assignments as b', 'a.id', '=', 'b.cpar_id')
             ->where('b.dept_head_assigned', $this->id)
             ->where('b.record_type', 5)
             ->where('b.status_id', 1)
             ->count();
+
         $this->concern_count = $resultRequestCount + $cparRequestCount;
     }
 
     public function loadAcknowledgeCount()
     {
-        $cparCount = DB::table('cpar_assignments as b')
-            ->join('employees as j', 'b.assigned_to', '=', 'j.id')
-            ->where('b.status_id', 15)
-            ->where('b.record_type', 5)
-            ->where('j.dept_head', $this->employee_no)
+        $cparCount = DB::table('cpar_assignments as a')
+            ->join('employees as b', 'a.assigned_to', '=', 'b.id')
+            ->where('a.status_id', 15)
+            ->where('a.record_type', 5)
+            ->where('b.dept_head', $this->employee_no)
             ->count();
-        $resultCount = DB::table('cpar_assignments as d')
-            ->where('d.status_id', 15)
-            ->where('d.record_type', 10)
-            ->where('d.dept_head_assigned', $this->id)
+
+        $resultCount = DB::table('cpar_assignments as a')
+            ->join('employees as b', 'a.assigned_to', '=', 'b.id')
+            ->where('a.status_id', 15)
+            ->where('a.record_type', 10)
+            ->where('b.dept_head', $this->employee_no)
             ->count();
-            
+
         $this->acknowledgment_count = $cparCount + $resultCount;
     }
 

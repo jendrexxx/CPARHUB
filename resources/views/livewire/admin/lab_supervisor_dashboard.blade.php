@@ -70,4 +70,6 @@
     <livewire:admin.lab.lab_request />
     <livewire:admin.lab.lab_result />
     <livewire:admin.lab.tabs />
+    <livewire:admin.lab.result_re-assigned />
+    <livewire:admin.lab.lab_re-assigned />
 </div>

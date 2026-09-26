@@ -1,30 +1,61 @@
 <div>
     <flux:modal
         name="LABAssignedModal"
-        class="w-[120%] max-w-[1500px] mt-6 top-0 z-50">
+        class="w-[150%] max-w-[1500px] mt-6 top-0 z-50">
         <div class="space-y-6">
 
             {{-- Header --}}
             <div>
                 <flux:heading size="lg">
-                    HR Requests
+                    LAB Requests
                 </flux:heading>
 
                 <flux:text>
-                    Below is the list of CPAR and Result Error requests assigned to HR.
+                    Below is the list of CPAR and Result Error requests assigned to MANAGEMENT.
                 </flux:text>
             </div>
+            <div class="flex items-center justify-between mb-4">
 
+                <div class="flex items-center gap-2">
 
-            {{-- Table --}}
+                    <span class="text-sm text-zinc-600 dark:text-zinc-400">
+                        Rows:
+                    </span>
+
+                    <flux:select
+                        wire:model.live="perPage"
+                        class="w-24">
+
+                        <flux:select.option value="5">
+                            5
+                        </flux:select.option>
+
+                        <flux:select.option value="10">
+                            10
+                        </flux:select.option>
+
+                        <flux:select.option value="50">
+                            50
+                        </flux:select.option>
+
+                        <flux:select.option value="100">
+                            100
+                        </flux:select.option>
+
+                    </flux:select>
+
+                </div>
+
+            </div>
+
             <div class="overflow-x-auto rounded-lg border border-zinc-200 dark:border-zinc-700">
 
                 <table class="w-full text-sm text-center">
 
-                    {{-- Header --}}
                     <thead class="bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 uppercase text-xs tracking-wider">
 
                         <tr>
+
                             <th class="px-4 py-3">
                                 Type
                             </th>
@@ -46,26 +77,29 @@
                             </th>
 
                             <th class="px-4 py-3">
+                                Department Name
+                            </th>
+
+                            <th class="px-4 py-3">
                                 Status
                             </th>
 
                             <th class="px-4 py-3">
                                 Action
                             </th>
+
                         </tr>
 
                     </thead>
 
-                    {{-- Body --}}
                     <tbody class="divide-y divide-zinc-200 dark:divide-zinc-700">
 
                         @forelse ($lab_requests as $request)
 
                         <tr
-                            wire:key="{{ strtolower($request->record_type) }}-{{ $request->id }}"
+                            wire:key="lab-{{ $request->record_type }}-{{ $request->assignment_id }}"
                             class="hover:bg-zinc-50 dark:hover:bg-zinc-800/50">
 
-                            {{-- TYPE --}}
                             <td class="px-4 py-3">
 
                                 @if ($request->record_type === 'CPAR')
@@ -84,35 +118,26 @@
 
                             </td>
 
-
-                            {{-- NUMBER --}}
                             <td class="px-4 py-3 font-medium text-zinc-900 dark:text-zinc-100">
                                 {{ $request->record_no }}
                             </td>
 
-
-                            {{-- REPORTED BY --}}
                             <td class="px-4 py-3 text-zinc-700 dark:text-zinc-300">
                                 {{ $request->reported_by }}
                             </td>
 
-                            {{-- DATE --}}
                             <td class="px-4 py-3 text-zinc-700 dark:text-zinc-300">
-
                                 {{ \Carbon\Carbon::parse($request->record_date)->format('M d, Y') }}
-
                             </td>
 
-
-                            {{-- ASSIGNED EMPLOYEE --}}
                             <td class="px-4 py-3 text-zinc-700 dark:text-zinc-300">
-
-                                {{ $request->dept_head_name ?? 'N/A' }}
-
+                                {{ $request->employee_name ?: $request->emp_dept_name }}
                             </td>
 
+                            <td class="px-4 py-3 text-zinc-700 dark:text-zinc-300">
+                                {{ $request->employee_department ?: $request->dept_department }}
+                            </td>
 
-                            {{-- STATUS --}}
                             <td class="px-4 py-3">
 
                                 @if ($request->status_name === 'PENDING')
@@ -149,8 +174,6 @@
 
                             </td>
 
-
-                            {{-- ACTION --}}
                             <td class="px-4 py-3 text-center">
 
                                 <flux:dropdown align="end">
@@ -162,20 +185,26 @@
 
                                     <flux:menu>
 
-                                        {{-- CPAR --}}
                                         @if ($request->record_type === 'CPAR')
+
                                         <flux:menu.item
                                             icon="arrow-path"
-                                            wire:click="UpdateAssign({{ $request->record_id }})">
+                                            wire:click="UpdateAssign({{ $request->assignment_id }})">
+
                                             Re-Assign
+
                                         </flux:menu.item>
-                                        {{-- RESULT ERROR --}}
+
                                         @elseif ($request->record_type === 'RESULT')
+
                                         <flux:menu.item
                                             icon="arrow-path"
-                                            wire:click="viewResultDetails({{ $request->result_id }})">
+                                            wire:click="viewResultDetails({{ $request->assignment_id }})">
+
                                             Re-Assign
+
                                         </flux:menu.item>
+
                                         @endif
 
                                     </flux:menu>
@@ -193,7 +222,9 @@
                             <td
                                 colspan="8"
                                 class="px-4 py-10 text-center text-zinc-500 dark:text-zinc-400">
+
                                 No HR requests found.
+
                             </td>
 
                         </tr>
@@ -206,6 +237,61 @@
 
             </div>
 
+            @if ($labTotal > 0)
+
+            <div class="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+
+                <div class="text-sm text-zinc-600 dark:text-zinc-400">
+
+                    Showing
+                    {{ (($labPage - 1) * $perPage) + 1 }}
+                    -
+                    {{ min($labPage * $perPage, $labTotal) }}
+                    of
+                    {{ $labTotal }}
+
+                </div>
+
+                <div class="flex items-center gap-1">
+
+                    <flux:button
+                        size="sm"
+                        variant="ghost"
+                        wire:click="previousLabPage"
+                        :disabled="$labPage <= 1">
+
+                        Previous
+
+                    </flux:button>
+
+                    @for ($page = 1; $page <= $labLastPage; $page++)
+
+                        <flux:button
+                        size="sm"
+                        wire:click="goToLabPage({{ $page }})"
+                        :variant="$labPage === $page ? 'primary' : 'ghost'">
+
+                        {{ $page }}
+
+                        </flux:button>
+
+                        @endfor
+
+                        <flux:button
+                            size="sm"
+                            variant="ghost"
+                            wire:click="nextLabPage"
+                            :disabled="$labPage >= $labLastPage">
+
+                            Next
+
+                        </flux:button>
+
+                </div>
+
+            </div>
+
+            @endif
         </div>
     </flux:modal>
 </div>

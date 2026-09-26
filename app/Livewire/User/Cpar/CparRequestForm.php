@@ -201,7 +201,7 @@ class CparRequestForm extends Component
         $this->reset_form();
         return redirect()
             ->route('user_dashboard')
-            ->with('toast', ['type' => 'success', 'message' => 'OTHERS application submitted successfully!',]);
+            ->with('toast', ['type' => 'success', 'message' => 'Others application submitted successfully!',]);
     }
 
     public function updatedComplainCategoryId($value = '')

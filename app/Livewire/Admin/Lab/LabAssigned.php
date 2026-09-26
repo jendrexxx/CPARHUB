@@ -6,11 +6,17 @@ use Livewire\Component;
 use Illuminate\Support\Facades\Auth;
 use App\Models\employee;
 use Illuminate\Support\Facades\DB;
+use Livewire\WithPagination;
 
 class LabAssigned extends Component
 {
-    public $lab_requests = '';
+    use WithPagination;
+    public $perPage = 5;
     public $employee_no = '';
+    public $lab_requests = [];
+    public $labPage = 1;
+    public $labTotal = 0;
+    public $labLastPage = 1;
 
     protected $listeners = [
         'refresLABRData' => 'loadLabDetails',
@@ -30,9 +36,10 @@ class LabAssigned extends Component
     {
         $cpar = DB::table('cpar_request_forms as a')
             ->join('cpar_assignments as b', 'a.id', '=', 'b.cpar_id')
-            ->join('departments as g', 'a.department_id', '=', 'g.id')
-            ->join('cpar_statuses as h', 'b.status_id', '=', 'h.id')
-            ->join('employees as i', 'b.assigned_to', '=', 'i.id')
+            ->join('departments as c', 'a.department_id', '=', 'c.id')
+            ->join('cpar_statuses as d', 'b.status_id', '=', 'd.id')
+            ->leftJoin('employees as e', 'b.assigned_to', '=', 'e.id')
+            ->leftJoin('employees as f', 'b.dept_head_assigned', '=', 'f.id')
             ->select(
                 'a.id',
                 'a.cpar_no as record_no',
@@ -41,53 +48,26 @@ class LabAssigned extends Component
                 DB::raw("'CPAR' as record_type"),
                 'b.cpar_id as record_id',
                 DB::raw('NULL as result_id'),
-                'i.branch_id',
-                'g.department_name',
-                'h.status_name',
-                DB::raw("
-                GROUP_CONCAT(
-                    DISTINCT b.id
-                    ORDER BY b.id
-                    SEPARATOR ','
-                ) as assignment_ids
-                "),
-
-                DB::raw("
-                    GROUP_CONCAT(
-                        DISTINCT b.assigned_to
-                        ORDER BY b.id
-                        SEPARATOR ','
-                    ) as assigned_to
-                "),
-
-                DB::raw("
-                GROUP_CONCAT(
-                    DISTINCT CONCAT(
-                        i.first_name,
-                        ' ',
-                        i.last_name
-                    )
-                    ORDER BY b.id
-                    SEPARATOR ', '
-                ) as dept_head_name
-            ")
+                'b.id as assignment_id',
+                'b.assigned_to',
+                'b.updated_at',
+                'c.department_name',
+                'd.status_name',
+                'e.branch_id',
+                'e.department_name as employee_department',
+                'f.department_name as dept_department',
+                DB::raw("CONCAT(e.first_name, ' ', e.last_name) as employee_name"),
+                DB::raw("CONCAT(f.first_name, ' ', f.last_name) as emp_dept_name")
             )
             ->where('b.status_id', '!=', 50)
-            ->where('b.record_type', 5)
-            ->groupBy(
-                'a.id',
-                'a.cpar_no',
-                'a.reported_by',
-                'a.date_open',
-                'b.cpar_id',
-                'i.branch_id',
-                'g.department_name',
-                'h.status_name'
-            );
+            ->where('b.record_type', 5);
+
         $result = DB::table('result_error_forms as a')
-            ->join('cpar_assignments as d', 'a.id', '=', 'd.result_id')
-            ->join('employees as e', 'd.assigned_to', '=', 'e.id')
-            ->join('cpar_statuses as f', 'd.status_id', '=', 'f.id')
+            ->join('cpar_assignments as b', 'a.id', '=', 'b.result_id')
+            ->join('departments as c', 'a.department_id', '=', 'c.id')
+            ->join('cpar_statuses as d', 'b.status_id', '=', 'd.id')
+            ->leftJoin('employees as e', 'b.assigned_to', '=', 'e.id')
+            ->leftJoin('employees as f', 'b.dept_head_assigned', '=', 'f.id')
             ->select(
                 'a.id',
                 'a.result_no as record_no',
@@ -95,57 +75,87 @@ class LabAssigned extends Component
                 'a.date_reported as record_date',
                 DB::raw("'RESULT' as record_type"),
                 DB::raw('NULL as record_id'),
-                'd.result_id',
+                'b.result_id',
+                'b.id as assignment_id',
+                'b.assigned_to',
+                'b.updated_at',
+                'c.department_name',
+                'd.status_name',
                 'e.branch_id',
-                DB::raw('NULL as department_name'),
-                'f.status_name',
-                DB::raw("
-                GROUP_CONCAT(
-                    DISTINCT d.id
-                    ORDER BY d.id
-                    SEPARATOR ','
-                ) as assigned_id
-                "),
-                DB::raw("
-                GROUP_CONCAT(
-                    DISTINCT d.assigned_to
-                    ORDER BY d.id
-                    SEPARATOR ','
-                ) as assigned_to
-                "),
-                DB::raw("
-                GROUP_CONCAT(
-                    DISTINCT CONCAT(
-                        e.first_name,
-                        ' ',
-                        e.last_name
-                    )
-                    ORDER BY d.id
-                    SEPARATOR ', '
-                ) as dept_head_name
-                ")
+                'e.department_name as employee_department',
+                'f.department_name as dept_department',
+                DB::raw("CONCAT(e.first_name, ' ', e.last_name) as employee_name"),
+                DB::raw("CONCAT(f.first_name, ' ', f.last_name) as emp_dept_name")
             )
-            ->where('d.status_id', '!=', 50)
-            ->where('d.record_type', 10)
-            ->groupBy(
-                'a.id',
-                'a.result_no',
-                'a.reported_by',
-                'a.date_reported',
-                'd.result_id',
-                'e.branch_id',
-                'f.status_name'
-            );
+            ->where('b.status_id', '!=', 50)
+            ->where('b.record_type', 10);
 
-        $this->lab_requests = $cpar
-            ->unionAll($result)
-            ->orderByDesc('record_date')
+        $query = $cpar->unionAll($result);
+
+        $allRequests = DB::query()
+            ->fromSub($query, 'lab_requests')
+            ->orderByDesc('assignment_id')
             ->get();
+
+        $this->labTotal = $allRequests->count();
+
+        $this->labLastPage = max(
+            1,
+            (int) ceil($this->labTotal / $this->perPage)
+        );
+
+        if ($this->labPage > $this->labLastPage) {
+            $this->labPage = $this->labLastPage;
+        }
+
+        $offset = ($this->labPage - 1) * $this->perPage;
+
+        $this->lab_requests = $allRequests
+            ->slice($offset, $this->perPage)
+            ->values();
     }
 
-    public function UpdateAssign($cpar_id)
+    public function updatedPerPage()
     {
-        $this->dispatch('open-reassign', id: $cpar_id);
+        $this->perPage = (int) $this->perPage;
+
+        $this->labPage = 1;
+
+        $this->loadLabDetails();
+    }
+
+    public function nextLabPage()
+    {
+        if ($this->labPage < $this->labLastPage) {
+            $this->labPage++;
+
+            $this->loadLabDetails();
+        }
+    }
+
+    public function previousLabPage()
+    {
+        if ($this->labPage > 1) {
+            $this->labPage--;
+
+            $this->loadLabDetails();
+        }
+    }
+
+    public function goToLabPage($page)
+    {
+        $page = (int) $page;
+
+        if ($page >= 1 && $page <= $this->labLastPage) {
+            $this->labPage = $page;
+
+            $this->loadLabDetails();
+        }
+    }
+
+    public function UpdateAssign($assignment_id)
+    {
+        $this->dispatch('open-reassign', id: $assignment_id);
     }
 
     public function viewResultDetails($result_id)

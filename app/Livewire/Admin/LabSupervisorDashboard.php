@@ -23,6 +23,7 @@ class LabSupervisorDashboard extends Component
     public $disciplinaryCategories = [];
     protected $listeners = [
         'refreshLABCount' => 'loadLABCount',
+        'refreshAssignedCount'  => 'loadAssignedCount'
     ];
 
     public function mount()
@@ -39,21 +40,22 @@ class LabSupervisorDashboard extends Component
 
     public function loadAssignedCount()
     {
-        // CPAR count
         $cparCount = DB::table('cpar_request_forms as a')
             ->join('cpar_assignments as b', 'a.id', '=', 'b.cpar_id')
-            ->join('employees as c', 'b.assigned_to', '=', 'c.id')
+            ->leftJoin('employees as c', 'b.assigned_to', '=', 'c.id')
+            ->leftJoin('employees as d', 'b.dept_head_assigned', '=', 'd.id')
             ->where('b.status_id', '!=', 50)
             ->where('b.record_type', 5)
-            ->count(DB::raw('DISTINCT a.id'));
-        // Result Error count
+            ->count('b.id');
+
         $resultCount = DB::table('result_error_forms as a')
             ->join('cpar_assignments as b', 'a.id', '=', 'b.result_id')
-            ->join('employees as c', 'b.assigned_to', '=', 'c.id')
+            ->leftJoin('employees as c', 'b.assigned_to', '=', 'c.id')
+            ->leftJoin('employees as d', 'b.dept_head_assigned', '=', 'd.id')
             ->where('b.status_id', '!=', 50)
             ->where('b.record_type', 10)
-            ->count(DB::raw('DISTINCT a.id'));
-        // Combined count
+            ->count('b.id');
+
         $this->assigned_count = $cparCount + $resultCount;
     }
 

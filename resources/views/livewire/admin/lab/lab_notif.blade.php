@@ -12,25 +12,6 @@
             </div>
             <flux:separator />
 
-            {{-- Search --}}
-            <div class="flex items-center gap-2">
-                <div class="flex-1">
-                    <flux:input
-                        wire:model.live.debounce.300ms="search"
-                        placeholder="Search CPAR No., employee, department..."
-                        icon="magnifying-glass" />
-                </div>
-
-                @if ($search)
-                <flux:button
-                    variant="ghost"
-                    icon="x-mark"
-                    wire:click="$set('search', '')">
-                    Clear
-                </flux:button>
-                @endif
-            </div>
-
             {{-- Records --}}
             <div class="overflow-x-auto rounded-xl border border-zinc-200 dark:border-zinc-700">
                 <table class="w-full text-sm">
