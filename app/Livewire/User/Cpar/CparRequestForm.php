@@ -14,6 +14,9 @@ use App\Models\employee;
 use App\Models\priority_level;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use App\Mail\CparAssignedMail;
+use App\Models\User;
+use Illuminate\Support\Facades\Mail;
 use Livewire\WithFileUploads;
 
 class CparRequestForm extends Component
@@ -125,13 +128,15 @@ class CparRequestForm extends Component
     public function save()
     {
         $this->validate();
+
         $attachmentPath = null;
 
         if ($this->attachment) {
             $attachmentPath = $this->attachment->store('cpar', 'public');
         }
 
-        DB::transaction(function () use ($attachmentPath) {
+        $request = DB::transaction(function () use ($attachmentPath) {
+
             $request = cpar_request_forms::create([
                 'cpar_no'               => $this->cpar_no,
                 'employee_no'           => $this->employee_no,
@@ -156,7 +161,6 @@ class CparRequestForm extends Component
                     'uploaded_by' => Auth::id(),
                 ]);
             } else {
-                // Walang attachment
                 cpar_attachments::create([
                     'cpar_id'     => $request->id,
                     'uploaded_by' => Auth::id(),
@@ -164,44 +168,70 @@ class CparRequestForm extends Component
             }
 
             cpar_assignments::create([
-                'cpar_id'        => $request->id,
-                'dept_head_assigned'    => $this->dept_head_assigned,
-                'department_id'  => $this->department_id,
-                'status_id'      => 1,
-                'record_type'    => 5,
-                'created_by'     => Auth::id(),
+                'cpar_id'            => $request->id,
+                'dept_head_assigned' => $this->dept_head_assigned,
+                'department_id'     => $this->department_id,
+                'status_id'         => 1,
+                'record_type'       => 5,
+                'created_by'        => Auth::id(),
             ]);
 
             $newValue = [
-                'cpar_no'               => $this->cpar_no,
-                'date_opened'           => $this->date_opened,
-                'source_origin_id'      => $this->source_origin_id,
-                'reported_by'           => $this->reported_by,
-                'complain_category_id'  => $this->complain_category_id,
-                'complain_name'         => $this->complain_name,
-                'concern_description'   => $this->concern_description,
-                'attachment'            => $attachmentPath ?? null,
-                'concern_category_id'   => $this->concern_category_id,
-                'dept_head_assigned'    => $this->dept_head_assigned,
-                'department_name'       => $this->department_name,
-                'priority_level'        => $this->priority,
+                'cpar_no'              => $this->cpar_no,
+                'date_opened'          => $this->date_opened,
+                'source_origin_id'     => $this->source_origin_id,
+                'reported_by'          => $this->reported_by,
+                'complain_category_id' => $this->complain_category_id,
+                'complain_name'        => $this->complain_name,
+                'concern_description'  => $this->concern_description,
+                'attachment'           => $attachmentPath ?? null,
+                'concern_category_id'  => $this->concern_category_id,
+                'dept_head_assigned'   => $this->dept_head_assigned,
+                'department_name'      => $this->department_name,
+                'priority_level'       => $this->priority,
             ];
 
             audit_logs::create([
-                'user_reported_by'    => $this->reported_by,
-                'user_reported'       => $this->dept_head_assigned,
-                'action'     => 'CREATED',
-                'old_value'  => null,
-                'new_value'  => json_encode($newValue),
+                'user_reported_by'  => $this->reported_by,
+                'user_reported'     => $this->dept_head_assigned,
+                'action'            => 'CREATED',
+                'old_value'         => null,
+                'new_value'         => json_encode($newValue),
                 'status_changed_by' => $this->id,
-                'date'       => now(),
+                'date'              => now(),
             ]);
+
+            return $request;
         });
 
+        $deptHead = DB::table('employees')
+            ->where('id', $this->dept_head_assigned)
+            ->select('first_name', 'last_name', 'email')
+            ->first();
+
+        $prioritylevel = DB::table('priority_levels')
+            ->where('id', $request->priority_level)
+            ->value('priority_name');
+        $recordType = 5;
+
+        if ($deptHead && !empty($deptHead->email)) {
+            Mail::to($deptHead->email)
+                ->queue(new CparAssignedMail(
+                    $request,
+                    $deptHead,
+                    $prioritylevel,
+                    $recordType
+                ));
+        }
+
         $this->reset_form();
+
         return redirect()
             ->route('user_dashboard')
-            ->with('toast', ['type' => 'success', 'message' => 'Others application submitted successfully!',]);
+            ->with('toast', [
+                'type' => 'success',
+                'message' => 'Others application submitted successfully!',
+            ]);
     }
 
     public function updatedComplainCategoryId($value = '')

@@ -21,7 +21,7 @@
     @endif
 
     <livewire:common.custom-table
-        :model="'App\Models\Employee'"
+        :model="'App\Models\employee'"
         refreshEvent="refreshEmployees"
         addLabel="Employee"
         :columns="[

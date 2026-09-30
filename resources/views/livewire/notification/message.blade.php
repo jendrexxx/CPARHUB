@@ -214,7 +214,7 @@
 
                             <div>
                                 {{ $lab_request_count }}
-                                laboratory request{{ $lab_request_count > 1 ? 's' : '' }}
+                                Re-Assigned request{{ $lab_request_count > 1 ? 's' : '' }}
                             </div>
 
                         </div>

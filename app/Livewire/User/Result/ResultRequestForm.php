@@ -2,6 +2,7 @@
 
 namespace App\Livewire\User\Result;
 
+use App\Mail\CparAssignedMail;
 use App\Models\cpar_assignments;
 use App\Models\cpar_attachments;
 use App\Models\priority_level;
@@ -15,6 +16,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\employee;
 use App\Models\result_complain_categories;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use Livewire\WithFileUploads;
 
 class ResultRequestForm extends Component
@@ -134,7 +136,7 @@ class ResultRequestForm extends Component
             'complain_name' => 'required',
             'priority' => 'required',
             'dept_head_assigned' => 'required',
-            'department_name'   => 'required'
+            'department_name' => 'required',
         ]);
 
         $attachmentPath = null;
@@ -159,36 +161,65 @@ class ResultRequestForm extends Component
             'complainant_category' => $this->complain_category_id,
             'complain_name' => $this->complain_name,
             'concern_description' => $this->concern_description,
-            'department_id'       => $this->department_id,
-            'priority_level'      => $this->priority
+            'department_id' => $this->department_id,
+            'priority_level' => $this->priority,
         ]);
+
         cpar_assignments::create([
-            'result_id'               => $result->id,
-            'dept_head_assigned'    => $this->dept_head_assigned,
-            'department_id'         => $this->department_id,
-            'status_id'             => 1,
-            'record_type'           => 10,
-            'created_by'            => Auth::id(),
+            'result_id' => $result->id,
+            'dept_head_assigned' => $this->dept_head_assigned,
+            'department_id' => $this->department_id,
+            'status_id' => 1,
+            'record_type' => 10,
+            'created_by' => Auth::id(),
         ]);
 
         if ($attachmentPath) {
             cpar_attachments::create([
-                'result_id'   => $result->id,
-                'file_name'   => $this->concern_attachment->getClientOriginalName(),
-                'file_path'   => $attachmentPath,
-                'file_type'   => $this->concern_attachment->getMimeType(),
+                'result_id' => $result->id,
+                'file_name' => $this->concern_attachment->getClientOriginalName(),
+                'file_path' => $attachmentPath,
+                'file_type' => $this->concern_attachment->getMimeType(),
                 'uploaded_by' => Auth::id(),
             ]);
         } else {
-            // Walang attachment
             cpar_attachments::create([
-                'result_id'     => $result->id,
+                'result_id' => $result->id,
                 'uploaded_by' => Auth::id(),
             ]);
         }
 
+        $deptHead = DB::table('employees')
+            ->where('id', $this->dept_head_assigned)
+            ->select(
+                'first_name',
+                'last_name',
+                'email'
+            )
+            ->first();
 
-        return redirect()->route('user_dashboard')->with('toast', ['type' => 'success', 'message' => 'Result Concern submitted successfully',]);
+        $prioritylevel = DB::table('priority_levels')
+            ->where('id', $this->priority)
+            ->value('priority_name');
+        $recordType = 10;
+
+        if ($deptHead && !empty($deptHead->email)) {
+
+            Mail::to($deptHead->email)
+                ->queue(new CparAssignedMail(
+                    $result,
+                    $deptHead,
+                    $prioritylevel,
+                    $recordType
+                ));
+        }
+
+        return redirect()
+            ->route('user_dashboard')
+            ->with('toast', [
+                'type' => 'success',
+                'message' => 'Result Concern submitted successfully',
+            ]);
     }
 
     public function render()
