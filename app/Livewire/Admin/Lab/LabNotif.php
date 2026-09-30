@@ -12,6 +12,7 @@ class LabNotif extends Component
     public $labReviewPage = 1;
     public $labReviewTotal = 0;
     public $labReviewLastPage = 1;
+    public string $search = '';
     protected $listeners = [
         'refreshLABRecords' => 'loadLABReview',
     ];
@@ -22,13 +23,10 @@ class LabNotif extends Component
         $this->loadLABReview();
     }
 
-    public function updatedSearch()
-    {
-        $this->loadLABReview();
-    }
-
     public function loadLABReview()
     {
+        $search = trim($this->search);
+
         $cparQuery = DB::table('cpar_request_forms as a')
             ->leftJoin('cpar_assignments as b', 'a.id', '=', 'b.cpar_id')
             ->leftJoin('departments as g', 'a.department_id', '=', 'g.id')
@@ -51,6 +49,7 @@ class LabNotif extends Component
             ->select(
                 'a.id as cpar_id',
                 'a.cpar_no',
+                DB::raw("NULL as result_no"),
                 'a.reported_by',
                 DB::raw("'CPAR' as record_type"),
                 'b.id as assignment_id',
@@ -59,9 +58,9 @@ class LabNotif extends Component
                 'i.employee_no',
                 DB::raw("
                 CONCAT(
-                    i.first_name,
+                    COALESCE(i.first_name, ''),
                     ' ',
-                    i.last_name
+                    COALESCE(i.last_name, '')
                 ) AS employee_name
             "),
                 DB::raw("
@@ -89,25 +88,11 @@ class LabNotif extends Component
                             ->where('m.ir_id', '!=', '');
                     });
             })
-            ->when(!empty($this->search), function ($query) {
-                $search = '%' . $this->search . '%';
-
-                $query->where(function ($q) use ($search) {
-                    $q->where('a.cpar_no', 'like', $search)
-                        ->orWhere('a.reported_by', 'like', $search)
-                        ->orWhere('i.employee_no', 'like', $search)
-                        ->orWhere('i.first_name', 'like', $search)
-                        ->orWhere('i.last_name', 'like', $search)
-                        ->orWhere('g.department_name', 'like', $search)
-                        ->orWhere('l.nte_no', 'like', $search)
-                        ->orWhere('m.ir_id', 'like', $search);
-                });
-            })
             ->groupBy(
                 'a.id',
                 'a.cpar_no',
-                'a.reported_by',
                 'b.id',
+                'a.reported_by',
                 'g.department_name',
                 'h.status_name',
                 'i.employee_no',
@@ -140,6 +125,7 @@ class LabNotif extends Component
             )
             ->select(
                 'a.id as cpar_id',
+                DB::raw("NULL as cpar_no"),
                 'a.result_no',
                 'a.reported_by',
                 DB::raw("'RESULT' as record_type"),
@@ -149,9 +135,9 @@ class LabNotif extends Component
                 'i.employee_no',
                 DB::raw("
                 CONCAT(
-                    i.first_name,
+                    COALESCE(i.first_name, ''),
                     ' ',
-                    i.last_name
+                    COALESCE(i.last_name, '')
                 ) AS employee_name
             "),
                 DB::raw("
@@ -179,25 +165,11 @@ class LabNotif extends Component
                             ->where('m.ir_id', '!=', '');
                     });
             })
-            ->when(!empty($this->search), function ($query) {
-                $search = '%' . $this->search . '%';
-
-                $query->where(function ($q) use ($search) {
-                    $q->where('a.result_no', 'like', $search)
-                        ->orWhere('a.reported_by', 'like', $search)
-                        ->orWhere('i.employee_no', 'like', $search)
-                        ->orWhere('i.first_name', 'like', $search)
-                        ->orWhere('i.last_name', 'like', $search)
-                        ->orWhere('g.department_name', 'like', $search)
-                        ->orWhere('l.nte_no', 'like', $search)
-                        ->orWhere('m.ir_id', 'like', $search);
-                });
-            })
             ->groupBy(
                 'a.id',
                 'a.result_no',
-                'a.reported_by',
                 'b.id',
+                'a.reported_by',
                 'g.department_name',
                 'h.status_name',
                 'i.employee_no',
@@ -211,8 +183,28 @@ class LabNotif extends Component
 
         $query = $cparQuery->unionAll($resultQuery);
 
-        $allReviews = DB::query()
-            ->fromSub($query, 'lab_reviews')
+        $allReviewsQuery = DB::query()
+            ->fromSub($query, 'lab_reviews');
+
+        if ($search !== '') {
+            $searchTerm = '%' . $search . '%';
+
+            $allReviewsQuery->where(function ($q) use ($searchTerm) {
+                $q->where('cpar_no', 'like', $searchTerm)
+                    ->orWhere('result_no', 'like', $searchTerm)
+                    ->orWhere('reported_by', 'like', $searchTerm)
+                    ->orWhere('employee_no', 'like', $searchTerm)
+                    ->orWhere('employee_name', 'like', $searchTerm)
+                    ->orWhere('department_name', 'like', $searchTerm)
+                    ->orWhere('decision_name', 'like', $searchTerm)
+                    ->orWhere('nte_no', 'like', $searchTerm)
+                    ->orWhere('ir_id', 'like', $searchTerm)
+                    ->orWhere('record_type', 'like', $searchTerm)
+                    ->orWhere('status_name', 'like', $searchTerm);
+            });
+        }
+
+        $allReviews = $allReviewsQuery
             ->orderByDesc('assignment_id')
             ->get();
 
@@ -232,6 +224,12 @@ class LabNotif extends Component
         $this->cpar_reviews = $allReviews
             ->slice($offset, $this->perPage)
             ->values();
+    }
+
+    public function updatedSearch()
+    {
+        $this->labReviewPage = 1;
+        $this->loadLABReview();
     }
 
     public function viewDetails($assignment_id = '')

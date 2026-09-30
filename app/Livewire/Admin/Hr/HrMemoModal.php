@@ -25,6 +25,7 @@ class HrMemoModal extends Component
     public $offenseLevels = [];
     public $emp_reported = '', $employeeName = '', $user_id = '', $assigned_to = '', $full_name = '', $reported_department = '';
     public $decision_name = '', $position_name = '', $from = '', $signatory = '', $memo_re = '', $memo_id = '', $cpar_ids = '';
+    public $signatory_position = '';
     protected $listeners = [
         'open-memo-cpar' => 'open_memo'
     ];
@@ -38,10 +39,10 @@ class HrMemoModal extends Component
         }
         $this->memo_no = $this->generateMemoNo();
         $this->memo_date = now()->format('m-d-Y');
-        $memo_template = memo_templates::select('From', 'Signatory')->first();
-
+        $memo_template = memo_templates::select('From', 'Signatory', 'position')->first();
         $this->from = $memo_template->From ?? '';
         $this->signatory = $memo_template->Signatory ?? '';
+        $this->signatory_position = $memo_template->position ?? '';
     }
 
     private function generateMemoNo()

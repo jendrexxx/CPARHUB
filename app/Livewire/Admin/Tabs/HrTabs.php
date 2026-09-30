@@ -29,7 +29,7 @@ class HrTabs extends Component
     // SEARCH
     public $search = '';
     // PAGINATION
-    public $perPage = 10;
+    public $perPage = 5;
 
     public function mount($branch_id)
     {

@@ -1,10 +1,8 @@
 <?php
 
-use App\Http\Controllers\MemoPdfController;
 use App\Livewire\Admin\AdminDashboard;
 use App\Livewire\Admin\DeptHeadDashboard;
 use App\Livewire\Admin\Employees;
-use App\Livewire\Admin\Hr\Print\Memo;
 use App\Livewire\Admin\HrHeadDashboard;
 use App\Livewire\Admin\LabSupervisorDashboard;
 use App\Livewire\Admin\Reports\CparMasterFile;
@@ -29,33 +27,21 @@ Route::middleware(['auth'])->group(function () {
 });
 
 Route::middleware(['auth', 'verified', 'session.timeout'])->group(function () {
-    Route::get('dept_head_dashboard', DeptHeadDashboard::class)
-        ->name('dept_head_dashboard');
-
-    Route::get('hr-dashboard', HrHeadDashboard::class)
-        ->name('hr_dashboard');
-
-    Route::get('lab_supervisor', LabSupervisorDashboard::class)
-        ->name('lab_supervisor');
-
+    Route::get('dept_head_dashboard', DeptHeadDashboard::class)->name('dept_head_dashboard');
+    Route::get('hr-dashboard', HrHeadDashboard::class)->name('hr_dashboard');
+    Route::get('lab_supervisor', LabSupervisorDashboard::class)->name('lab_supervisor');
     Route::get('/cpar/{assignment_id}/pdf', [Pdf::class, 'pdf'])->name('cpar.pdf');
     Route::get('/result/{assignment_id}/pdf', [ResultPdf::class, 'result'])->name('result.pdf');
     Route::get('/pdf', [PdfAll::class, 'pdf'])->name('pdf');
-    Route::get('/export/excel', [ExcelAll::class, 'excel'])
-        ->name('excel');
+    Route::get('/export/excel', [ExcelAll::class, 'excel'])->name('excel');
 });
 
 Route::middleware(['auth', 'verified', 'session.timeout'])->group(function () {
-    Route::get('user_dashboard', UserDashboard::class)
-        ->name('user_dashboard');
-    Route::get('/cpar-request-form', CparRequestForm::class)
-        ->name('cpar_request_form');
-    Route::get('/cpar-report', CparReports::class)
-        ->name('cpar-report');
-    Route::get('/cpar-master-file', CparMasterFile::class)
-        ->name('cpar-master-file');
-    Route::get('/result-request-form', ResultRequestForm::class)
-        ->name('user.result.result_request_form');
+    Route::get('user_dashboard', UserDashboard::class)->name('user_dashboard');
+    Route::get('/cpar-request-form', CparRequestForm::class)->name('cpar_request_form');
+    Route::get('/cpar-report', CparReports::class)->name('cpar-report');
+    Route::get('/cpar-master-file', CparMasterFile::class)->name('cpar-master-file');
+    Route::get('/result-request-form', ResultRequestForm::class)->name('user.result.result_request_form');
 });
 
 Route::middleware([

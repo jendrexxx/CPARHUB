@@ -11,17 +11,19 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('memo_templates', function (Blueprint $table) {
-            $table->increments('id');
-            $table->string('From')->nullable();
-            $table->string('Signatory')->nullable();
-            $table->string('position')->nullable();
+        Schema::create('record_types', function (Blueprint $table) {
+            $table->id();
+            $table->string('record_name');
+            $table->string('record_alias');
             $table->timestamps();
         });
     }
 
+    /**
+     * Reverse the migrations.
+     */
     public function down(): void
     {
-        Schema::dropIfExists('memo_templates');
+        Schema::dropIfExists('record_types');
     }
 };

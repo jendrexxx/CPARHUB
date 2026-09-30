@@ -34,7 +34,7 @@ class HrMemoModal extends Component
     public $isNoDisciplinaryAction = false;
     public $nte_no = '', $hr_decision_remarks = '', $management_remarks = '', $current_memo_attachment = '';
     public $assigned_department = '', $decision_name = '', $full_name = '', $from = '', $signatory = '', $position_name = '';
-    public $memo_re = '';
+    public $memo_re = '', $signatory_position = '';
     protected $listeners = [
         'open-memo-result' => 'open_memo'
     ];
@@ -60,10 +60,11 @@ class HrMemoModal extends Component
             ->get();
         $this->memo_no = $this->generateMemoNo();
         $this->memo_date = now()->format('m-d-Y');
-        $memo_template = memo_templates::select('From', 'Signatory')->first();
+        $memo_template = memo_templates::select('From', 'Signatory', 'position')->first();
 
         $this->from = $memo_template->From ?? '';
         $this->signatory = $memo_template->Signatory ?? '';
+        $this->signatory_position = $memo_template->position ?? '';
     }
 
     private function generateMemoNo()

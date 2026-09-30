@@ -28,7 +28,30 @@ new #[Layout('components.layouts.auth')] class extends Component {
 
         $this->ensureIsNotRateLimited();
 
-        if (! Auth::attempt(['username' => $this->username, 'password' => $this->password], $this->remember)) {
+        $user = \App\Models\User::where('username', $this->username)->first();
+
+        // Username does not exist
+        if (!$user) {
+            RateLimiter::hit($this->throttleKey());
+
+            throw ValidationException::withMessages([
+                'username' => __('auth.failed'),
+            ]);
+        }
+
+        // Account is inactive
+        if ($user->status !== 'Active') {
+            throw ValidationException::withMessages([
+                'username' => 'Your account is inactive. Please contact the administrator.',
+            ]);
+        }
+
+        // Check password
+        if (!Auth::attempt([
+            'username' => $this->username,
+            'password' => $this->password,
+        ], $this->remember)) {
+
             RateLimiter::hit($this->throttleKey());
 
             throw ValidationException::withMessages([
@@ -37,9 +60,13 @@ new #[Layout('components.layouts.auth')] class extends Component {
         }
 
         RateLimiter::clear($this->throttleKey());
+
         Session::regenerate();
 
-        $this->redirectIntended(default: route('user_dashboard', absolute: false), navigate: true);
+        $this->redirectIntended(
+            default: route('user_dashboard', absolute: false),
+            navigate: true
+        );
     }
 
     /**

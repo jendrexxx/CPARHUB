@@ -2,7 +2,7 @@
 
     <flux:modal
         name="lab-reassign-cpar"
-        class="w-full max-w-7xl mt-7 top-0 z-50">
+        class="mt-7 w-full max-w-7xl top-0 z-50">
 
         <div class="border-b pb-4">
             <flux:heading size="lg">
@@ -14,14 +14,11 @@
             </flux:text>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-6">
+        <div class="mt-6 grid grid-cols-1 gap-8 lg:grid-cols-2">
 
             <div class="min-w-0">
 
-                {{-- HEADER --}}
-                <div
-                    class="flex items-center justify-between cursor-pointer border-b pb-3">
-
+                <div class="flex items-center justify-between border-b pb-3">
                     <div>
                         <flux:heading size="md">
                             CPAR Details
@@ -31,86 +28,73 @@
                             View the CPAR request information below.
                         </flux:text>
                     </div>
-
                 </div>
 
-
-                {{-- CPAR DETAILS CONTENT --}}
                 <div class="mt-5 space-y-5">
 
-                    {{-- CPAR NO + DATE --}}
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
 
                         <flux:input
                             label="CPAR No."
                             wire:model="cpar_no"
                             readonly
-                            class="opacity-60 cursor-not-allowed bg-zinc-100 dark:bg-zinc-800" />
+                            class="cursor-not-allowed bg-zinc-100 opacity-60 dark:bg-zinc-800" />
 
                         <flux:input
                             label="Date Opened"
                             wire:model="date_open"
                             readonly
-                            class="opacity-60 cursor-not-allowed bg-zinc-100 dark:bg-zinc-800" />
+                            class="cursor-not-allowed bg-zinc-100 opacity-60 dark:bg-zinc-800" />
 
                     </div>
 
-
-                    {{-- SOURCE ORIGIN --}}
                     <flux:input
                         label="Source Origin"
                         wire:model="source_name"
                         readonly
-                        class="opacity-60 cursor-not-allowed bg-zinc-100 dark:bg-zinc-800" />
+                        class="cursor-not-allowed bg-zinc-100 opacity-60 dark:bg-zinc-800" />
 
-
-                    {{-- REPORTED BY + DEPARTMENT --}}
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
 
                         <flux:input
                             label="Reported By"
                             wire:model="reported_by"
                             readonly
-                            class="opacity-60 cursor-not-allowed bg-zinc-100 dark:bg-zinc-800" />
+                            class="cursor-not-allowed bg-zinc-100 opacity-60 dark:bg-zinc-800" />
 
                         <flux:input
                             label="Department Name"
                             wire:model="department_name"
                             readonly
-                            class="opacity-60 cursor-not-allowed bg-zinc-100 dark:bg-zinc-800" />
+                            class="cursor-not-allowed bg-zinc-100 opacity-60 dark:bg-zinc-800" />
 
                     </div>
 
-                    {{-- COMPLAINANT --}}
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
 
                         <flux:input
                             label="Complainant Category"
                             wire:model="complain_name"
                             readonly
-                            class="opacity-60 cursor-not-allowed bg-zinc-100 dark:bg-zinc-800" />
+                            class="cursor-not-allowed bg-zinc-100 opacity-60 dark:bg-zinc-800" />
 
                         <flux:input
                             label="Complainant Name"
                             wire:model="complainant_name"
                             readonly
-                            class="opacity-60 cursor-not-allowed bg-zinc-100 dark:bg-zinc-800" />
+                            class="cursor-not-allowed bg-zinc-100 opacity-60 dark:bg-zinc-800" />
 
                     </div>
 
-
-                    {{-- CONCERN DESCRIPTION --}}
                     <flux:textarea
                         label="Concern Description"
                         wire:model="concern_description"
                         rows="4"
                         readonly
-                        class="opacity-60 cursor-not-allowed bg-zinc-100 dark:bg-zinc-800" />
+                        class="cursor-not-allowed bg-zinc-100 opacity-60 dark:bg-zinc-800" />
 
-                    {{-- ATTACHMENT + CATEGORY + STATUS --}}
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
 
-                        {{-- ATTACHMENT --}}
                         <div>
                             <flux:label>
                                 Attachment
@@ -125,40 +109,32 @@
                                     size="sm"
                                     href="{{ Storage::url($attachment) }}"
                                     target="_blank">
-
                                     Download
-
                                 </flux:button>
                             </div>
 
                             @else
 
                             <div class="mt-2 rounded-lg border border-gray-200 bg-gray-100 px-3 py-2.5 dark:border-zinc-700 dark:bg-zinc-800">
-
                                 <flux:text>
                                     N/A
                                 </flux:text>
-
                             </div>
 
                             @endif
-
                         </div>
 
-
-                        {{-- CONCERN CATEGORY --}}
                         <flux:input
                             label="Concern Category"
                             wire:model="concern_name"
                             readonly
-                            class="opacity-60 cursor-not-allowed bg-zinc-100 dark:bg-zinc-800" />
+                            class="cursor-not-allowed bg-zinc-100 opacity-60 dark:bg-zinc-800" />
 
-                        {{-- Priority --}}
                         <flux:input
                             label="Priority"
                             wire:model="priority"
                             readonly
-                            class="opacity-60 cursor-not-allowed bg-zinc-100 dark:bg-zinc-800" />
+                            class="cursor-not-allowed bg-zinc-100 opacity-60 dark:bg-zinc-800" />
 
                     </div>
 
@@ -168,7 +144,6 @@
 
             <div class="min-w-0">
 
-                {{-- HEADER --}}
                 <div class="border-b pb-3">
 
                     <flux:heading size="md">
@@ -182,34 +157,46 @@
                 </div>
 
                 <div class="mt-5 space-y-5">
+
                     <div class="flex items-end gap-2">
-                        <div class="flex-1 min-w-0">
+
+                        <div class="min-w-0 flex-1">
+
                             <flux:select
                                 label="Assign To"
-                                wire:model="assigned" disabled>
+                                wire:model="assigned"
+                                disabled>
                                 <flux:select.option value="">
                                     -- Select Employee --
                                 </flux:select.option>
-                                @foreach($employees as $employee)
+
+                                @foreach ($employees as $employee)
+
                                 <flux:select.option value="{{ $employee->id }}">
                                     {{ $employee->first_name }} {{ $employee->last_name }}
                                 </flux:select.option>
+
                                 @endforeach
+
                             </flux:select>
+
                         </div>
+
                         <flux:button
                             type="button"
                             variant="primary"
                             icon="plus"
                             wire:click="addAssignee" />
+
                     </div>
 
-                    @foreach($new_assignees as $index => $assignee)
+                    @foreach ($new_assignees as $index => $assignee)
+
                     <div
                         wire:key="additional-assignee-{{ $index }}"
                         class="flex items-end gap-2">
 
-                        <div class="flex-1 min-w-0">
+                        <div class="min-w-0 flex-1">
 
                             <flux:select
                                 label="Additional Assignee"
@@ -219,11 +206,13 @@
                                     -- Select Employee --
                                 </flux:select.option>
 
-                                @foreach($employees as $employee)
+                                @foreach ($employees as $employee)
+
                                 <flux:select.option value="{{ $employee->id }}">
                                     {{ $employee->first_name }}
                                     {{ $employee->last_name }}
                                 </flux:select.option>
+
                                 @endforeach
 
                             </flux:select>
@@ -237,9 +226,9 @@
                             wire:click="removeAssignee({{ $index }})" />
 
                     </div>
+
                     @endforeach
 
-                    {{-- REMARKS --}}
                     <flux:textarea
                         label="Remarks"
                         wire:model="remarks"
@@ -252,22 +241,26 @@
 
         </div>
 
-        {{-- =========================
-            FOOTER
-        ========================== --}}
-        <div class="flex justify-end gap-2 mt-8 border-t pt-4">
+        <div class="mt-8 flex justify-end gap-2 border-t pt-4">
 
             <flux:button
                 variant="ghost"
-                x-on:click="$flux.modal('reassign-cpar').close()">
+                x-on:click="$flux.modal('lab-reassign-cpar').close()">
                 Cancel
             </flux:button>
 
             <flux:button
                 variant="primary"
                 icon="check"
-                wire:click="LabAssigned">
-                Assign
+                wire:click="LabAssigned"
+                wire:loading.attr="disabled">
+                <span wire:loading.remove wire:target="LabAssigned">
+                    Assign
+                </span>
+
+                <span wire:loading wire:target="LabAssigned">
+                    Assigning...
+                </span>
             </flux:button>
 
         </div>

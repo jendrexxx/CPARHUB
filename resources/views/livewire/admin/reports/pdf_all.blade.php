@@ -61,162 +61,198 @@
 
     <table
         style="
-            width: 100%;
-            border-collapse: collapse;
-            table-layout: fixed;
-            font-size: 7.5px;
-        ">
-
+        width: 100%;
+        border-collapse: collapse;
+        table-layout: fixed;
+        font-size: 6.5px;
+        word-wrap: break-word;
+        overflow-wrap: anywhere;
+    ">
         <thead>
             <tr>
 
-                <th
-                    style="
-                        width: 6.5%;
-                        border: 1px solid #222;
-                        padding: 7px 4px;
-                        text-align: center;
-                        vertical-align: middle;
-                        font-weight: bold;
-                    ">
+                <th style="
+                width: 6%;
+                border: 1px solid #222;
+                padding: 5px 2px;
+                text-align: center;
+                vertical-align: middle;
+                font-weight: bold;
+                overflow-wrap: anywhere;
+            ">
                     Request No.
                 </th>
 
-                <th
-                    style="
-                        width: 6.5%;
-                        border: 1px solid #222;
-                        padding: 7px 4px;
-                        text-align: center;
-                        vertical-align: middle;
-                        font-weight: bold;
-                    ">
+                <th style="
+                width: 6%;
+                border: 1px solid #222;
+                padding: 5px 2px;
+                text-align: center;
+                vertical-align: middle;
+                font-weight: bold;
+                overflow-wrap: anywhere;
+            ">
                     Date Reported
                 </th>
 
-                <th
-                    style="
-                        width: 5.5%;
-                        border: 1px solid #222;
-                        padding: 7px 4px;
-                        text-align: center;
-                        vertical-align: middle;
-                        font-weight: bold;
-                    ">
+                <th style="
+                width: 7%;
+                border: 1px solid #222;
+                padding: 5px 2px;
+                text-align: center;
+                vertical-align: middle;
+                font-weight: bold;
+                overflow-wrap: anywhere;
+            ">
                     Reported Employee
                 </th>
 
-                <th
-                    style="
-                        width: 7%;
-                        border: 1px solid #222;
-                        padding: 7px 4px;
-                        text-align: center;
-                        vertical-align: middle;
-                        font-weight: bold;
-                    ">
+                <th style="
+                width: 7%;
+                border: 1px solid #222;
+                padding: 5px 2px;
+                text-align: center;
+                vertical-align: middle;
+                font-weight: bold;
+                overflow-wrap: anywhere;
+            ">
                     Department
                 </th>
 
-                <th
-                    style="
-                        width: 6%;
-                        border: 1px solid #222;
-                        padding: 7px 4px;
-                        text-align: center;
-                        vertical-align: middle;
-                        font-weight: bold;
-                    ">
+                <th style="
+                width: 7%;
+                border: 1px solid #222;
+                padding: 5px 2px;
+                text-align: center;
+                vertical-align: middle;
+                font-weight: bold;
+                overflow-wrap: anywhere;
+            ">
+                    Source Of Information
+                </th>
+
+                <th style="
+                width: 8%;
+                border: 1px solid #222;
+                padding: 5px 2px;
+                text-align: center;
+                vertical-align: middle;
+                font-weight: bold;
+                overflow-wrap: anywhere;
+            ">
+                    Complainant Category
+                </th>
+
+                <th style="
+                width: 7%;
+                border: 1px solid #222;
+                padding: 5px 2px;
+                text-align: center;
+                vertical-align: middle;
+                font-weight: bold;
+                overflow-wrap: anywhere;
+            ">
+                    Concern Description
+                </th>
+
+                <th style="
+                width: 7%;
+                border: 1px solid #222;
+                padding: 5px 2px;
+                text-align: center;
+                vertical-align: middle;
+                font-weight: bold;
+                overflow-wrap: anywhere;
+            ">
                     Identified Cause
                 </th>
 
-                <th
-                    style="
-                        width: 7%;
-                        border: 1px solid #222;
-                        padding: 7px 4px;
-                        text-align: center;
-                        vertical-align: middle;
-                        font-weight: bold;
-                    ">
+                <th style="
+                width: 7%;
+                border: 1px solid #222;
+                padding: 5px 2px;
+                text-align: center;
+                vertical-align: middle;
+                font-weight: bold;
+                overflow-wrap: anywhere;
+            ">
                     Provided Solution
                 </th>
 
-                <th
-                    style="
-                        width: 7%;
-                        border: 1px solid #222;
-                        padding: 7px 4px;
-                        text-align: center;
-                        vertical-align: middle;
-                        font-weight: bold;
-                    ">
+                <th style="
+                width: 7%;
+                border: 1px solid #222;
+                padding: 5px 2px;
+                text-align: center;
+                vertical-align: middle;
+                font-weight: bold;
+                overflow-wrap: anywhere;
+            ">
                     Date Completed
                 </th>
 
-                <th
-                    style="
-                        width: 7%;
-                        border: 1px solid #222;
-                        padding: 7px 4px;
-                        text-align: center;
-                        vertical-align: middle;
-                        font-weight: bold;
-                    ">
-                    Tat
+                <th style="
+                width: 5%;
+                border: 1px solid #222;
+                padding: 5px 2px;
+                text-align: center;
+                vertical-align: middle;
+                font-weight: bold;
+                overflow-wrap: anywhere;
+            ">
+                    TAT
                 </th>
 
-                <th
-                    style="
-                        width: 7%;
-                        border: 1px solid #222;
-                        padding: 7px 4px;
-                        text-align: center;
-                        vertical-align: middle;
-                        font-weight: bold;
-                    ">
-                    Decision Name
+                <th style="
+                width: 8%;
+                border: 1px solid #222;
+                padding: 5px 2px;
+                text-align: center;
+                vertical-align: middle;
+                font-weight: bold;
+                overflow-wrap: anywhere;
+            ">
+                    Decision
                 </th>
 
-                <th
-                    style="
-                        width: 8%;
-                        border: 1px solid #222;
-                        padding: 7px 4px;
-                        text-align: center;
-                        vertical-align: middle;
-                        font-weight: bold;
-                    ">
-                    Category Name
+                <th style="
+                width: 8%;
+                border: 1px solid #222;
+                padding: 5px 2px;
+                text-align: center;
+                vertical-align: middle;
+                font-weight: bold;
+                overflow-wrap: anywhere;
+            ">
+                    Category
                 </th>
 
-                <th
-                    style="
-                        width: 6%;
-                        border: 1px solid #222;
-                        padding: 7px 4px;
-                        text-align: center;
-                        vertical-align: middle;
-                        font-weight: bold;
-                    ">
+                <th style="
+                width: 5%;
+                border: 1px solid #222;
+                padding: 5px 2px;
+                text-align: center;
+                vertical-align: middle;
+                font-weight: bold;
+                overflow-wrap: anywhere;
+            ">
                     Offense Level
                 </th>
 
-                <th
-                    style="
-                        width: 7%;
-                        border: 1px solid #222;
-                        padding: 7px 4px;
-                        text-align: center;
-                        vertical-align: middle;
-                        font-weight: bold;
-                    ">
+                <th style="
+                width: 5%;
+                border: 1px solid #222;
+                padding: 5px 2px;
+                text-align: center;
+                vertical-align: middle;
+                font-weight: bold;
+                overflow-wrap: anywhere;
+            ">
                     Status
                 </th>
 
             </tr>
         </thead>
-
 
         <tbody>
 
@@ -224,25 +260,25 @@
 
             <tr>
 
-                {{-- CPAR NO --}}
-                <td
-                    style="
-                            border: 1px solid #222;
-                            padding: 8px 4px;
-                            text-align: center;
-                            vertical-align: middle;
-                        ">
-                    {{ $record->cpar_no ?? $record->record_no ?? '—' }}
+                <td style="
+                border: 1px solid #222;
+                padding: 4px 2px;
+                text-align: center;
+                vertical-align: middle;
+                overflow-wrap: anywhere;
+                word-break: break-word;
+            ">
+                    {{ $record->record_no ?? '—' }}
                 </td>
 
-                {{-- DATE REPORTED --}}
-                <td
-                    style="
-                            border: 1px solid #222;
-                            padding: 8px 4px;
-                            text-align: center;
-                            vertical-align: middle;
-                        ">
+                <td style="
+                border: 1px solid #222;
+                padding: 4px 2px;
+                text-align: center;
+                vertical-align: middle;
+                overflow-wrap: anywhere;
+                word-break: break-word;
+            ">
                     @if (!empty($record->date_open))
                     {{ \Carbon\Carbon::parse($record->date_open)->format('m/d/Y') }}
                     @else
@@ -250,121 +286,146 @@
                     @endif
                 </td>
 
-
-                {{-- --}}
-                <td
-                    style="
-                            border: 1px solid #222;
-                            padding: 8px 4px;
-                            text-align: center;
-                            vertical-align: middle;
-                        ">
+                <td style="
+                border: 1px solid #222;
+                padding: 4px 2px;
+                text-align: center;
+                vertical-align: middle;
+                overflow-wrap: anywhere;
+                word-break: break-word;
+            ">
                     {{ $record->employee_name ?? '—' }}
                 </td>
 
-                {{-- DEPARTMENT --}}
-                <td
-                    style="
-                            border: 1px solid #222;
-                            padding: 8px 4px;
-                            text-align: center;
-                            vertical-align: middle;
-                        ">
-                    {{ $record->department_name ?? $record->department ?? '—' }}
+                <td style="
+                border: 1px solid #222;
+                padding: 4px 2px;
+                text-align: center;
+                vertical-align: middle;
+                overflow-wrap: anywhere;
+                word-break: break-word;
+            ">
+                    {{ $record->department_name ?? '—' }}
                 </td>
 
+                <td style="
+                border: 1px solid #222;
+                padding: 4px 2px;
+                text-align: center;
+                vertical-align: middle;
+                overflow-wrap: anywhere;
+                word-break: break-word;
+            ">
+                    {{ $record->source_name ?? '—' }}
+                </td>
 
-                {{-- identified_cause --}}
-                <td
-                    style="
-                            border: 1px solid #222;
-                            padding: 8px 4px;
-                            text-align: center;
-                            vertical-align: middle;
-                        ">
+                <td style="
+                border: 1px solid #222;
+                padding: 4px 2px;
+                text-align: center;
+                vertical-align: middle;
+                overflow-wrap: anywhere;
+                word-break: break-word;
+            ">
+                    {{ $record->complain_name ?? '—' }}
+                </td>
+
+                <td style="
+                border: 1px solid #222;
+                padding: 4px 2px;
+                text-align: center;
+                vertical-align: middle;
+                overflow-wrap: anywhere;
+                word-break: break-word;
+            ">
+                    {{ $record->concern_description ?? '—' }}
+                </td>
+
+                <td style="
+                border: 1px solid #222;
+                padding: 4px 2px;
+                text-align: center;
+                vertical-align: middle;
+                overflow-wrap: anywhere;
+                word-break: break-word;
+            ">
                     {{ $record->identified_cause ?? '—' }}
                 </td>
 
-
-                {{-- provided_solution --}}
-                <td
-                    style="
-                            border: 1px solid #222;
-                            padding: 8px 4px;
-                            text-align: center;
-                            vertical-align: middle;
-                        ">
+                <td style="
+                border: 1px solid #222;
+                padding: 4px 2px;
+                text-align: center;
+                vertical-align: middle;
+                overflow-wrap: anywhere;
+                word-break: break-word;
+            ">
                     {{ $record->provided_solution ?? '—' }}
                 </td>
 
-
-                {{-- COMPLAINANT CATEGORY --}}
-                <td
-                    style="
-                            border: 1px solid #222;
-                            padding: 8px 4px;
-                            text-align: center;
-                            vertical-align: middle;
-                        ">
+                <td style="
+                border: 1px solid #222;
+                padding: 4px 2px;
+                text-align: center;
+                vertical-align: middle;
+                overflow-wrap: anywhere;
+                word-break: break-word;
+            ">
                     {{ $record->date_completed ?? '—' }}
                 </td>
 
-
-                {{-- COMPLAINANT NAME --}}
-                <td
-                    style="
-                            border: 1px solid #222;
-                            padding: 8px 4px;
-                            text-align: center;
-                            vertical-align: middle;
-                        ">
+                <td style="
+                border: 1px solid #222;
+                padding: 4px 2px;
+                text-align: center;
+                vertical-align: middle;
+                overflow-wrap: anywhere;
+                word-break: break-word;
+            ">
                     {{ $record->tat ?? '—' }}
                 </td>
 
-
-                {{-- Decision --}}
-                <td
-                    style="
-                            border: 1px solid #222;
-                            padding: 8px 4px;
-                            text-align: center;
-                            vertical-align: middle;
-                        ">
+                <td style="
+                border: 1px solid #222;
+                padding: 4px 2px;
+                text-align: center;
+                vertical-align: middle;
+                overflow-wrap: anywhere;
+                word-break: break-word;
+            ">
                     {{ $record->decision_name ?? '—' }}
                 </td>
 
-
-                {{-- Category --}}
-                <td
-                    style="
-                            border: 1px solid #222;
-                            padding: 8px 4px;
-                            text-align: center;
-                            vertical-align: middle;
-                        ">
+                <td style="
+                border: 1px solid #222;
+                padding: 4px 2px;
+                text-align: center;
+                vertical-align: middle;
+                overflow-wrap: anywhere;
+                word-break: break-word;
+            ">
                     {{ $record->category_name ?? '—' }}
                 </td>
 
-                {{-- offense --}}
-                <td
-                    style="
-                            border: 1px solid #222;
-                            padding: 8px 4px;
-                            text-align: center;
-                            vertical-align: middle;
-                        ">
+                <td style="
+                border: 1px solid #222;
+                padding: 4px 2px;
+                text-align: center;
+                vertical-align: middle;
+                overflow-wrap: anywhere;
+                word-break: break-word;
+            ">
                     {{ $record->offense_name ?? '—' }}
                 </td>
 
-
-                {{-- SOLUTION NAME --}}
-                <td
-                    style="
-                            border: 1px solid #222;
-                            padding: 8px 4px;
-                            text-align: center;
-                            vertical-align: middle;
-                        ">
+                <td style="
+                border: 1px solid #222;
+                padding: 4px 2px;
+                text-align: center;
+                vertical-align: middle;
+                overflow-wrap: anywhere;
+                word-break: break-word;
+            ">
                     {{ $record->status_name ?? '—' }}
                 </td>
 
@@ -376,10 +437,10 @@
                 <td
                     colspan="15"
                     style="
-                            border: 1px solid #222;
-                            padding: 15px;
-                            text-align: center;
-                        ">
+                    border: 1px solid #222;
+                    padding: 15px;
+                    text-align: center;
+                ">
                     No CPAR records found.
                 </td>
             </tr>
@@ -387,7 +448,6 @@
             @endforelse
 
         </tbody>
-
     </table>
 
 </div>

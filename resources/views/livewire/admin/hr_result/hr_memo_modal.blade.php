@@ -11,7 +11,7 @@
                 </flux:heading>
 
                 <flux:text class="mt-1">
-                    Review the RESULT details and HR decision before issuing the employee memo.
+                    Review the Result details and HR decision before issuing the employee memo.
                 </flux:text>
             </div>
 
@@ -761,20 +761,15 @@
 
                         {{-- FROM --}}
                         <div class="mt-4 flex items-center">
-
                             <div class="w-28 shrink-0 font-semibold">
                                 From:
                             </div>
-
                             <div class="flex-1">
-
                                 <flux:input
                                     wire:model="from"
                                     readonly
                                     class="cursor-not-allowed bg-zinc-100 dark:bg-zinc-800" />
-
                             </div>
-
                         </div>
 
                         {{-- RE --}}
@@ -794,10 +789,9 @@
                             </div>
 
                         </div>
-
                         {{-- MEMO CONTENT --}}
                         <div class="mt-6">
-
+                            <div class="memo-content-separator"></div>
                             <flux:textarea
                                 id="memo_content"
                                 label="Memo Content"
@@ -805,20 +799,19 @@
                                 rows="18"
                                 class="uppercase"
                                 placeholder="Enter memo content..." />
-
                         </div>
 
                         {{-- SIGNATORY --}}
                         <div class="mt-6">
-
                             <div class="mb-2 text-sm font-semibold">
                                 Signatory
                             </div>
-
-                            <flux:input
-                                wire:model="signatory"
-                                readonly
-                                class="cursor-not-allowed bg-zinc-100 dark:bg-zinc-800" />
+                            <div class="w-80 border-b border-zinc-900 pb-1 dark:border-zinc-100">
+                                {{ $signatory }}
+                            </div>
+                            <div class="text-sm text-zinc-600 dark:text-zinc-400">
+                                {{ $signatory_position }}
+                            </div>
 
                         </div>
 
@@ -908,10 +901,6 @@
                             line-height: 1.25 !important;
                         }
 
-                        /* =========================
-           LOGO
-           ========================= */
-
                         .memo-logo-result {
                             display: block !important;
                             width: 100% !important;
@@ -931,10 +920,6 @@
                             object-fit: contain !important;
                             vertical-align: top !important;
                         }
-
-                        /* =========================
-           MEMO FIELDS
-           ========================= */
 
                         .memo-field {
                             display: grid !important;
@@ -996,10 +981,6 @@
                             overflow-wrap: break-word !important;
                         }
 
-                        /* =========================
-           MEMO CONTENT
-           ========================= */
-
                         .memo-content {
                             display: block !important;
 
@@ -1043,10 +1024,6 @@
                             overflow-wrap: break-word !important;
                         }
 
-                        /* =========================
-           SIGNATORY
-           ========================= */
-
                         .memo-signatory {
                             display: block !important;
 
@@ -1066,10 +1043,6 @@
                         .memo-signatory .memo-input {
                             width: 100% !important;
                         }
-
-                        /* =========================
-           CONFORME
-           ========================= */
 
                         .memo-conforme {
                             display: block !important;
@@ -1124,10 +1097,6 @@
                             color: black !important;
                         }
 
-                        /* =========================
-           PAGE BREAK CONTROL
-           ========================= */
-
                         .memo-logo-result,
                         .memo-field,
                         .memo-content,
@@ -1137,16 +1106,32 @@
                             page-break-inside: avoid !important;
                         }
 
-                        /* =========================
-           FORCE PRINT COLORS
-           ========================= */
-
                         .memo-print-wrapper,
                         .memo-print-wrapper * {
                             color: black !important;
                             background: white !important;
-
                             box-sizing: border-box !important;
+                        }
+
+                        .memo-content-separator {
+                            display: block !important;
+                            width: 100% !important;
+                            margin: 0 !important;
+                            padding: 0 !important;
+                            border-bottom: 1px solid black !important;
+                            height: 1px !important;
+                        }
+
+                        .memo-content-separator {
+                            display: block !important;
+
+                            width: 120% !important;
+                            height: 1px !important;
+
+                            margin: 8px 0 12px 0 !important;
+                            padding: 0 !important;
+
+                            border-top: 1px solid black !important;
                         }
                     }
 
@@ -1186,8 +1171,11 @@
                             line-height: 1.3 !important;
                         }
                     }
-                </style>
 
+                    .memo-content-separator {
+                        display: none;
+                    }
+                </style>
 
                 {{-- MEMO ATTACHMENT --}}
                 <div
@@ -1201,7 +1189,6 @@
 
                     {{-- CURRENT ATTACHMENT --}}
                     @if ($current_memo_attachment)
-
                     <div class="mb-4 flex items-center justify-between rounded-lg
                         border border-zinc-200 bg-zinc-50 px-4 py-3
                         dark:border-zinc-700 dark:bg-zinc-800">
@@ -1239,9 +1226,7 @@
                         </flux:button>
 
                     </div>
-
                     @endif
-
 
                     {{-- UPLOAD --}}
                     <flux:input
@@ -1336,7 +1321,7 @@
                     class="mx-auto h-auto">
             </div>
 
-            <!-- <div class="memo-field">
+            <div class="memo-field">
                 <div class="memo-label">
                     SUBJECT:
                 </div>
@@ -1344,7 +1329,7 @@
                 <div class="memo-input">
                     {{ strtoupper($memo_subject ?? '') }}
                 </div>
-            </div> -->
+            </div>
 
             <div class="memo-field">
                 <div class="memo-label">
@@ -1386,22 +1371,22 @@
                 </div>
             </div>
 
+            <div class="memo-content-separator"></div>
+
             <div class="memo-content">
-
                 <div class="memo-text-field1">{{ strtoupper($memo_content ?? '') }}</div>
-
             </div>
 
             <div class="memo-signatory">
-
                 <div class="memo-label">
                     SIGNATORY:
                 </div>
-
-                <div class="memo-input">
+                <div class="memo-signature">
                     {{ $signatory ?? '' }}
                 </div>
-
+                <div class="memo-input">
+                    {{ $signatory_position ?? '' }}
+                </div>
             </div>
 
             <div class="memo-conforme">

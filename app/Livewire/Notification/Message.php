@@ -30,6 +30,7 @@ class Message extends Component
     public int $memo_count = 0;
     public int $lab_request_count = 0;
     public int $concern_count = 0;
+    public int $lab_reported_count = 0;
 
     protected $listeners = [
         'refreshNotificationCount' => 'loadNotifications',
@@ -201,9 +202,22 @@ class Message extends Component
                 ->where('b.record_type', 10)
                 ->count();
 
-            $this->lab_request_count =
-                $labCparCount +
-                $labResultCount;
+            $reportlabCparCount = DB::table('cpar_request_forms as a')
+                ->join('cpar_assignments as b', 'a.id', '=', 'b.cpar_id')
+                ->join('cpar_statuses as h', 'b.status_id', '=', 'h.id')
+                ->where('h.id', 35)
+                ->where('b.record_type', 5)
+                ->count();
+
+            $reportlabResultCount = DB::table('result_error_forms as a')
+                ->join('cpar_assignments as b', 'a.id', '=', 'b.result_id')
+                ->join('cpar_statuses as h', 'b.status_id', '=', 'h.id')
+                ->where('h.id', 35)
+                ->where('b.record_type', 10)
+                ->count();
+
+            $this->lab_request_count = $labCparCount + $labResultCount;
+            $this->lab_reported_count = $reportlabCparCount + $reportlabResultCount;
 
             $this->concern_count =
                 $this->request_count +
@@ -216,7 +230,8 @@ class Message extends Component
                 $this->acknowledged_cpar +
                 $this->hr_decision_count +
                 $this->memo_count +
-                $this->lab_request_count;
+                $this->lab_request_count +
+                $this->lab_reported_count;
         }
     }
 

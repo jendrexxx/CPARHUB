@@ -17,6 +17,7 @@ class CparReports extends Component
     public $departmentFilter = 'ALL';
     public $statusFilter = 'ALL';
     public $categoryFilter = 'ALL';
+    public $recordFilter = 'ALL';
     public $dateFrom = '';
     public $dateTo = '';
     public $perPage = 10;
@@ -31,6 +32,7 @@ class CparReports extends Component
             'categoryFilter',
             'dateFrom',
             'dateTo',
+            'recordFilter'
         ])) {
             $this->resetPage();
         }
@@ -39,14 +41,13 @@ class CparReports extends Component
     public function clearFilters()
     {
         $this->search = '';
-
         $this->branchFilter = 'ALL';
         $this->departmentFilter = 'ALL';
         $this->statusFilter = 'ALL';
         $this->categoryFilter = 'ALL';
         $this->dateFrom = '';
         $this->dateTo = '';
-
+        $this->recordFilter = 'ALL';
         $this->resetPage();
     }
 
@@ -65,6 +66,7 @@ class CparReports extends Component
             || $this->departmentFilter !== 'ALL'
             || $this->statusFilter !== 'ALL'
             || $this->categoryFilter !== 'ALL'
+            || $this->recordFilter !== 'ALL'
             || !empty($this->dateFrom)
             || !empty($this->dateTo);
 
@@ -80,7 +82,6 @@ class CparReports extends Component
         );
 
         if ($hasActiveFilters) {
-
             $cparQuery = DB::table('cpar_request_forms as a')
                 ->join('cpar_assignments as b', 'a.id', '=', 'b.cpar_id')
                 ->leftJoin('employees as c', 'b.assigned_to', '=', 'c.id')
@@ -114,7 +115,6 @@ class CparReports extends Component
                     'b.id as assignment_id',
                     'b.status_id',
                     'c.employee_no',
-
                     DB::raw("
                     NULLIF(
                         TRIM(
@@ -127,7 +127,6 @@ class CparReports extends Component
                         ''
                     ) AS employee_name
                 "),
-
                     'c.department_name',
                     'e.status_name',
                     'h.branch_name',
@@ -135,7 +134,6 @@ class CparReports extends Component
                     'a.department_id',
                     'f.incident_date',
                     'f.valid_until',
-
                     DB::raw("
                     GROUP_CONCAT(
                         DISTINCT g.decision_name
@@ -143,7 +141,6 @@ class CparReports extends Component
                         SEPARATOR ', '
                     ) AS decision_name
                 "),
-
                     DB::raw("
                     NULLIF(
                         TRIM(
@@ -156,7 +153,6 @@ class CparReports extends Component
                         ''
                     ) AS dept_head_name
                 "),
-
                     DB::raw("'CPAR' AS record_type"),
                     'i.memo_attachment',
                 ])
@@ -171,10 +167,10 @@ class CparReports extends Component
                     'c.first_name',
                     'c.last_name',
                     'c.department_name',
-                    'c.branch_id',
-                    'a.department_id',
                     'e.status_name',
                     'h.branch_name',
+                    'c.branch_id',
+                    'a.department_id',
                     'f.incident_date',
                     'f.valid_until',
                     'i.memo_attachment',
@@ -183,12 +179,7 @@ class CparReports extends Component
                 ]);
 
             $resultQuery = DB::table('result_error_forms as a')
-                ->join(
-                    'cpar_assignments as b',
-                    'a.id',
-                    '=',
-                    'b.result_id'
-                )
+                ->join('cpar_assignments as b', 'a.id', '=', 'b.result_id')
                 ->leftJoin('employees as c', 'b.assigned_to', '=', 'c.id')
                 ->leftJoin('departments as d', 'a.department_id', '=', 'd.id')
                 ->leftJoin('cpar_statuses as e', 'b.status_id', '=', 'e.id')
@@ -220,7 +211,6 @@ class CparReports extends Component
                     'b.id as assignment_id',
                     'b.status_id',
                     'c.employee_no',
-
                     DB::raw("
                     NULLIF(
                         TRIM(
@@ -247,9 +237,6 @@ class CparReports extends Component
                         SEPARATOR ', '
                     ) AS decision_name
                 "),
-
-                    // IMPORTANT:
-                    // Same column position as $cparQuery
                     DB::raw("
                     NULLIF(
                         TRIM(
@@ -262,11 +249,7 @@ class CparReports extends Component
                         ''
                     ) AS dept_head_name
                 "),
-
-                    // Same column position as $cparQuery
                     DB::raw("'RESULT' AS record_type"),
-
-                    // Same column position as $cparQuery
                     'i.memo_attachment',
                 ])
                 ->groupBy([
@@ -280,16 +263,30 @@ class CparReports extends Component
                     'c.first_name',
                     'c.last_name',
                     'c.department_name',
-                    'c.branch_id',
-                    'a.department_id',
                     'e.status_name',
                     'h.branch_name',
+                    'c.branch_id',
+                    'a.department_id',
                     'f.incident_date',
                     'f.valid_until',
                     'i.memo_attachment',
                     'j.first_name',
                     'j.last_name',
                 ]);
+
+            $cparQuery->when(
+                $this->recordFilter !== 'ALL',
+                function ($query) {
+                    $query->where('b.record_type', $this->recordFilter);
+                }
+            );
+
+            $resultQuery->when(
+                $this->recordFilter !== 'ALL',
+                function ($query) {
+                    $query->where('b.record_type', $this->recordFilter);
+                }
+            );
 
             $query = DB::query()
                 ->fromSub(
@@ -340,15 +337,12 @@ class CparReports extends Component
             $query->when(
                 $this->statusFilter !== 'ALL',
                 function ($query) {
-
                     if ((int) $this->statusFilter === 1) {
-
                         $query->where(function ($q) {
                             $q->where('status_id', '!=', 50)
                                 ->orWhereNull('status_id');
                         });
                     } else {
-
                         $query->where(
                             'status_id',
                             $this->statusFilter
@@ -360,7 +354,6 @@ class CparReports extends Component
             $query->when(
                 $this->categoryFilter !== 'ALL',
                 function ($query) {
-
                     $decisionName = DB::table('cpar_decision_categories')
                         ->where(
                             'id',
@@ -369,7 +362,6 @@ class CparReports extends Component
                         ->value('decision_name');
 
                     if ($decisionName) {
-
                         $query->whereRaw(
                             "FIND_IN_SET(?, decision_name)",
                             [$decisionName]
@@ -418,6 +410,10 @@ class CparReports extends Component
             ->orderBy('id')
             ->get();
 
+        $record = DB::table('record_types')
+            ->orderByDesc('id')
+            ->get();
+
         $decisions = DB::table('cpar_decision_categories')
             ->orderBy('id', 'asc')
             ->get();
@@ -431,6 +427,7 @@ class CparReports extends Component
                 'statuses' => $statuses,
                 'decisions' => $decisions,
                 'hasActiveFilters' => $hasActiveFilters,
+                'record' => $record,
             ]
         );
     }

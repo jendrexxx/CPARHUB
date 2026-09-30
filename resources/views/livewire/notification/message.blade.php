@@ -229,6 +229,46 @@
 
         @endif
 
+        @if ($lab_reported_count > 0)
+
+        <div class="notification-container">
+
+            <div class="notification-toast"
+                aria-label="">
+
+                <div class="notification-content">
+
+                    {{-- Icon --}}
+                    <div class="notification-icon">
+                        <flux:icon.bell class="h-5 w-5" />
+                    </div>
+
+                    {{-- Text --}}
+                    <div class="notification-text">
+
+                        <div class="notification-title">
+                            Reported Concern Notification
+                        </div>
+
+                        <div class="notification-message">
+
+                            <div>
+                                {{ $lab_reported_count }}
+                                laboratory request{{ $lab_reported_count > 1 ? 's' : '' }}
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        @endif
+
     </div>
 
     <style>

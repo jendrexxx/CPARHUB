@@ -5,6 +5,7 @@ namespace App\Livewire\System\Modal;
 use App\Livewire\System\Branches;
 use App\Models\branch;
 use App\Models\department;
+use App\Models\employee;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Livewire\Component;
@@ -25,7 +26,7 @@ class CreateUser extends Component
     public $department_name = '';
     public $branch_name = '';
     public $role = '';
-    public $status = 'Active';
+    public string $status = 'Active';
     public $userId = '';
     public $department_list = [];
     public $branch_list = [];
@@ -66,6 +67,62 @@ class CreateUser extends Component
         }
 
         return $rules;
+    }
+
+    public function updatedEmployeeNo($value)
+    {
+        $value = trim($value);
+
+        if ($value === '') {
+            $this->resetEmployeeFields();
+
+            return;
+        }
+
+        $employee = employee::query()
+            ->leftJoin('branches', 'employees.branch_id', '=', 'branches.id')
+            ->where('employees.employee_no', $value)
+            ->select(
+                'employees.*',
+                'branches.branch_name'
+            )
+            ->first();
+
+        if (!$employee) {
+            $this->resetEmployeeFields();
+
+            return;
+        }
+
+        $firstName = trim($employee->first_name ?? '');
+        $lastName = trim($employee->last_name ?? '');
+
+        // Full Name
+        $this->name = trim($firstName . ' ' . $lastName);
+
+        // Email
+        $this->email = $employee->email ?? '';
+
+        // Username = first 3 letters of first name + first 3 letters of last name
+        $this->username = strtoupper(
+            substr($firstName, 0, 3) .
+                substr($lastName, 0, 3)
+        );
+
+        // Department
+        $this->department_name = $employee->department_name ?? '';
+
+        // Branch
+        $this->branch_name = $employee->branch_name ?? '';
+    }
+
+    private function resetEmployeeFields()
+    {
+        $this->name = '';
+        $this->email = '';
+        $this->username = '';
+        $this->department_name = '';
+        $this->branch_name = '';
     }
 
     protected function messages()
@@ -126,7 +183,6 @@ class CreateUser extends Component
         $this->name = $user->name;
         $this->email = $user->email;
         $this->username = $user->username;
-        $this->status = $user->status;
         $this->department_name = $user->department_name;
         $this->branch_name = $user->branch_name;
         $this->role = $user->role_name ?? '';
@@ -159,17 +215,10 @@ class CreateUser extends Component
 
     public function save()
     {
-        $this->validate();
-
         if ($this->user_id) {
-
-            // ==========================================
-            // UPDATE USER
-            // ==========================================
 
             $user = User::findOrFail($this->user_id);
 
-            // Keep old email before updating user
             $oldEmail = $user->email;
 
             $data = [
@@ -186,35 +235,23 @@ class CreateUser extends Component
 
             $user->update($data);
 
-
-            // ==========================================
-            // UPDATE EMPLOYEE
-            // ==========================================
-
             DB::table('employees')
                 ->where('email', $oldEmail)
                 ->update([
                     'email'            => $this->email,
                     'employee_no'      => $this->employee_no,
-                    'department_name' => $this->department_name,
+                    'department_name'  => $this->department_name,
                     'branch_name'      => $this->branch_name,
                 ]);
-
-
-            // ==========================================
-            // UPDATE ROLE
-            // ==========================================
 
             if ($this->role) {
                 $user->syncRoles([$this->role]);
             }
 
-
-            // ==========================================
-            // CLOSE + REFRESH
-            // ==========================================
-
-            $this->dispatch('modal-close', name: 'user-create');
+            $this->dispatch(
+                'modal-close',
+                name: 'user-create'
+            );
 
             $this->dispatch('refreshUsers');
 
@@ -225,10 +262,6 @@ class CreateUser extends Component
             );
         } else {
 
-            // ==========================================
-            // CREATE USER
-            // ==========================================
-
             $user = User::create([
                 'name'     => $this->name,
                 'email'    => $this->email,
@@ -237,34 +270,21 @@ class CreateUser extends Component
                 'status'   => $this->status,
             ]);
 
-
-            // ==========================================
-            // CREATE EMPLOYEE
-            // ==========================================
-
             DB::table('employees')->insert([
-                'employee_no'      => $this->employee_no,
-                'name'             => $this->name,
-                'email'            => $this->email,
-                'department_name'  => $this->department_name,
-                'branch_name'      => $this->branch_name,
+                'employee_no'     => $this->employee_no,
+                'email'           => $this->email,
+                'department_name' => $this->department_name,
+                'branch_name'     => $this->branch_name,
             ]);
-
-
-            // ==========================================
-            // ASSIGN ROLE
-            // ==========================================
 
             if ($this->role) {
                 $user->assignRole($this->role);
             }
 
-
-            // ==========================================
-            // CLOSE + REFRESH
-            // ==========================================
-
-            $this->dispatch('modal-close', name: 'user-create');
+            $this->dispatch(
+                'modal-close',
+                name: 'user-create'
+            );
 
             $this->dispatch('refreshUsers');
 

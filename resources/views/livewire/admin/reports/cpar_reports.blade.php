@@ -8,13 +8,19 @@
         <p class="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
             View and analyze Corrective & Preventive Action Reports.
         </p>
+        <p class="mt-2 text-sm font-medium text-red-600 dark:text-red-400">
+            <span class="text-red-500">*</span>
+            Record Type is required before exporting the report.
+        </p>
     </div>
+
     {{-- FILTER CARD --}}
     <div class="rounded-xl border border-zinc-200 bg-white p-4 sm:p-5 dark:border-zinc-700 dark:bg-zinc-900">
-        {{-- FILTER GRID --}}
+        {{-- FIRST ROW --}}
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+
             {{-- SEARCH --}}
-            <div class="sm:col-span-2 lg:col-span-2">
+            <div class="sm:col-span-2">
                 <flux:input
                     wire:model.live.debounce.300ms="search"
                     icon="magnifying-glass"
@@ -23,129 +29,122 @@
             </div>
 
             {{-- BRANCH --}}
-            <div class="sm:col-span-1">
-
+            <div>
                 <flux:select
                     wire:model.live="branchFilter"
                     label="Branch">
-
                     <flux:select.option value="ALL">
                         All Branches
                     </flux:select.option>
 
                     @foreach ($branches as $branch)
-
                     <flux:select.option value="{{ $branch->id }}">
                         {{ $branch->branch_name }}
                     </flux:select.option>
-
                     @endforeach
-
                 </flux:select>
-
             </div>
 
-
             {{-- DEPARTMENT --}}
-            <div class="sm:col-span-1">
-
+            <div>
                 <flux:select
                     wire:model.live="departmentFilter"
                     label="Department">
-
                     <flux:select.option value="ALL">
                         All Departments
                     </flux:select.option>
 
                     @foreach ($departments as $department)
-
                     <flux:select.option value="{{ $department->id }}">
                         {{ $department->department_name }}
                     </flux:select.option>
-
                     @endforeach
-
                 </flux:select>
-
-            </div>
-
-
-            {{-- STATUS --}}
-            <div class="sm:col-span-1">
-
-                <flux:select
-                    wire:model.live="statusFilter"
-                    label="Status">
-
-                    <flux:select.option selected disabled value="ALL">
-
-                    </flux:select.option>
-
-                    @foreach ($statuses as $status)
-
-                    <flux:select.option value="{{ $status->id }}">
-                        {{ $status->status_name }}
-                    </flux:select.option>
-
-                    @endforeach
-
-                </flux:select>
-
-            </div>
-
-            {{-- DECISION --}}
-            <div class="sm:col-span-1">
-
-                <flux:select
-                    wire:model.live="categoryFilter"
-                    label="Decision">
-
-                    <flux:select.option value="ALL">
-                        All Decisions
-                    </flux:select.option>
-
-                    @foreach ($decisions as $decision)
-
-                    <flux:select.option value="{{ $decision->id }}">
-                        {{ $decision->decision_name }}
-                    </flux:select.option>
-
-                    @endforeach
-
-                </flux:select>
-
-            </div>
-
-
-            {{-- DATE FROM --}}
-            <div class="sm:col-span-1">
-
-                <flux:input
-                    type="date"
-                    wire:model.live="dateFrom"
-                    label="Date From" />
-
-            </div>
-
-
-            {{-- DATE TO --}}
-            <div class="sm:col-span-1">
-
-                <flux:input
-                    type="date"
-                    wire:model.live="dateTo"
-                    label="Date To" />
-
             </div>
 
         </div>
 
 
-        {{-- ACTIONS --}}
-        @if ($search || $branchFilter !== 'ALL' || $departmentFilter !== 'ALL' || $statusFilter !== 'ALL' || $categoryFilter !== 'ALL' || $dateFrom || $dateTo)
-        <div class="mt-5 flex flex-col gap-3 border-t border-zinc-200 pt-4 dark:border-zinc-700 sm:flex-row sm:items-center sm:justify-between">
+        {{-- SECOND ROW --}}
+        <div class="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-5">
 
-            {{-- ACTIVE FILTER MESSAGE --}}
+            {{-- STATUS --}}
+            <div>
+                <flux:select
+                    wire:model.live="statusFilter"
+                    label="Status">
+                    <flux:select.option value="ALL">
+                        All Status
+                    </flux:select.option>
+
+                    @foreach ($statuses as $status)
+                    <flux:select.option value="{{ $status->id }}">
+                        {{ $status->status_name }}
+                    </flux:select.option>
+                    @endforeach
+                </flux:select>
+            </div>
+
+            {{-- RECORD FILTER --}}
+            <div>
+                <flux:select
+                    wire:model.live="recordFilter"
+                    label="Record Type">
+                    <flux:select.option value="ALL">
+                        Record Type
+                    </flux:select.option>
+
+                    @foreach ($record as $rec)
+                    <flux:select.option value="{{ $rec->id }}">
+                        {{ $rec->record_name }}
+                    </flux:select.option>
+                    @endforeach
+                </flux:select>
+            </div>
+
+            {{-- DECISION --}}
+            <div>
+                <flux:select
+                    wire:model.live="categoryFilter"
+                    label="Decision">
+                    <flux:select.option value="ALL">
+                        All Decisions
+                    </flux:select.option>
+
+                    @foreach ($decisions as $decision)
+                    <flux:select.option value="{{ $decision->id }}">
+                        {{ $decision->decision_name }}
+                    </flux:select.option>
+                    @endforeach
+                </flux:select>
+            </div>
+
+            {{-- DATE FROM --}}
+            <div>
+                <flux:input
+                    type="date"
+                    wire:model.live="dateFrom"
+                    label="Date From" />
+            </div>
+
+            {{-- DATE TO --}}
+            <div>
+                <flux:input
+                    type="date"
+                    wire:model.live="dateTo"
+                    label="Date To" />
+            </div>
+
+            {{-- FIFTH FILTER --}}
+            <div>
+                {{-- Add your fifth filter here --}}
+            </div>
+
+        </div>
+
+        {{-- ACTIONS --}}
+        @if ($search || $branchFilter !== 'ALL' || $departmentFilter !== 'ALL' || $statusFilter !== 'ALL' || $categoryFilter !== 'ALL' || $dateFrom || $dateTo || $recordFilter !== 'ALL')
+        <div class="mt-5 flex flex-col gap-3 border-t border-zinc-200 pt-4 dark:border-zinc-700 sm:flex-row sm:items-center sm:justify-between">
             <span
                 class="
                     text-sm
@@ -154,8 +153,6 @@
                 ">
                 Filters are currently applied.
             </span>
-
-            {{-- CLEAR FILTERS --}}
             <flux:button
                 type="button"
                 variant="ghost"
@@ -163,14 +160,12 @@
                 wire:click="clearFilters">
                 Clear Filters
             </flux:button>
-
         </div>
         @endif
 
     </div>
     @if ($hasActiveFilters)
     <div class="mb-4 flex justify-end gap-2">
-
         <a
             href="{{ route('pdf', [
             'search' => $search,
@@ -179,8 +174,8 @@
             'status_id' => $statusFilter,
             'category_id' => $categoryFilter,
             'date_from' => $dateFrom,
-            'date_to' => $dateTo,
-        ]) }}"
+            'type_id'  => $recordFilter,
+            'date_to' => $dateTo,]) }}"
             target="_blank"
             class="inline-flex items-center gap-2 rounded-lg bg-red-700 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-red-800 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
             <svg
@@ -199,7 +194,6 @@
                     stroke-linejoin="round"
                     d="M9 12.75h6m-6 3h6" />
             </svg>
-
             Export PDF
         </a>
 
@@ -211,8 +205,8 @@
             'status_id' => $statusFilter,
             'category_id' => $categoryFilter,
             'date_from' => $dateFrom,
-            'date_to' => $dateTo,
-        ]) }}"
+            'type_id'  => $recordFilter,
+            'date_to' => $dateTo,]) }}"
             class="inline-flex items-center gap-2 rounded-lg bg-green-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2">
             <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -228,7 +222,6 @@
             </svg>
             Export Excel
         </a>
-
     </div>
     @endif
 
@@ -289,10 +282,6 @@
                     <tr>
 
                         <th class="whitespace-nowrap px-4 py-3 text-center font-semibold">
-                            Type
-                        </th>
-
-                        <th class="whitespace-nowrap px-4 py-3 text-center font-semibold">
                             Request No.
                         </th>
 
@@ -341,26 +330,6 @@
                     @forelse ($cparReports as $record)
 
                     <tr class="text-center transition hover:bg-zinc-50 dark:hover:bg-zinc-800">
-
-                        {{-- TYPE --}}
-                        <td class="whitespace-nowrap px-4 py-4">
-
-                            @if ($record->record_type === 'CPAR')
-
-                            <span class="inline-flex items-center rounded-full bg-red-100 px-2.5 py-1 text-xs font-medium text-red-700 dark:bg-red-950 dark:text-red-400">
-                                CPAR
-                            </span>
-
-                            @else
-
-                            <span class="inline-flex items-center rounded-full bg-blue-100 px-2.5 py-1 text-xs font-medium text-blue-700 dark:bg-blue-950 dark:text-blue-400">
-                                RESULT
-                            </span>
-
-                            @endif
-
-                        </td>
-
 
                         {{-- REFERENCE NO --}}
                         <td class="whitespace-nowrap px-4 py-4">
@@ -418,7 +387,6 @@
 
                         </td>
 
-
                         {{-- DECISION --}}
                         <td class="px-4 py-4">
 
@@ -445,7 +413,6 @@
                             </div>
 
                         </td>
-
 
                         {{-- VALID UNTIL --}}
                         <td class="whitespace-nowrap px-4 py-4">

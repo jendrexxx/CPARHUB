@@ -15,7 +15,7 @@
             <div class="grid grid-cols-2 gap-4 mt-6">
                 <flux:input
                     label="Employee No"
-                    wire:model="employee_no" />
+                    wire:model.live="employee_no" />
 
                 <flux:input
                     label="Full Name"
@@ -28,7 +28,7 @@
 
                 <flux:input
                     label="Username"
-                    wire:model="username" />
+                    wire:model="username" class="uppercase" />
 
                 @if(!$user_id)
 
@@ -102,10 +102,13 @@
 
                 <flux:select
                     label="Status"
-                    wire:model="status">
-                    <option value="Active">Active</option>
-                    <option value="Inactive">Inactive</option>
-
+                    wire:model.live="status">
+                    <flux:select.option value="Active">
+                        Active
+                    </flux:select.option>
+                    <flux:select.option value="Inactive">
+                        Inactive
+                    </flux:select.option>
                 </flux:select>
 
             </div>

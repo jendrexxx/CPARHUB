@@ -517,21 +517,18 @@
 
                         </div>
 
-
                         {{-- SIGNATORY --}}
                         <div class="mt-6">
-
                             <div class="mb-2 text-sm font-semibold">
-                                SIGNATORY
+                                Signatory
                             </div>
-
-                            <flux:input
-                                wire:model="signatory"
-                                readonly
-                                class="opacity-60 cursor-not-allowed bg-zinc-100 dark:bg-zinc-800" />
-
+                            <div class="w-80 border-b border-zinc-900 pb-1 dark:border-zinc-100">
+                                {{ $signatory }}
+                            </div>
+                            <div class="text-sm text-zinc-600 dark:text-zinc-400">
+                                {{ $signatory_position }}
+                            </div>
                         </div>
-
 
                         {{-- CONFORME --}}
                         <div class="mt-8">
@@ -843,6 +840,43 @@
                             background: #fff !important;
                             box-sizing: border-box !important;
                         }
+
+                        .memo-content-separator2 {
+                            display: block !important;
+                            width: 100% !important;
+                            margin: 0 !important;
+                            padding: 0 !important;
+                            border-bottom: 1px solid black !important;
+                            height: 1px !important;
+                        }
+
+                        .memo-content-separator2 {
+                            display: block !important;
+
+                            width: 120% !important;
+                            height: 1px !important;
+
+                            margin: 8px 0 12px 0 !important;
+                            padding: 0 !important;
+
+                            border-top: 1px solid black !important;
+                        }
+
+                        body.hr-memo-printing .memo-signature {
+                            display: block !important;
+                            width: 245px !important;
+                            margin: 0 !important;
+                            padding: 0 0 2px 0 !important;
+
+                            border-bottom: 1px solid #000 !important;
+
+                            font-weight: 700 !important;
+                            font-size: 10pt !important;
+                            line-height: 1.2 !important;
+
+                            color: #000 !important;
+                            text-align: left !important;
+                        }
                     }
 
                     .memo-text-field {
@@ -880,6 +914,10 @@
 
                             line-height: 1.3 !important;
                         }
+                    }
+
+                    .memo-content-separator2 {
+                        display: none;
                     }
                 </style>
 
@@ -1029,7 +1067,7 @@
             </div>
 
             {{-- SUBJECT --}}
-            <!-- <div class="memo-field">
+            <div class="memo-field">
                 <div class="memo-label">
                     SUBJECT:
                 </div>
@@ -1037,8 +1075,7 @@
                 <div class="memo-input">
                     {{ strtoupper($memo_subject ?? '') }}
                 </div>
-            </div> -->
-
+            </div>
 
             {{-- DATE --}}
             <div class="memo-field">
@@ -1087,6 +1124,7 @@
                 </div>
             </div>
 
+            <div class="memo-content-separator2"></div>
 
             {{-- MEMO CONTENT --}}
             <div class="memo-content">
@@ -1096,17 +1134,16 @@
 
             {{-- SIGNATORY --}}
             <div class="memo-signatory">
-
                 <div class="memo-label">
                     SIGNATORY:
                 </div>
-
-                <div class="memo-input">
+                <div class="memo-signature">
                     {{ $signatory ?? '' }}
                 </div>
-
+                <div class="memo-input">
+                    {{ $signatory_position ?? '' }}
+                </div>
             </div>
-
 
             {{-- CONFORME --}}
             <div class="memo-conforme">
@@ -1132,16 +1169,12 @@
     <script>
         function HRprintMemo(memoId) {
             const memo = document.getElementById('memo-print-test-' + memoId);
-
             if (!memo) {
                 console.error('Memo print element not found:', memoId);
                 return;
             }
-
             document.body.classList.add('hr-memo-printing');
-
             window.print();
-
             setTimeout(() => {
                 document.body.classList.remove('hr-memo-printing');
             }, 500);

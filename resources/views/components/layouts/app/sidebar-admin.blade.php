@@ -135,44 +135,47 @@
                                 </a>
                                 @endif
 
-                                @if(auth()->user()->can('View CPAR Master File'))
-                                <a
-                                    href="{{ route('cpar-master-file') }}"
-                                    wire:navigate
-                                    class="rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200
-                                    {{ request()->routeIs('cpar-master-file')
-                                        ? 'bg-gray-900 text-white'
-                                        : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900' }}">
+                                @if(auth()->user()->can('View CPAR Master File') || auth()->user()->can('View CPAR Reports'))
+                                <flux:dropdown position="bottom" align="start">
 
-                                    <span class="inline-flex items-center gap-2">
+                                    <flux:button
+                                        variant="ghost"
+                                        class="rounded-lg px-3 py-2 text-sm font-medium
+                                        {{ request()->routeIs('cpar-master-file', 'cpar-report')
+                                            ? 'bg-gray-900 text-white'
+                                            : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900' }}">
+                                        <span class="inline-flex items-center gap-2">
+                                            <flux:icon.chart-bar class="size-4" />
 
-                                        <flux:icon.document-text class="size-4" />
+                                            <span>Reports</span>
 
-                                        Master File
+                                            <flux:icon.chevron-down class="size-3.5" />
+                                        </span>
+                                    </flux:button>
 
-                                    </span>
+                                    <flux:menu class="min-w-56">
 
-                                </a>
-                                @endif
+                                        @if(auth()->user()->can('View CPAR Master File'))
+                                        <flux:menu.item
+                                            href="{{ route('cpar-master-file') }}"
+                                            wire:navigate
+                                            icon="document-text">
+                                            Master File
+                                        </flux:menu.item>
+                                        @endif
 
-                                @if(auth()->user()->can('View CPAR Reports'))
-                                <a
-                                    href="{{ route('cpar-report') }}"
-                                    wire:navigate
-                                    class="rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200
-                                    {{ request()->routeIs('cpar-report')
-                                        ? 'bg-gray-900 text-white'
-                                        : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900' }}">
+                                        @if(auth()->user()->can('View CPAR Reports'))
+                                        <flux:menu.item
+                                            href="{{ route('cpar-report') }}"
+                                            wire:navigate
+                                            icon="chart-bar">
+                                            Result/Others Reports
+                                        </flux:menu.item>
+                                        @endif
 
-                                    <span class="inline-flex items-center gap-2">
+                                    </flux:menu>
 
-                                        <flux:icon.chart-bar class="size-4" />
-
-                                        Reports
-
-                                    </span>
-
-                                </a>
+                                </flux:dropdown>
                                 @endif
 
                                 @if(auth()->user()->can('View Employees'))
@@ -410,7 +413,6 @@
 
                     @endif
 
-
                     {{-- DEPARTMENT HEAD --}}
                     @if(auth()->user()->can('View Department Dashboard'))
 
@@ -484,11 +486,7 @@
 
 
                     {{-- REPORTS --}}
-                    @if(
-                    auth()->user()->can('View CPAR Reports') ||
-                    auth()->user()->can('View CPAR Master File')
-                    )
-
+                    @if(auth()->user()->can('View CPAR Reports') || auth()->user()->can('View CPAR Master File'))
                     <div class="pt-2">
 
                         <div class="px-3 py-2 text-xs font-semibold uppercase tracking-wider text-gray-500">
@@ -532,9 +530,62 @@
                         @endif
 
                     </div>
-
                     @endif
 
+                    <div
+                        x-data="{ open: false }"
+                        class="relative">
+                        <button
+                            type="button"
+                            @click="open = !open"
+                            class="flex w-full items-center justify-between rounded-lg px-3 py-2 text-sm font-medium
+                                text-gray-700 hover:bg-gray-100">
+                            <span>Setup</span>
+
+                            <svg
+                                class="h-4 w-4 transition-transform"
+                                :class="{ 'rotate-180': open }"
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor">
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="m19 9-7 7-7-7" />
+                            </svg>
+                        </button>
+
+                        <div
+                            x-show="open"
+                            x-transition
+                            @click.outside="open = false"
+                            class="mt-1 space-y-1 pl-4">
+
+                            {{-- Result Setup --}}
+                            <a
+                                href=""
+                                wire:navigate
+                                class="block rounded-lg px-3 py-2 text-sm font-medium
+                                {{ request()->routeIs()
+                                ? 'bg-gray-900 text-white'
+                                : 'text-gray-600 hover:bg-gray-100' }}">
+                                Result Setup
+                            </a>
+
+                            {{-- Other Setup --}}
+                            <a
+                                href=""
+                                wire:navigate
+                                class="block rounded-lg px-3 py-2 text-sm font-medium
+                                {{ request()->routeIs()
+                                    ? 'bg-gray-900 text-white'
+                                    : 'text-gray-600 hover:bg-gray-100' }}">
+                                Other Setup
+                            </a>
+                        </div>
+                    </div>
 
                     {{-- EMPLOYEES --}}
                     @if(auth()->user()->can('View Employees'))
