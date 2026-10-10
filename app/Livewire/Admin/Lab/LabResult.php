@@ -29,7 +29,7 @@ class LabResult extends Component
     public $decisionCategories = [], $disciplinaryCategories = [], $offenseLevels = [];
     public $selectedCategories = [null], $selectedOffenseLevels = [''], $selectedHRDecisions = [''];
     public $isNoDisciplinaryAction = false;
-    public $nte_no = '', $hr_decision_remarks = '', $management_remarks = '';
+    public $nte_no = '', $hr_decision_remarks = '', $management_remarks = '', $employee_id = '';
 
     protected $listeners = [
         'open-result-details' => 'open',
@@ -103,6 +103,7 @@ class LabResult extends Component
                 'g.priority_name',
                 DB::raw("CONCAT(h.first_name, ' ', h.last_name) AS employee_assigned_to"),
                 'h.employee_no as employee_no_assigned',
+                'h.id as employee_id_assigned',
                 'i.identified_cause',
                 'i.provided_solution',
                 'i.recommendation',
@@ -191,6 +192,7 @@ class LabResult extends Component
         $this->tat = $result->tat;
         $this->ir_request_id = $result->ir_request_id;
         $this->management_remarks = $result->management_remarks;
+        $this->employee_id = $result->employee_id_assigned;
         // Basic information
         $this->selectedCategories = json_decode(
             $result->discipline_ids ?? '[]',
@@ -216,6 +218,7 @@ class LabResult extends Component
             'management_remarks.required' => 'Management remarks is required.',
             'management_remarks.max' => 'Management remarks must not exceed 1000 characters.',
         ]);
+
         if (!$this->id) {
             $this->dispatch(
                 'toast',
@@ -226,16 +229,7 @@ class LabResult extends Component
         }
 
         DB::transaction(function () {
-            DB::table('cpar_employee_disciplinary_records')
-                ->where('assignment_id', $this->id)
-                ->update([
-                    'management_remarks'  => $this->management_remarks,
-                    'updated_at' => now(),
-                ]);
-        });
 
-        DB::transaction(function () {
-            // OLD VALUES
             $oldRecord = DB::table('cpar_employee_disciplinary_records')
                 ->where('assignment_id', $this->id)
                 ->first();
@@ -244,43 +238,48 @@ class LabResult extends Component
                 ->where('id', $this->id)
                 ->first();
 
-            DB::table('cpar_assignments')
-                ->where('id', $this->id)
-                ->update([
-                    'status_id'  => 30,
-                    'updated_at' => now(),
-                ]);
-
             DB::table('cpar_employee_disciplinary_records')
                 ->where('assignment_id', $this->id)
                 ->update([
-                    'status'  => 'DRAFT',
+                    'management_remarks' => $this->management_remarks,
+                    'status' => 'DRAFT',
                     'updated_at' => now(),
                 ]);
 
-            // AUDIT LOG
+            DB::table('cpar_assignments')
+                ->where('id', $this->id)
+                ->update([
+                    'status_id' => 30,
+                    'updated_at' => now(),
+                ]);
+
             DB::table('audit_logs')->insert([
-                'user_reported_by'       => $this->employeeName,
-                'user_reported'     => $this->assigned_to,
+                'user_reported_by' => $this->reported_by,
+                'user_reported' => $this->assigned_to,
                 'action' => 'BACK TO HR RESULT',
                 'old_value' => json_encode([
                     'management_remarks' => $oldRecord?->management_remarks,
-                    'status_id'           => $oldAssignment?->status_id,
+                    'status_id' => $oldAssignment?->status_id,
                 ], JSON_UNESCAPED_UNICODE),
+
                 'new_value' => json_encode([
                     'management_remarks' => $this->management_remarks,
-                    'status_id'           => 30,
+                    'status_id' => 30,
                 ], JSON_UNESCAPED_UNICODE),
-                'date'       => now(),
+                'status_changed_by' => $this->user_id,
+                'date' => now(),
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
         });
-        $this->dispatch('toast', type: 'success', message: 'RESULT has been returned to HR.');
-        // Close modal
+
+        $this->dispatch(
+            'toast',
+            type: 'success',
+            message: 'RESULT has been returned to HR.'
+        );
         $this->dispatch('modal-close', name: 'LABModal');
         $this->dispatch('modal-close', name: 'LABrequest');
-        // Refresh laboratory records/count
         $this->dispatch('refreshLABRecords');
         $this->dispatch('refreshLABCount');
     }
@@ -341,7 +340,7 @@ class LabResult extends Component
             ];
 
             DB::table('audit_logs')->insert([
-                'user_reported_by'       => $this->employeeName,
+                'user_reported_by'       => $this->reported_by,
                 'user_reported'     => $this->assigned_to,
                 'action'     => 'RESULT LAB VERIFIED',
                 'old_value'  => json_encode($oldValue),

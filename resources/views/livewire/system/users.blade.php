@@ -21,7 +21,6 @@
             'username' => 'Username',
             'department_name' => 'Department',
             'branch_name' => 'Branch',
-            'status' => 'Status',
             'role' => 'Role',
             'actions' => 'Actions',
         ]"

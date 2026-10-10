@@ -9,12 +9,11 @@
         </p>
     </div>
     <livewire:common.custom-table
-        :model="'App\Models\Branch'"
+        :model="'App\Models\branch'"
         refreshEvent="refreshBranches"
         :columns="[
             'id' => 'Branch Code',
             'branch_name' => 'Branch Name',
-            'status' => 'Status',
         ]"
         :searchable="[
             'id',

@@ -13,38 +13,52 @@ class CparAssignedMail extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
 
-    public $cpar;
-    public $deptHead;
+    public $request;
+    public $recipient;
     public $prioritylevel;
     public $recordType;
+    public $branch_id;
 
-    public function __construct($cpar, $deptHead, $prioritylevel,$recordType)
-    {
-        $this->cpar = $cpar;
-        $this->deptHead = $deptHead;
+    public function __construct(
+        $request,
+        $recipient,
+        $prioritylevel,
+        $recordType,
+        $branch_id
+    ) {
+        $this->request = $request;
+        $this->recipient = $recipient;
         $this->prioritylevel = $prioritylevel;
-        $this->recordType = $recordType;
+        $this->recordType = (int) $recordType;
+        $this->branch_id = $branch_id;
     }
 
     public function envelope(): Envelope
     {
-        $type = match ((int) $this->recordType) {
-            5 => 'CPAR',
-            10 => 'RESULT',
-            default => 'CPAR / RESULT',
-        };
-        $number = match ((int) $this->recordType) {
-            5 => $this->cpar->cpar_no ?? 'N/A',
-            10 => $this->cpar->result_no ?? 'N/A',
-            default => $this->cpar->cpar_no ?? $this->cpar->result_no ?? 'N/A',
-        };
-        return new Envelope(subject: 'New ' . $type . ' Assigned - ' . $number,);
+        $number = $this->recordType === 10
+            ? ($this->request->result_no ?? 'N/A')
+            : ($this->request->cpar_no ?? 'N/A');
+
+        $type = $this->recordType === 10
+            ? 'RESULT'
+            : 'CPAR';
+
+        return new Envelope(
+            subject: "New {$type} Assigned - {$number}"
+        );
     }
 
     public function content(): Content
     {
         return new Content(
             view: 'emails.cpar-assigned',
+            with: [
+                'request' => $this->request,
+                'recipient' => $this->recipient,
+                'prioritylevel' => $this->prioritylevel,
+                'recordType' => $this->recordType,
+                'branch_id' => $this->branch_id,
+            ],
         );
     }
 

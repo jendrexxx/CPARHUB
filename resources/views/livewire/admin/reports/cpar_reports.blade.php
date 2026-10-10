@@ -277,52 +277,50 @@
 
             <table class="min-w-[1200px] w-full text-left text-sm">
 
-                <thead class="border-b border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900">
-
+                <thead class="bg-red-800 text-sm text-white uppercase">
                     <tr>
 
-                        <th class="whitespace-nowrap px-4 py-3 text-center font-semibold">
+                        <th class="whitespace-nowrap px-4 py-3 text-center font-bold text-white">
                             Request No.
                         </th>
 
-                        <th class="whitespace-nowrap px-4 py-3 text-center font-semibold">
+                        <th class="whitespace-nowrap px-4 py-3 text-center font-bold text-white">
                             Reported By
                         </th>
 
-                        <th class="whitespace-nowrap px-4 py-3 text-center font-semibold">
+                        <th class="whitespace-nowrap px-4 py-3 text-center font-bold text-white">
                             Reported Employee
                         </th>
 
-                        <th class="whitespace-nowrap px-4 py-3 text-center font-semibold">
+                        <th class="whitespace-nowrap px-4 py-3 text-center font-bold text-white">
                             Branch
                         </th>
 
-                        <th class="whitespace-nowrap px-4 py-3 text-center font-semibold">
+                        <th class="whitespace-nowrap px-4 py-3 text-center font-bold text-white">
                             Department
                         </th>
 
-                        <th class="whitespace-nowrap px-4 py-3 text-center font-semibold">
+                        <th class="whitespace-nowrap px-4 py-3 text-center font-bold text-white">
                             Date Reported
                         </th>
 
-                        <th class="whitespace-nowrap px-4 py-3 text-center font-semibold">
+                        <th class="whitespace-nowrap px-4 py-3 text-center font-bold text-white">
                             Decision Category
                         </th>
 
-                        <th class="whitespace-nowrap px-4 py-3 text-center font-semibold">
+                        <th class="whitespace-nowrap px-4 py-3 text-center font-bold text-white">
                             Valid Until
                         </th>
 
-                        <th class="whitespace-nowrap px-4 py-3 text-center font-semibold">
+                        <th class="whitespace-nowrap px-4 py-3 text-center font-bold text-white">
                             Status
                         </th>
 
-                        <th class="whitespace-nowrap px-4 py-3 text-center font-semibold">
+                        <th class="whitespace-nowrap px-4 py-3 text-center font-bold text-white">
                             Actions
                         </th>
 
                     </tr>
-
                 </thead>
 
                 <tbody class="divide-y divide-zinc-200 dark:divide-zinc-700">

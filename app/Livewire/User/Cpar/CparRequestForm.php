@@ -15,7 +15,6 @@ use App\Models\priority_level;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use App\Mail\CparAssignedMail;
-use App\Models\User;
 use Illuminate\Support\Facades\Mail;
 use Livewire\WithFileUploads;
 
@@ -53,6 +52,7 @@ class CparRequestForm extends Component
             $this->employee_no = $info->employee_no;
             $this->id = $info->id;
         }
+
         $this->date_opened = now()->format('M d, Y');
         $this->cpar_no = $this->generateCparNo();
         $this->source_origin = cpar_source_origins::select('id', 'source_name')->get();
@@ -209,19 +209,36 @@ class CparRequestForm extends Component
             ->select('first_name', 'last_name', 'email')
             ->first();
 
+        $labSupervisor = DB::table('employees')
+            ->where('branch_id', $this->branch_id)
+            ->where('is_lab_sup', 1)
+            ->select('first_name', 'last_name', 'email')
+            ->first();
+
         $prioritylevel = DB::table('priority_levels')
             ->where('id', $request->priority_level)
             ->value('priority_name');
+
         $recordType = 5;
 
-        if ($deptHead && !empty($deptHead->email)) {
-            Mail::to($deptHead->email)
-                ->queue(new CparAssignedMail(
-                    $request,
-                    $deptHead,
-                    $prioritylevel,
-                    $recordType
-                ));
+        foreach (
+            [
+                $deptHead,
+                $labSupervisor,
+            ] as $recipient
+        ) {
+
+            if ($recipient && !empty($recipient->email)) {
+                Mail::to($recipient->email)->queue(
+                    new CparAssignedMail(
+                        $request,
+                        $recipient,
+                        $prioritylevel,
+                        $recordType,
+                        $this->branch_id
+                    )
+                );
+            }
         }
 
         $this->reset_form();

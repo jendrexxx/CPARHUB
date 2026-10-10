@@ -26,13 +26,10 @@
 
         <table class="w-full text-left text-sm">
 
-            <thead
-                class="bg-gray-50 text-xs uppercase text-gray-600 dark:bg-gray-800 dark:text-gray-300">
-
+            <thead class="bg-red-800 text-xs uppercase text-white">
                 <tr>
-
                     <th class="px-4 py-3 font-semibold">
-                        No.
+                        Request No.
                     </th>
 
                     <th class="px-4 py-3 font-semibold">
@@ -47,24 +44,22 @@
                         Reported Employee
                     </th>
 
-                    <th class="whitespace-nowrap px-6 py-3">
+                    <th class="whitespace-nowrap px-6 py-3 font-semibold">
                         Branch
                     </th>
 
-                    <th class="whitespace-nowrap px-6 py-3">
+                    <th class="whitespace-nowrap px-6 py-3 font-semibold">
                         Date
                     </th>
 
-                    <th class="whitespace-nowrap px-6 py-3">
+                    <th class="whitespace-nowrap px-6 py-3 font-semibold">
                         Status
                     </th>
 
-                    <th class="whitespace-nowrap px-6 py-3 text-center">
+                    <th class="whitespace-nowrap px-6 py-3 text-center font-semibold">
                         Action
                     </th>
-
                 </tr>
-
             </thead>
 
 
@@ -200,12 +195,21 @@
 
                             <flux:menu>
 
+                                @if ($cpar->record_type === 'CPAR')
+
                                 <flux:menu.item
                                     wire:click="view({{ $cpar->assignment_id }})">
-
-                                    View
-
+                                    View CPAR
                                 </flux:menu.item>
+
+                                @else
+
+                                <flux:menu.item
+                                    wire:click="viewResult({{ $cpar->assignment_id }})">
+                                    View Result
+                                </flux:menu.item>
+
+                                @endif
 
                             </flux:menu>
 
@@ -243,4 +247,5 @@
     </div>
 
     <livewire:admin.reports.modal.edit />
+    <livewire:admin.reports.modal.result_file />
 </div>

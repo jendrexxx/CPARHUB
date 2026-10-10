@@ -57,144 +57,132 @@
 
         @include('toast')
 
-        <div class="p-3 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+        <div class="grid grid-cols-1 gap-4 p-3 sm:grid-cols-2 sm:gap-6 lg:grid-cols-4">
 
             <flux:modal.trigger name="CPARHRModal">
-
                 <div
-                    class="group flex h-full w-full items-center gap-4 p-5
-                           bg-white dark:bg-zinc-900
-                           rounded-2xl border border-gray-200 dark:border-zinc-700
-                           shadow-sm cursor-pointer
-                           transition-all duration-200
-                           hover:-translate-y-1 hover:shadow-lg">
+                    class="group flex h-full w-full cursor-pointer items-center gap-4
+                   rounded-2xl border border-gray-200 bg-white p-5 shadow-sm
+                   transition-all duration-200
+                   hover:-translate-y-1 hover:shadow-lg
+                   dark:border-zinc-700 dark:bg-zinc-900">
 
                     <div
                         class="flex h-12 w-12 shrink-0 items-center justify-center
-                               rounded-xl bg-yellow-100 text-yellow-600
-                               group-hover:bg-yellow-500 group-hover:text-white
-                               transition-colors duration-200">
-                        <flux:icon.clipboard-document-list class="w-6 h-6" />
+                       rounded-xl bg-yellow-100 text-yellow-600
+                       transition-colors duration-200
+                       group-hover:bg-yellow-500 group-hover:text-white
+                       dark:bg-yellow-900/30 dark:text-yellow-400
+                       dark:group-hover:bg-yellow-500 dark:group-hover:text-white">
+
+                        <flux:icon.clipboard-document-list class="h-6 w-6" />
                     </div>
 
                     <div class="min-w-0">
-
                         <div class="text-2xl font-bold text-gray-900 dark:text-white">
                             {{ $hr_request_count }}
                         </div>
 
-                        <div class="text-sm font-medium text-gray-600 dark:text-gray-400">
+                        <div class="truncate text-[15px] font-bold text-gray-500 dark:text-zinc-400">
                             Reported Concern
                         </div>
-
                     </div>
-
                 </div>
-
             </flux:modal.trigger>
 
             <flux:modal.trigger name="CPARAcknowledgeModal">
-
                 <div
-                    class="group flex h-full w-full items-center gap-4 p-5
-                           bg-white dark:bg-zinc-900
-                           rounded-2xl border border-gray-200 dark:border-zinc-700
-                           shadow-sm cursor-pointer
-                           transition-all duration-200
-                           hover:-translate-y-1 hover:shadow-lg">
+                    class="group flex h-full w-full cursor-pointer items-center gap-4
+                   rounded-2xl border border-gray-200 bg-white p-5 shadow-sm
+                   transition-all duration-200
+                   hover:-translate-y-1 hover:shadow-lg
+                   dark:border-zinc-700 dark:bg-zinc-900">
 
                     <div
                         class="flex h-12 w-12 shrink-0 items-center justify-center
-                               rounded-xl bg-blue-100 text-blue-600
-                               group-hover:bg-blue-500 group-hover:text-white
-                               transition-colors duration-200">
-                        <flux:icon.paper-airplane class="w-6 h-6" />
+                       rounded-xl bg-blue-100 text-blue-600
+                       transition-colors duration-200
+                       group-hover:bg-blue-500 group-hover:text-white
+                       dark:bg-blue-900/30 dark:text-blue-400
+                       dark:group-hover:bg-blue-500 dark:group-hover:text-white">
+
+                        <flux:icon.paper-airplane class="h-6 w-6" />
                     </div>
 
                     <div class="min-w-0">
-
                         <div class="text-2xl font-bold text-gray-900 dark:text-white">
                             {{ $acknowledged_cpar }}
                         </div>
 
-                        <div class="text-sm font-medium text-gray-600 dark:text-gray-400">
+                        <div class="truncate text-[15px] font-bold text-gray-500 dark:text-zinc-400">
                             Acknowledgment Concern
                         </div>
-
                     </div>
-
                 </div>
-
             </flux:modal.trigger>
 
             <flux:modal.trigger name="HRDecisionModal">
-
                 <div
-                    class="group flex h-full w-full items-center gap-4 p-5
-                           bg-white dark:bg-zinc-900
-                           rounded-2xl border border-gray-200 dark:border-zinc-700
-                           shadow-sm cursor-pointer
-                           transition-all duration-200
-                           hover:-translate-y-1 hover:shadow-lg">
+                    class="group flex h-full w-full cursor-pointer items-center gap-4
+                   rounded-2xl border border-gray-200 bg-white p-5 shadow-sm
+                   transition-all duration-200
+                   hover:-translate-y-1 hover:shadow-lg
+                   dark:border-zinc-700 dark:bg-zinc-900">
 
                     <div
                         class="flex h-12 w-12 shrink-0 items-center justify-center
-                               rounded-xl bg-blue-100 text-blue-600
-                               transition-all duration-200
-                               group-hover:bg-blue-500 group-hover:text-white
-                               group-hover:scale-105">
+                       rounded-xl bg-blue-100 text-blue-600
+                       transition-all duration-200
+                       group-hover:scale-105 group-hover:bg-blue-500
+                       group-hover:text-white
+                       dark:bg-blue-900/30 dark:text-blue-400
+                       dark:group-hover:bg-blue-500 dark:group-hover:text-white">
+
                         <flux:icon.scale class="h-6 w-6" />
                     </div>
 
                     <div class="min-w-0">
-
                         <div class="text-2xl font-bold text-gray-900 dark:text-white">
                             {{ $hr_decision_count }}
                         </div>
 
-                        <div class="text-sm font-medium text-gray-500 dark:text-zinc-400">
+                        <div class="truncate text-[15px] font-bold text-gray-500 dark:text-zinc-400">
                             Pending HR Decision
                         </div>
-
                     </div>
-
                 </div>
-
             </flux:modal.trigger>
 
             <flux:modal.trigger name="HRMemoModal">
-
                 <div
-                    class="group flex h-full w-full items-center gap-4 p-5
-                           bg-white dark:bg-zinc-900
-                           rounded-2xl border border-gray-200 dark:border-zinc-700
-                           shadow-sm cursor-pointer
-                           transition-all duration-200
-                           hover:-translate-y-1 hover:shadow-lg">
+                    class="group flex h-full w-full cursor-pointer items-center gap-4
+                   rounded-2xl border border-gray-200 bg-white p-5 shadow-sm
+                   transition-all duration-200
+                   hover:-translate-y-1 hover:shadow-lg
+                   dark:border-zinc-700 dark:bg-zinc-900">
 
                     <div
                         class="flex h-12 w-12 shrink-0 items-center justify-center
-                               rounded-xl bg-blue-100 text-blue-600
-                               transition-all duration-200
-                               group-hover:bg-blue-500 group-hover:text-white
-                               group-hover:scale-105">
+                       rounded-xl bg-blue-100 text-blue-600
+                       transition-all duration-200
+                       group-hover:scale-105 group-hover:bg-blue-500
+                       group-hover:text-white
+                       dark:bg-blue-900/30 dark:text-blue-400
+                       dark:group-hover:bg-blue-500 dark:group-hover:text-white">
+
                         <flux:icon.document-text class="h-6 w-6" />
                     </div>
 
                     <div class="min-w-0">
-
                         <div class="text-2xl font-bold text-gray-900 dark:text-white">
                             {{ $memo_count }}
                         </div>
 
-                        <div class="text-sm font-medium text-gray-500 dark:text-zinc-400">
+                        <div class="truncate text-[15px] font-bold text-gray-500 dark:text-zinc-400">
                             Employees Subject to Memo
                         </div>
-
                     </div>
-
                 </div>
-
             </flux:modal.trigger>
 
         </div>

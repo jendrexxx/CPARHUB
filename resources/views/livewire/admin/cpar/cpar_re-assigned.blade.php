@@ -163,10 +163,6 @@
 
             </div>
 
-
-            {{-- =========================
-                RIGHT SIDE - ASSIGNMENT
-            ========================== --}}
             <div class="min-w-0">
 
                 <div class="border-b pb-3">

@@ -2,7 +2,7 @@
 
     <flux:modal
         name="lab-reassign-cpar"
-        class="mt-7 w-full max-w-7xl top-0 z-50">
+        class="w-[120%] max-w-[1500px] mt-6 top-0 z-50">
 
         <div class="border-b pb-4">
             <flux:heading size="lg">

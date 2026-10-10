@@ -20,9 +20,6 @@
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
-            {{-- ========================================================= --}}
-            {{-- LEFT SIDE - RESULT ERROR INFORMATION --}}
-            {{-- ========================================================= --}}
             <div class="space-y-4">
 
                 <div>
@@ -250,7 +247,7 @@
                                     icon="eye"
                                     variant="primary"
                                     size="sm"
-                                    href="{{ Storage::url($ir_attachment) }}"
+                                    href="{{ Storage::url($existing_ir_attachment) }}"
                                     target="_blank">
                                     View
                                 </flux:button>
@@ -259,7 +256,7 @@
                                     icon="arrow-down-tray"
                                     variant="primary"
                                     size="sm"
-                                    href="{{ Storage::url($ir_attachment) }}"
+                                    href="{{ Storage::url($existing_ir_attachment) }}"
                                     download>
                                     Download
                                 </flux:button>

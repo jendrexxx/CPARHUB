@@ -1,210 +1,248 @@
-<div class="overflow-hidden rounded-xl border border-zinc-200 dark:border-zinc-700">
+<div>
 
     <flux:modal
         name="HROffenseModal"
-        class="w-[120%] max-w-[1500px] mt-6 top-0 z-50">
+        class="mt-4 w-[95vw] max-w-[1500px] sm:mt-6">
 
-        {{-- MODAL HEADER --}}
-        <div class="mb-5 border-b border-zinc-200 pb-4 dark:border-zinc-700">
+        <div class="flex max-h-[85vh] min-w-0 flex-col">
 
-            <flux:heading
-                size="lg"
-                class="font-bold">
-                Offense History
-            </flux:heading>
+            <div class="shrink-0 space-y-1 border-b border-zinc-200 pb-4 dark:border-zinc-700">
 
-            <div class="mt-1 text-sm font-semibold text-zinc-700 dark:text-zinc-200">
-                
+                <flux:heading
+                    size="lg"
+                    class="font-bold">
+                    Offense History
+                </flux:heading>
+
+                <flux:text class="text-xs text-zinc-500 dark:text-zinc-400">
+                    Previous final disciplinary records
+                </flux:text>
+
             </div>
 
-            <div class="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
-                Previous final disciplinary records
-            </div>
+            <div
+                class="min-w-0 max-w-full overflow-x-auto overflow-y-auto
+                       overscroll-x-contain rounded-lg
+                       border border-zinc-200 dark:border-zinc-700">
 
-        </div>
+                <table class="min-w-[1200px] w-full text-center text-sm">
 
-        {{-- TABLE --}}
-        <div class="w-full overflow-x-auto">
+                    <thead class="bg-red-800 text-xs tracking-wider text-white">
+                        <tr class="border-b-2 border-white/30">
 
-            <table class="min-w-[1200px] w-full text-sm">
+                            <th class="whitespace-nowrap px-3 py-3 font-bold text-white sm:px-4">
+                                Record No.
+                            </th>
 
-                <thead
-                    class="bg-zinc-100 text-xs tracking-wider text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300">
+                            <th class="whitespace-nowrap px-3 py-3 font-bold text-white sm:px-4">
+                                Reported Date
+                            </th>
 
-                    <tr>
+                            <th class="whitespace-nowrap px-3 py-3 font-bold text-white sm:px-4">
+                                HR Decision
+                            </th>
 
-                        <th class="px-4 py-3 text-center text-xs font-semibold uppercase">
-                            Record No.
-                        </th>
+                            <th class="whitespace-nowrap px-3 py-3 font-bold text-white sm:px-4">
+                                Disciplinary Category
+                            </th>
 
-                        <th class="px-4 py-3 text-center text-xs font-semibold uppercase">
-                            Reported Date
-                        </th>
+                            <th class="whitespace-nowrap px-3 py-3 font-bold text-white sm:px-4">
+                                Offense
+                            </th>
 
-                        <th class="px-4 py-3 text-center text-xs font-semibold uppercase">
-                            HR Decision
-                        </th>
+                            <th class="whitespace-nowrap px-3 py-3 font-bold text-white sm:px-4">
+                                Incident Date
+                            </th>
 
-                        <th class="px-4 py-3 text-center text-xs font-semibold uppercase">
-                            Disciplinary Category
-                        </th>
+                            <th class="whitespace-nowrap px-3 py-3 font-bold text-white sm:px-4">
+                                Valid Until
+                            </th>
 
-                        <th class="px-4 py-3 text-center text-xs font-semibold uppercase">
-                            Offense
-                        </th>
+                            <th class="sticky right-0 whitespace-nowrap bg-red-800 px-3 py-3 text-center font-bold text-white sm:px-4">
+                                Status
+                            </th>
 
-                        <th class="px-4 py-3 text-center text-xs font-semibold uppercase">
-                            Incident Date
-                        </th>
+                        </tr>
+                    </thead>
 
-                        <th class="px-4 py-3 text-center text-xs font-semibold uppercase">
-                            Valid Until
-                        </th>
+                    <tbody class="divide-y divide-zinc-200 dark:divide-zinc-700">
 
-                        <th class="px-4 py-3 text-center text-xs font-semibold uppercase">
-                            Status
-                        </th>
+                        @forelse ($offenseList as $offense)
 
-                    </tr>
+                        <tr
+                            wire:key="offense-{{ $offense->record_type }}-{{ $offense->assignment_id ?? $offense->record_no }}"
+                            class="transition hover:bg-zinc-50 dark:hover:bg-zinc-800/50">
 
-                </thead>
+                            <td class="whitespace-nowrap px-3 py-4 sm:px-4">
 
-                <tbody class="divide-y divide-zinc-200 dark:divide-zinc-700">
+                                <div class="flex flex-col items-center gap-1">
 
-                    @forelse ($offenseList as $offense)
+                                    <div class="font-semibold text-zinc-900 dark:text-white">
+                                        {{ $offense->record_no }}
+                                    </div>
 
-                    <tr class="transition hover:bg-zinc-50 dark:hover:bg-zinc-800">
+                                    @if ($offense->record_type === 'CPAR')
 
-                        {{-- RECORD NO --}}
-                        <td class="whitespace-nowrap px-4 py-4 text-center">
+                                    <span
+                                        class="inline-flex items-center rounded-full
+                                                       bg-red-100 px-2.5 py-0.5
+                                                       text-[10px] font-semibold text-red-700
+                                                       dark:bg-red-950 dark:text-red-400">
+                                        CPAR
+                                    </span>
 
-                            <div class="font-semibold">
-                                {{ $offense->record_no }}
-                            </div>
+                                    @else
 
-                            <div class="mt-1 text-center">
+                                    <span
+                                        class="inline-flex items-center rounded-full
+                                                       bg-blue-100 px-2.5 py-0.5
+                                                       text-[10px] font-semibold text-blue-700
+                                                       dark:bg-blue-950 dark:text-blue-400">
+                                        RESULT
+                                    </span>
 
-                                @if ($offense->record_type === 'CPAR')
+                                    @endif
 
-                                <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-[10px] font-semibold
-                                    bg-red-100 text-red-700
-                                    dark:bg-red-950 dark:text-red-400">
-                                    CPAR
-                                </span>
+                                </div>
+
+                            </td>
+
+                            <td
+                                class="whitespace-nowrap px-3 py-4
+                                           text-zinc-700 dark:text-zinc-300 sm:px-4">
+
+                                @if ($offense->record_date)
+
+                                {{ \Carbon\Carbon::parse($offense->record_date)->format('M d, Y') }}
 
                                 @else
 
-                                <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-[10px] font-semibold
-                                    bg-blue-100 text-blue-700
-                                    dark:bg-blue-950 dark:text-blue-400">
-                                    RESULT
+                                <span class="text-zinc-400 dark:text-zinc-500">
+                                    N/A
                                 </span>
 
                                 @endif
 
-                            </div>
+                            </td>
 
-                        </td>
+                            <td class="whitespace-nowrap px-3 py-4 sm:px-4">
 
-                        {{-- REPORTED DATE --}}
-                        <td class="max-w-[250px] px-4 py-4 text-center">
+                                <flux:badge color="orange">
+                                    {{ $offense->decision_name ?? 'N/A' }}
+                                </flux:badge>
 
-                            <div class="font-semibold">
-                                {{ $offense->record_date
-                                    ? \Carbon\Carbon::parse($offense->record_date)->format('M d, Y')
-                                    : 'N/A'
-                                }}
-                            </div>
+                            </td>
 
-                        </td>
+                            <td
+                                class="max-w-[220px] px-3 py-4
+                                           text-zinc-700 dark:text-zinc-300 sm:px-4">
 
+                                <div
+                                    class="truncate"
+                                    title="{{ $offense->category_name ?? 'N/A' }}">
+                                    {{ $offense->category_name ?? 'N/A' }}
+                                </div>
 
-                        {{-- HR DECISION --}}
-                        <td class="px-4 py-4 text-center">
+                            </td>
 
-                            <flux:badge color="orange">
-                                {{ $offense->decision_name ?? 'N/A' }}
-                            </flux:badge>
+                            <td
+                                class="max-w-[250px] px-3 py-4
+                                           text-zinc-700 dark:text-zinc-300 sm:px-4">
 
-                        </td>
+                                <div
+                                    class="truncate font-medium"
+                                    title="{{ $offense->offense_name ?? 'N/A' }}">
+                                    {{ $offense->offense_name ?? 'N/A' }}
+                                </div>
 
+                            </td>
 
-                        {{-- CATEGORY --}}
-                        <td class="px-4 py-4 text-center">
-                            {{ $offense->category_name ?? 'N/A' }}
-                        </td>
+                            <td
+                                class="whitespace-nowrap px-3 py-4
+                                           text-zinc-700 dark:text-zinc-300 sm:px-4">
 
+                                @if ($offense->incident_date)
 
-                        {{-- OFFENSE --}}
-                        <td class="max-w-[250px] px-4 py-4 text-center">
+                                {{ \Carbon\Carbon::parse($offense->incident_date)->format('M d, Y') }}
 
-                            <div class="font-medium">
-                                {{ $offense->offense_name ?? 'N/A' }}
-                            </div>
+                                @else
 
-                        </td>
+                                <span class="text-zinc-400 dark:text-zinc-500">
+                                    N/A
+                                </span>
 
+                                @endif
 
-                        {{-- INCIDENT DATE --}}
-                        <td class="whitespace-nowrap px-4 py-4 text-center">
+                            </td>
 
-                            {{ $offense->incident_date
-                                ? \Carbon\Carbon::parse($offense->incident_date)->format('M d, Y')
-                                : 'N/A'
-                            }}
+                            <td
+                                class="whitespace-nowrap px-3 py-4
+                                           text-zinc-700 dark:text-zinc-300 sm:px-4">
 
-                        </td>
+                                @if ($offense->valid_until)
 
+                                {{ \Carbon\Carbon::parse($offense->valid_until)->format('M d, Y') }}
 
-                        {{-- VALID UNTIL --}}
-                        <td class="whitespace-nowrap px-4 py-4 text-center">
+                                @else
 
-                            {{ $offense->valid_until
-                                ? \Carbon\Carbon::parse($offense->valid_until)->format('M d, Y')
-                                : 'N/A'
-                            }}
+                                <span class="text-zinc-400 dark:text-zinc-500">
+                                    N/A
+                                </span>
 
-                        </td>
+                                @endif
 
+                            </td>
 
-                        {{-- STATUS --}}
-                        <td class="px-4 py-4 text-center">
+                            <td
+                                class="sticky right-0 whitespace-nowrap
+                                           bg-white px-3 py-4 text-center
+                                           dark:bg-zinc-900 sm:px-4">
 
-                            <flux:badge color="green">
-                                {{ $offense->status_name }}
-                            </flux:badge>
+                                <flux:badge color="green">
+                                    {{ $offense->status_name ?? 'N/A' }}
+                                </flux:badge>
 
-                        </td>
+                            </td>
 
-                    </tr>
+                        </tr>
 
-                    @empty
+                        @empty
 
-                    <tr>
+                        <tr>
 
-                        <td colspan="9" class="px-4 py-12 text-center">
+                            <td
+                                colspan="8"
+                                class="px-4 py-12 text-center">
 
-                            <flux:icon
-                                name="check-circle"
-                                class="mx-auto size-10 text-green-500" />
+                                <flux:icon
+                                    name="check-circle"
+                                    class="mx-auto size-10 text-green-500" />
 
-                            <flux:heading size="sm" class="mt-3">
-                                No Previous Offenses
-                            </flux:heading>
+                                <flux:heading
+                                    size="sm"
+                                    class="mt-3">
+                                    No Previous Offenses
+                                </flux:heading>
 
-                            <flux:text class="mt-1 text-zinc-500">
-                                No final disciplinary records were found for this employee.
-                            </flux:text>
+                                <flux:text class="mt-1 text-zinc-500 dark:text-zinc-400">
+                                    No final disciplinary records were found for this employee.
+                                </flux:text>
 
-                        </td>
+                            </td>
 
-                    </tr>
+                        </tr>
 
-                    @endforelse
+                        @endforelse
 
-                </tbody>
+                    </tbody>
 
-            </table>
+                </table>
+
+            </div>
+
+            <div class="pt-2 text-xs text-zinc-500 dark:text-zinc-400 sm:hidden">
+                Swipe left or right to view all columns.
+            </div>
 
         </div>
 

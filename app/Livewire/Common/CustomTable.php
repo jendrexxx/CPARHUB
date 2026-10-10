@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Common;
 
+use App\Models\employee;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
@@ -32,7 +33,6 @@ class CustomTable extends Component
     public $message;
 
     protected $paginationTheme = 'tailwind';
-
 
     public function mount(
         $model,
@@ -84,7 +84,6 @@ class CustomTable extends Component
         if ($this->refreshMethod && method_exists($this, $this->refreshMethod)) {
             $this->{$this->refreshMethod}();
         }
-
         $this->resetPage();
         $this->dispatch('$refresh');
     }
@@ -171,14 +170,10 @@ class CustomTable extends Component
 
     public function getRecordsProperty()
     {
-        /**
-         * USER TABLE (WITH JOIN)
-         */
         if ($this->model === User::class) {
 
             $query = User::query()
                 ->join('employees as a', 'a.email', '=', 'users.email')
-
                 ->leftJoin('model_has_roles as mhr', function ($join) {
                     $join->on('users.id', '=', 'mhr.model_id')
                         ->where('mhr.model_type', User::class);
@@ -192,7 +187,8 @@ class CustomTable extends Component
                     'a.branch_name',
                     'roles.name as role',
                     DB::raw("CONCAT(a.first_name, ' ', a.last_name) as full_name")
-                )->orderBy('a.last_name', 'asc');
+                )
+                ->orderBy('a.last_name', 'asc');
 
             if ($this->search) {
                 $query->where(function ($q) {
@@ -204,22 +200,36 @@ class CustomTable extends Component
                         ->orWhere('a.branch_name', 'like', "%{$this->search}%");
                 });
             }
+
             return $query
                 ->orderBy('users.created_at', 'desc')
                 ->paginate($this->perPage);
         }
 
-        /**
-         * DEFAULT TABLE
-         */
+        if ($this->model === employee::class) {
+
+            $query = employee::query();
+
+            if ($this->search && count($this->searchable)) {
+                $query->where(function ($q) {
+                    foreach ($this->searchable as $column) {
+                        $q->orWhere($column, 'like', "%{$this->search}%");
+                    }
+                });
+            }
+
+            $records = $query
+                ->orderBy('last_name', 'asc')
+                ->paginate($this->perPage);
+
+            return $records;
+        }
+
         $query = ($this->model)::query();
 
         if ($this->search && count($this->searchable)) {
-
             $query->where(function ($q) {
-
                 foreach ($this->searchable as $column) {
-
                     $q->orWhere($column, 'like', "%{$this->search}%");
                 }
             });

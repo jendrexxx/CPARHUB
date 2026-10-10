@@ -36,11 +36,6 @@ class CparAssigned extends Component
 
     public function loadAssignedRecords()
     {
-        /*
-    |--------------------------------------------------------------------------
-    | CPAR ASSIGNED RECORDS
-    |--------------------------------------------------------------------------
-    */
         $cpar = DB::table('cpar_request_forms as a')
             ->join('cpar_assignments as b', 'a.id', '=', 'b.cpar_id')
             ->leftJoin('departments as d', 'a.department_id', '=', 'd.id')
@@ -85,37 +80,16 @@ class CparAssigned extends Component
                     ' ',
                     e.last_name
                 ) as assigned_names
-            ")
-            )
+            "))
             ->where('b.status_id', 10)
             ->where('b.assigned_to', (int) $this->id)
             ->where('b.record_type', 5);
 
         $result = DB::table('result_error_forms as a')
-            ->join(
-                'cpar_assignments as b',
-                'a.id',
-                '=',
-                'b.result_id'
-            )
-            ->join(
-                'employees as e',
-                'b.assigned_to',
-                '=',
-                'e.id'
-            )
-            ->join(
-                'priority_levels as p',
-                'a.priority_level',
-                '=',
-                'p.id'
-            )
-            ->join(
-                'cpar_statuses as s',
-                'b.status_id',
-                '=',
-                's.id'
-            )
+            ->join('cpar_assignments as b','a.id','=','b.result_id')
+            ->join('employees as e','b.assigned_to','=','e.id')
+            ->join('priority_levels as p','a.priority_level','=','p.id')
+            ->join('cpar_statuses as s','b.status_id','=','s.id')
             ->select(
                 'a.id',
                 // Common fields
@@ -146,8 +120,7 @@ class CparAssigned extends Component
                     ' ',
                     e.last_name
                 ) as assigned_names
-            ")
-            )
+            "))
             ->where('b.status_id', 10)
             ->where('b.assigned_to', (int) $this->id)
             ->where('b.record_type', 10);

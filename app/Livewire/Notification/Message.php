@@ -181,7 +181,7 @@ class Message extends Component
                 $memoResultCount;
         }
 
-        if ($this->user_role === 'PGL SUPERVISOR') {
+        if ($this->user_role === 'LAB SUPERVISOR') {
 
             $status = cpar_statuses::where('id', '!=', 50)
                 ->get(['id', 'status_name']);

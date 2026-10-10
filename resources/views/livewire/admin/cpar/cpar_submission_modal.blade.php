@@ -16,7 +16,6 @@
                 </flux:text>
             </div>
 
-
             {{-- Main Content --}}
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
@@ -181,9 +180,7 @@
                                     icon="eye"
                                     href="{{ Storage::url($ir_attachment) }}"
                                     target="_blank">
-
                                     View PDF
-
                                 </flux:button>
 
                             </div>

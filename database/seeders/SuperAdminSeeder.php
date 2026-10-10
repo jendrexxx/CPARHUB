@@ -24,8 +24,8 @@ class SuperAdminSeeder extends Seeder
         // (Optional) Create permissions
         $permissions = [
             'View Admin Dashboard',
-            'View Department Head',
-            'View HR Head',
+            'View Department Dashboard',
+            'View HR Dashboard',
             'View Lab Supervisor',
             'View PGL Supervisor',
             'View User',
@@ -43,15 +43,19 @@ class SuperAdminSeeder extends Seeder
             'View CPAR Form',
             'Edit CPAR Form',
             'Delete CPAR Form',
+            // DEPARTMENT PERMISSIONS
             'View Departments',
             'Create Departments',
             'Edit Departments',
             'Delete Departments',
+            // LOG PERMISSIONS
             'View Audit Logs',
-            'View CPAR Reports',
-            'View CPAR Master File',
-            'Edit CPAR Reports',
-            'PDF CPAR Reports',
+            // reports
+            'View Result/Others Reports',
+            'View Result/Others Master File',
+            'Edit Result/Others Reports',
+            'PDF Result/Others Reports',
+            // employees
             'View Employees',
             'Create Employees',
             'Edit Employees',
@@ -77,7 +81,6 @@ class SuperAdminSeeder extends Seeder
                 'name' => 'Jendrex Lagando',
                 'username' => 'JENLAG',
                 'password' => Hash::make('test123'),
-                'status' => 'Active',
                 'email_verified_at' => now(),
             ]
         );

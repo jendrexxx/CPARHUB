@@ -21,25 +21,23 @@
     @endif
 
     <livewire:common.custom-table
-        :model="'App\Models\employee'"
+        :model="App\Models\Employee::class"
         refreshEvent="refreshEmployees"
         addLabel="Employee"
         :columns="[
-            'employee_no'=>'Employee No',
-            'first_name'=>'First Name',
-            'last_name'=>'Last Name',
-            'department_name'=>'Department',
-            'branch_name'=>'Branch',
-            'position_name'=>'Position',
-            'status'=>'Status',
-            'email'=>'Email',
-        ]"
-
+        'employee_no' => 'Employee No',
+        'first_name' => 'First Name',
+        'last_name' => 'Last Name',
+        'department_name' => 'Department',
+        'branch_name' => 'Branch',
+        'position_name' => 'Position',
+        'status' => 'Status',
+        'email' => 'Email',
+    ]"
         :searchable="[
-            'employee_no',
-            'first_name',
-            'last_name',
-            'email'
-        ]" />
-
+        'employee_no',
+        'first_name',
+        'last_name',
+        'email'
+    ]" />
 </div>

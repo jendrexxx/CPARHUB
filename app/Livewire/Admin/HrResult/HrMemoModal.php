@@ -34,7 +34,7 @@ class HrMemoModal extends Component
     public $isNoDisciplinaryAction = false;
     public $nte_no = '', $hr_decision_remarks = '', $management_remarks = '', $current_memo_attachment = '';
     public $assigned_department = '', $decision_name = '', $full_name = '', $from = '', $signatory = '', $position_name = '';
-    public $memo_re = '', $signatory_position = '';
+    public $memo_re = '', $signatory_position = '', $employee_position_name = '';
     protected $listeners = [
         'open-memo-result' => 'open_memo'
     ];
@@ -94,8 +94,8 @@ class HrMemoModal extends Component
             ->join('cpar_statuses as e', 'd.status_id', '=', 'e.id')
             ->leftJoin('employees as f', 'd.dept_head_assigned', '=', 'f.id')
             ->join('priority_levels as g', 'a.priority_level', '=', 'g.id')
-            ->leftjoin('employees as h', 'd.assigned_to', '=', 'h.id')
-            ->leftjoin('cpar_investigations as i', 'd.id', '=', 'i.assigned_id')
+            ->leftJoin('employees as h', 'd.assigned_to', '=', 'h.id')
+            ->leftJoin('cpar_investigations as i', 'd.id', '=', 'i.assigned_id')
             ->leftJoin('cpar_employee_disciplinary_records as k', 'd.id', '=', 'k.assignment_id')
             ->leftJoin('cpar_ir_requests as j', 'd.id', '=', 'j.assignment_ir_id')
             ->leftJoin('cpar_notice_to_explains as l', 'j.id', '=', 'l.assignment_id')
@@ -123,15 +123,105 @@ class HrMemoModal extends Component
                 'a.actual_released_date',
                 'a.data_information',
                 'a.technical_information',
-                'a.quality_information',
                 'a.patient_name',
                 'a.complain_name as complainant_name',
                 'a.attending_physician',
+                'a.concern_description',
+
+                'b.source_name',
+                'c.complain_name',
+
+                'd.id as assignment_id',
+                'd.result_id',
+                'd.assigned_to',
+                'd.remarks',
+                'd.dept_head_assigned',
+                'd.department_id',
+
+                'e.status_name',
+
+                'f.branch_id',
+                'f.department_name',
+                'f.first_name',
+                'f.last_name',
+                'f.position_name',
+
+                'g.priority_name',
+
+                DB::raw("
+                CONCAT(
+                    COALESCE(h.first_name, ''),
+                    ' ',
+                    COALESCE(h.last_name, '')
+                ) AS employee_assigned_to
+            "),
+
+                'h.employee_no as employee_no_assigned',
+                'h.department_name as assigned_department',
+                'h.position_name as employee_position_name',
+
+                'i.identified_cause',
+                'i.provided_solution',
+                'i.recommendation',
+                'i.date_completed',
+                'i.tat',
+                'i.action_taken_by',
+                'i.remarks as dept_head_remarks',
+
+                'j.id as ir_ids',
+                'j.ir_id',
+                'j.ir_attachment',
+                'j.id as ir_request_id',
+
+                'k.id as disciplinary_id',
+                'k.discipline_ids',
+                'k.offense_ids',
+                'k.decision_ids',
+                'k.status as decision_status',
+                'k.remarks as decision_remarks',
+                'k.management_remarks',
+
+                'l.id as nte_id',
+                'l.nte_no',
+                'l.nte_attachment',
+
+                'n.response_attachment',
+
+                'o.memo_no',
+                'o.memo_date',
+                'o.subject',
+                'o.memo_re',
+                'o.memo_content',
+                'o.memo_attachment',
+
+                'p.department_name as reported_by_department',
+
+                DB::raw("
+                GROUP_CONCAT(
+                    DISTINCT q.decision_name
+                    ORDER BY q.id
+                    SEPARATOR ', '
+                ) as decision_name
+            ")
+            )
+            ->where('d.id', $id)
+            ->groupBy(
+                'a.result_no',
+                'a.reported_by',
+                'a.employee_no',
+                'a.date_reported',
+                'a.test_procedure',
+                'a.quality_information',
+                'a.actual_released_date',
+                'a.data_information',
                 'a.technical_information',
+                'a.patient_name',
+                'a.complain_name',
+                'a.attending_physician',
                 'a.concern_description',
                 'b.source_name',
                 'c.complain_name',
-                'd.id as assignment_id',
+                'd.id',
                 'd.result_id',
                 'd.assigned_to',
                 'd.remarks',
@@ -144,31 +234,29 @@ class HrMemoModal extends Component
                 'f.last_name',
                 'f.position_name',
                 'g.priority_name',
-                DB::raw("CONCAT(h.first_name, ' ', h.last_name) AS employee_assigned_to"),
-                'h.employee_no as employee_no_assigned',
-                'h.department_name as assigned_department',
+                'h.first_name',
+                'h.last_name',
+                'h.employee_no',
+                'h.position_name',
+                'h.department_name',
                 'i.identified_cause',
                 'i.provided_solution',
                 'i.recommendation',
                 'i.date_completed',
                 'i.tat',
                 'i.action_taken_by',
-                'i.remarks as dept_head_remarks',
-                // IR
-                'j.id as ir_ids',
+                'i.remarks',
+                'j.id',
                 'j.ir_id',
                 'j.ir_attachment',
-                'j.id as ir_request_id',
-                // HR Decision
-                'k.id as disciplinary_id',
+                'k.id',
                 'k.discipline_ids',
                 'k.offense_ids',
                 'k.decision_ids',
-                'k.status as decision_status',
-                'k.remarks as decision_remarks',
+                'k.status',
+                'k.remarks',
                 'k.management_remarks',
-                // NTE
-                'l.id as nte_id',
+                'l.id',
                 'l.nte_no',
                 'l.nte_attachment',
                 'n.response_attachment',
@@ -178,18 +266,13 @@ class HrMemoModal extends Component
                 'o.memo_re',
                 'o.memo_content',
                 'o.memo_attachment',
-                'p.department_name as reported_by_department',
-                DB::raw("
-                GROUP_CONCAT(
-                    DISTINCT q.decision_name
-                    ORDER BY q.id
-                    SEPARATOR ', '
-                ) as decision_name
-            "),
+                'p.department_name'
             )
-            ->where('d.id', $id)
-            ->groupBy('a.result_no', 'a.reported_by', 'a.employee_no', 'a.date_reported', 'a.test_procedure', 'a.quality_information', 'a.actual_released_date', 'a.data_information', 'a.technical_information', 'a.patient_name', 'a.complain_name', 'a.attending_physician', 'a.concern_description', 'b.source_name', 'c.complain_name', 'd.id', 'd.result_id', 'd.assigned_to', 'd.remarks', 'd.dept_head_assigned', 'd.department_id', 'e.status_name', 'f.branch_id', 'f.department_name', 'f.first_name', 'f.last_name', 'f.position_name', 'g.priority_name', 'h.first_name', 'h.last_name', 'h.employee_no', 'h.department_name', 'i.identified_cause', 'i.provided_solution', 'i.recommendation', 'i.date_completed', 'i.tat', 'i.action_taken_by', 'i.remarks', 'j.id', 'j.ir_id', 'j.ir_attachment', 'k.id', 'k.discipline_ids', 'k.offense_ids', 'k.decision_ids', 'k.status', 'k.remarks', 'k.management_remarks', 'l.id', 'l.nte_no', 'l.nte_attachment', 'n.response_attachment', 'o.memo_no', 'o.memo_date', 'o.subject', 'o.memo_re', 'o.memo_content', 'o.memo_attachment', 'p.department_name')
             ->first();
+
+        if (!$result) {
+            return;
+        }
         $this->assigned_employee_no = $result->employee_no;
         $cpar_info = DB::table('employees as a')
             ->join('cpar_request_forms as b', 'a.employee_no', '=', 'b.employee_no')
@@ -229,6 +312,7 @@ class HrMemoModal extends Component
         $this->current_memo_attachment = $result->memo_attachment;
         $this->full_name = $result->employee_assigned_to;
         $this->position_name = $result->position_name;
+        $this->employee_position_name = $result->employee_position_name ?? '';
         // IR Response 
         $this->existing_ir_attachment = $result->ir_attachment ?? '';
         // NTE Response
@@ -327,7 +411,7 @@ class HrMemoModal extends Component
             ],
 
             'memo_attachment' => [
-                'nullable',
+                'required',
                 'file',
                 'mimes:pdf',
                 'max:10240',
@@ -351,30 +435,45 @@ class HrMemoModal extends Component
                 );
             }
 
+            $result = DB::table('result_error_forms')
+                ->where('id', $this->result_id)
+                ->first();
+
+            if (!$result) {
+                return;
+            }
+
+            $assignment = DB::table('cpar_assignments')
+                ->where('id', $this->id)
+                ->first();
+
+            $reportedBy = $result->reported_by ?? null;
+            $assignedTo = $assignment->assigned_to ?? null;
+
             $memo = DB::table('cpar_memos')
                 ->where('assignment_id', $this->id)
                 ->first();
 
             $oldValues = [
-                'result_no'   => $this->result_no,
-                'memo_no' => $memo?->memo_no,
-                'memo_date' => $memo?->memo_date,
-                'subject' => $memo?->subject,
-                'memo_re' => $memo?->memo_re,
-                'memo_content' => $memo?->memo_content,
-                'memo_attachment' => $memo?->memo_attachment,
-                'status' => $memo?->status,
+                'result_no'        => $result->result_no ?? $this->result_no,
+                'memo_no'          => $memo?->memo_no,
+                'memo_date'        => $memo?->memo_date,
+                'subject'          => $memo?->subject,
+                'memo_re'          => $memo?->memo_re,
+                'memo_content'     => $memo?->memo_content,
+                'memo_attachment'  => $memo?->memo_attachment,
+                'status'           => $memo?->status,
             ];
 
             $newValues = [
-                'result_no'   => $this->result_no,
-                'memo_no' => $this->memo_no,
-                'memo_date' => $this->memo_date,
-                'subject' => $this->memo_subject,
-                'memo_re' => $this->memo_re,
-                'memo_content' => $this->memo_content,
-                'memo_attachment' => $memoAttachment,
-                'status' => 'DRAFT',
+                'result_no'        => $this->result_no,
+                'memo_no'          => $this->memo_no,
+                'memo_date'        => $this->memo_date,
+                'subject'          => $this->memo_subject,
+                'memo_re'          => $this->memo_re,
+                'memo_content'     => $this->memo_content,
+                'memo_attachment'  => $memoAttachment,
+                'status'           => 'DRAFT',
             ];
 
             $changedOldValues = [];
@@ -391,50 +490,62 @@ class HrMemoModal extends Component
             }
 
             $data = [
-                'result_id' => $this->result_id,
-                'assignment_id' => $this->id,
-                'memo_no' => $this->memo_no,
-                'memo_date' => $this->memo_date,
-                'subject' => $this->memo_subject,
-                'memo_re' => $this->memo_re,
-                'memo_content' => $this->memo_content,
+                'result_id'       => $this->result_id,
+                'assignment_id'   => $this->id,
+                'memo_no'         => $this->memo_no,
+                'memo_date'       => $this->memo_date,
+                'subject'         => $this->memo_subject,
+                'memo_re'         => $this->memo_re,
+                'memo_content'    => $this->memo_content,
                 'memo_attachment' => $memoAttachment,
-                'status' => 'DRAFT',
-                'updated_at' => now(),
+                'status'          => 'DRAFT',
+                'updated_at'      => now(),
             ];
 
             if ($memo) {
+
                 DB::table('cpar_memos')
                     ->where('assignment_id', $this->id)
                     ->update($data);
             } else {
+
                 $data['created_at'] = now();
-                DB::table('cpar_memos')->insert($data);
+
+                DB::table('cpar_memos')
+                    ->insert($data);
             }
 
             $this->current_memo_attachment = $memoAttachment;
             $this->memo_attachment = null;
 
-            if (!empty($changedNewValues)) {
+            /*
+         * Create audit log whenever draft is saved.
+         */
+            $auditOldValues = !empty($changedOldValues)
+                ? $changedOldValues
+                : $oldValues;
 
-                DB::table('audit_logs')->insert([
-                    'user_reported_by'  => $this->employeeName,
-                    'user_reported'     => $this->assigned_to,
-                    'action' => 'RESULT MEMO DRAFT',
-                    'old_value' => json_encode(
-                        $changedOldValues,
-                        JSON_UNESCAPED_UNICODE
-                    ),
-                    'new_value' => json_encode(
-                        $changedNewValues,
-                        JSON_UNESCAPED_UNICODE
-                    ),
-                    'status_changed_by' => $this->user_id,
-                    'date' => now(),
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ]);
-            }
+            $auditNewValues = !empty($changedNewValues)
+                ? $changedNewValues
+                : $newValues;
+
+            DB::table('audit_logs')->insert([
+                'user_reported_by'  => $reportedBy,
+                'user_reported'     => $assignedTo,
+                'action'            => 'RESULT MEMO DRAFT',
+                'old_value'         => json_encode(
+                    $auditOldValues,
+                    JSON_UNESCAPED_UNICODE
+                ),
+                'new_value'         => json_encode(
+                    $auditNewValues,
+                    JSON_UNESCAPED_UNICODE
+                ),
+                'status_changed_by' => auth()->id(),
+                'date'              => now(),
+                'created_at'        => now(),
+                'updated_at'        => now(),
+            ]);
         });
 
         $this->dispatch(
@@ -442,14 +553,17 @@ class HrMemoModal extends Component
             type: 'success',
             message: 'Memo draft saved.'
         );
+
         $this->dispatch(
             'modal-close',
             name: 'hr-memo-modal'
         );
+
         $this->dispatch(
             'modal-close',
             name: 'HRMemoModal'
         );
+
         $this->dispatch('refreshMemoRecords');
         $this->dispatch('refreshMemoCount');
     }
@@ -509,7 +623,6 @@ class HrMemoModal extends Component
                         'updated_at'       => now(),
                     ]);
             } else {
-
                 DB::table('cpar_memos')
                     ->insert([
                         'result_id'          => $this->result_id,
@@ -544,7 +657,7 @@ class HrMemoModal extends Component
             ];
 
             $newValues = [
-                'result_no'          => $this->result_no,
+                'result_no'        => $this->result_no,
                 'assigned_id'      => $this->id,
                 'memo_no'          => $this->memo_no,
                 'memo_date'        => $this->memo_date,
@@ -552,7 +665,7 @@ class HrMemoModal extends Component
                 'memo_re'          => $this->memo_re,
                 'memo_content'     => $this->memo_content,
                 'memo_attachment'  => $memoAttachment,
-                'memo_status'      => 'RESULT MEMO ISSUED',
+                'memo_status'      => 'RESULT MEMO CLOSED',
                 'status_id'        => 50,
             ];
 
@@ -586,7 +699,7 @@ class HrMemoModal extends Component
                 }
             }
             DB::table('audit_logs')->insert([
-                'user_reported_by'  => $this->employeeName,
+                'user_reported_by'  => $this->reported_by,
                 'user_reported'     => $this->assigned_to,
                 'action'     => 'RESULT MEMO ISSUED',
                 'old_value'  => json_encode(

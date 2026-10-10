@@ -2,6 +2,7 @@
 
 use Illuminate\Auth\Events\Lockout;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Str;
@@ -16,7 +17,6 @@ new #[Layout('components.layouts.auth')] class extends Component {
 
     #[Validate('required|string')]
     public string $password = '';
-
     public bool $remember = false;
 
     /**
@@ -30,7 +30,6 @@ new #[Layout('components.layouts.auth')] class extends Component {
 
         $user = \App\Models\User::where('username', $this->username)->first();
 
-        // Username does not exist
         if (!$user) {
             RateLimiter::hit($this->throttleKey());
 
@@ -39,8 +38,22 @@ new #[Layout('components.layouts.auth')] class extends Component {
             ]);
         }
 
-        // Account is inactive
-        if ($user->status !== 'Active') {
+        // Find employee using users.email = employees.email
+        $employee = DB::table('employees')
+            ->where('email', $user->email)
+            ->first();
+
+        // Employee does not exist
+        if (!$employee) {
+            RateLimiter::hit($this->throttleKey());
+
+            throw ValidationException::withMessages([
+                'username' => 'Employee record not found. Please contact the administrator.',
+            ]);
+        }
+
+        // Only employees with status = 1 can login
+        if ((int) $employee->status !== 1) {
             throw ValidationException::withMessages([
                 'username' => 'Your account is inactive. Please contact the administrator.',
             ]);

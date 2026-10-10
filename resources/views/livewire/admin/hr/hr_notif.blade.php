@@ -1,11 +1,11 @@
 <div>
     <flux:modal
         name="CPARHRModal"
-        class="w-[120%] max-w-[1500px] mt-6 top-0 z-50">
-        <div class="space-y-6">
+        class="mt-4 w-[95vw] max-w-[1500px] sm:mt-6">
 
-            {{-- Header --}}
-            <div>
+        <div class="flex max-h-[85vh] min-w-0 flex-col">
+
+            <div class="shrink-0 space-y-1 pb-4">
                 <flux:heading size="lg">
                     HR Requests
                 </flux:heading>
@@ -15,189 +15,232 @@
                 </flux:text>
             </div>
 
+            <div
+                class="min-w-0 max-w-full overflow-x-auto overflow-y-auto
+                       overscroll-x-contain rounded-lg
+                       border border-zinc-200 dark:border-zinc-700"
+            >
 
-            {{-- Table --}}
-            <div class="overflow-x-auto rounded-lg border border-zinc-200 dark:border-zinc-700">
+                <table class="min-w-[950px] w-full text-center text-sm">
 
-                <table class="w-full text-sm text-center">
+                    <thead class="bg-red-800 text-xs tracking-wider text-white">
+                        <tr class="border-b-2 border-white/30">
 
-                    {{-- Header --}}
-                    <thead class="bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 uppercase text-xs tracking-wider">
-
-                        <tr>
-                            <th class="px-4 py-3">
+                            <th class="whitespace-nowrap px-3 py-3 font-bold text-white sm:px-4">
                                 Type
                             </th>
 
-                            <th class="px-4 py-3">
+                            <th class="whitespace-nowrap px-3 py-3 font-bold text-white sm:px-4">
                                 No.
                             </th>
 
-                            <th class="px-4 py-3">
+                            <th class="whitespace-nowrap px-3 py-3 font-bold text-white sm:px-4">
                                 Reported By
                             </th>
 
-                            <th class="px-4 py-3">
+                            <th class="whitespace-nowrap px-3 py-3 font-bold text-white sm:px-4">
                                 Date Reported
                             </th>
 
-                            <th class="px-4 py-3">
+                            <th class="whitespace-nowrap px-3 py-3 font-bold text-white sm:px-4">
                                 Reported Employee
                             </th>
 
-                            <th class="px-4 py-3">
+                            <th class="whitespace-nowrap px-3 py-3 font-bold text-white sm:px-4">
                                 Status
                             </th>
 
-                            <th class="px-4 py-3">
+                            <th class="sticky right-0 whitespace-nowrap bg-red-800 px-3 py-3 text-center font-bold text-white sm:px-4">
                                 Action
                             </th>
-                        </tr>
 
+                        </tr>
                     </thead>
 
-
-                    {{-- Body --}}
                     <tbody class="divide-y divide-zinc-200 dark:divide-zinc-700">
 
                         @forelse ($hr_requests as $request)
 
-                        <tr
-                            wire:key="{{ strtolower($request->record_type) }}-{{ $request->id }}"
-                            class="hover:bg-zinc-50 dark:hover:bg-zinc-800/50">
+                            <tr
+                                wire:key="{{ strtolower($request->record_type) }}-{{ $request->id }}"
+                                class="hover:bg-zinc-50 dark:hover:bg-zinc-800/50"
+                            >
 
-                            {{-- TYPE --}}
-                            <td class="px-4 py-3">
+                                <td class="whitespace-nowrap px-3 py-3 sm:px-4">
 
-                                @if ($request->record_type === 'CPAR')
+                                    @if ($request->record_type === 'CPAR')
 
-                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200">
-                                    CPAR
-                                </span>
+                                        <span
+                                            class="inline-flex items-center rounded-full
+                                                   bg-red-100 px-2.5 py-1
+                                                   text-xs font-semibold text-red-700
+                                                   dark:bg-red-900 dark:text-red-200"
+                                        >
+                                            CPAR
+                                        </span>
 
-                                @else
+                                    @else
 
-                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200">
-                                    RESULT ERROR
-                                </span>
+                                        <span
+                                            class="inline-flex items-center rounded-full
+                                                   bg-purple-100 px-2.5 py-1
+                                                   text-xs font-semibold text-purple-700
+                                                   dark:bg-purple-900 dark:text-purple-200"
+                                        >
+                                            RESULT ERROR
+                                        </span>
 
-                                @endif
+                                    @endif
 
-                            </td>
+                                </td>
 
+                                <td
+                                    class="whitespace-nowrap px-3 py-3 font-medium
+                                           text-zinc-900 dark:text-zinc-100 sm:px-4"
+                                >
+                                    {{ $request->record_no }}
+                                </td>
 
-                            {{-- NUMBER --}}
-                            <td class="px-4 py-3 font-medium text-zinc-900 dark:text-zinc-100">
-                                {{ $request->record_no }}
-                            </td>
+                                <td
+                                    class="whitespace-nowrap px-3 py-3
+                                           text-zinc-700 dark:text-zinc-300 sm:px-4"
+                                >
+                                    {{ $request->reported_by }}
+                                </td>
 
+                                <td
+                                    class="whitespace-nowrap px-3 py-3
+                                           text-zinc-700 dark:text-zinc-300 sm:px-4"
+                                >
+                                    {{ \Carbon\Carbon::parse($request->record_date)->format('M d, Y') }}
+                                </td>
 
-                            {{-- REPORTED BY --}}
-                            <td class="px-4 py-3 text-zinc-700 dark:text-zinc-300">
-                                {{ $request->reported_by }}
-                            </td>
+                                <td
+                                    class="whitespace-nowrap px-3 py-3
+                                           text-zinc-700 dark:text-zinc-300 sm:px-4"
+                                >
+                                    {{ $request->dept_head_name ?? 'N/A' }}
+                                </td>
 
-                            {{-- DATE --}}
-                            <td class="px-4 py-3 text-zinc-700 dark:text-zinc-300">
+                                <td class="whitespace-nowrap px-3 py-3 sm:px-4">
 
-                                {{ \Carbon\Carbon::parse($request->record_date)->format('M d, Y') }}
+                                    @if ($request->status_name === 'PENDING')
 
-                            </td>
+                                        <span
+                                            class="inline-flex items-center rounded-full
+                                                   bg-yellow-100 px-2.5 py-0.5
+                                                   text-xs font-medium text-yellow-800
+                                                   dark:bg-yellow-900 dark:text-yellow-200"
+                                        >
+                                            {{ $request->status_name }}
+                                        </span>
 
+                                    @elseif ($request->status_name === 'APPROVED')
 
-                            {{-- ASSIGNED EMPLOYEE --}}
-                            <td class="px-4 py-3 text-zinc-700 dark:text-zinc-300">
+                                        <span
+                                            class="inline-flex items-center rounded-full
+                                                   bg-green-100 px-2.5 py-0.5
+                                                   text-xs font-medium text-green-800
+                                                   dark:bg-green-900 dark:text-green-200"
+                                        >
+                                            {{ $request->status_name }}
+                                        </span>
 
-                                {{ $request->dept_head_name ?? 'N/A' }}
+                                    @elseif ($request->status_name === 'CLOSED')
 
-                            </td>
+                                        <span
+                                            class="inline-flex items-center rounded-full
+                                                   bg-blue-100 px-2.5 py-0.5
+                                                   text-xs font-medium text-blue-800
+                                                   dark:bg-blue-900 dark:text-blue-200"
+                                        >
+                                            {{ $request->status_name }}
+                                        </span>
 
+                                    @elseif ($request->status_name === 'ASSIGNED')
 
-                            {{-- STATUS --}}
-                            <td class="px-4 py-3">
+                                        <span
+                                            class="inline-flex items-center rounded-full
+                                                   bg-orange-100 px-2.5 py-0.5
+                                                   text-xs font-medium text-orange-800
+                                                   dark:bg-orange-900 dark:text-orange-200"
+                                        >
+                                            {{ $request->status_name }}
+                                        </span>
 
-                                @if ($request->status_name === 'PENDING')
+                                    @else
 
-                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">
-                                    {{ $request->status_name }}
-                                </span>
+                                        <span
+                                            class="inline-flex items-center rounded-full
+                                                   bg-zinc-100 px-2.5 py-0.5
+                                                   text-xs font-medium text-zinc-800
+                                                   dark:bg-zinc-700 dark:text-zinc-300"
+                                        >
+                                            {{ $request->status_name }}
+                                        </span>
 
-                                @elseif ($request->status_name === 'APPROVED')
+                                    @endif
 
-                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
-                                    {{ $request->status_name }}
-                                </span>
+                                </td>
 
-                                @elseif ($request->status_name === 'CLOSED')
+                                <td
+                                    class="sticky right-0 whitespace-nowrap
+                                           bg-white px-3 py-3 text-center
+                                           dark:bg-zinc-900 sm:px-4"
+                                >
 
-                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
-                                    {{ $request->status_name }}
-                                </span>
+                                    <flux:dropdown align="end">
 
-                                @elseif ($request->status_name === 'ASSIGNED')
+                                        <flux:button
+                                            size="sm"
+                                            variant="ghost"
+                                            icon="ellipsis-vertical"
+                                            aria-label="Actions"
+                                        />
 
-                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200">
-                                    {{ $request->status_name }}
-                                </span>
+                                        <flux:menu>
 
-                                @else
+                                            @if ($request->record_type === 'CPAR')
 
-                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-zinc-100 text-zinc-800 dark:bg-zinc-700 dark:text-zinc-300">
-                                    {{ $request->status_name }}
-                                </span>
+                                                <flux:menu.item
+                                                    icon="arrow-path"
+                                                    wire:click="UpdateAssign({{ $request->record_id }})"
+                                                >
+                                                    Re-Assign
+                                                </flux:menu.item>
 
-                                @endif
+                                            @elseif ($request->record_type === 'RESULT')
 
-                            </td>
+                                                <flux:menu.item
+                                                    icon="arrow-path"
+                                                    wire:click="viewResultDetails({{ $request->result_id }})"
+                                                >
+                                                    Re-Assign
+                                                </flux:menu.item>
 
+                                            @endif
 
-                            {{-- ACTION --}}
-                            <td class="px-4 py-3 text-center">
+                                        </flux:menu>
 
-                                <flux:dropdown align="end">
+                                    </flux:dropdown>
 
-                                    <flux:button
-                                        size="sm"
-                                        variant="ghost"
-                                        icon="ellipsis-vertical" />
+                                </td>
 
-                                    <flux:menu>
-
-                                        {{-- CPAR --}}
-                                        @if ($request->record_type === 'CPAR')
-                                        <flux:menu.item
-                                            icon="arrow-path"
-                                            wire:click="UpdateAssign({{ $request->record_id }})">
-                                            Re-Assign
-                                        </flux:menu.item>
-                                        {{-- RESULT ERROR --}}
-                                        @elseif ($request->record_type === 'RESULT')
-                                        <flux:menu.item
-                                            icon="arrow-path"
-                                            wire:click="viewResultDetails({{ $request->result_id }})">
-                                            Re-Assign
-                                        </flux:menu.item>
-                                        @endif
-
-                                    </flux:menu>
-
-                                </flux:dropdown>
-
-                            </td>
-
-                        </tr>
+                            </tr>
 
                         @empty
 
-                        <tr>
+                            <tr>
 
-                            <td
-                                colspan="8"
-                                class="px-4 py-10 text-center text-zinc-500 dark:text-zinc-400">
-                                No HR requests found.
-                            </td>
+                                <td
+                                    colspan="7"
+                                    class="px-4 py-10 text-center
+                                           text-zinc-500 dark:text-zinc-400"
+                                >
+                                    No HR requests found.
+                                </td>
 
-                        </tr>
+                            </tr>
 
                         @endforelse
 
@@ -207,6 +250,11 @@
 
             </div>
 
+            <div class="pt-2 text-xs text-zinc-500 dark:text-zinc-400 sm:hidden">
+                Swipe left or right to view all columns.
+            </div>
+
         </div>
+
     </flux:modal>
 </div>

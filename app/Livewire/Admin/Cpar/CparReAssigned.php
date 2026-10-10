@@ -278,7 +278,7 @@ class CparReAssigned extends Component
 
             DB::table('audit_logs')->insert([
                 'user_reported_by'  => $this->employeeName,
-                'user_reported'     => json_encode(array_values(array_merge([$mainAssignee], $additionalAssignees))),
+                'user_reported'     => $mainAssignee,
                 'action'            => $mainAssignment->wasRecentlyCreated ? 'CREATED' : 'ASSIGNED',
                 'old_value'         => $oldValue ? json_encode($oldValue) : null,
                 'new_value'         => json_encode($newValue),
@@ -296,7 +296,7 @@ class CparReAssigned extends Component
             'remarks',
         ]);
 
-        $this->dispatch('toast', type: 'success', message: 'CPAR successfully assigned.');
+        $this->dispatch('toast', type: 'success', message: 'CPAR Successfully assigned.');
         $this->dispatch('modal-close', name: 'reassign-cpar');
         $this->dispatch('modal-close', name: 'CPARHRModal');
         $this->dispatch('refreshNotificationCount');

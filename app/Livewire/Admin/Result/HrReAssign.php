@@ -2,12 +2,14 @@
 
 namespace App\Livewire\Admin\Result;
 
+use App\Models\audit_logs;
 use Illuminate\Support\Facades\Auth;
 use App\Models\employee;
 use App\Models\result_error_data_informations;
 use App\Models\result_error_quality_accuracies;
 use App\Models\result_error_technical_equipments;
 use App\Models\cpar_assignments;
+use App\Models\result_error_form;
 use Illuminate\Support\Facades\DB;
 
 use Livewire\Component;
@@ -254,65 +256,80 @@ class HrReAssign extends Component
     public function reassignResult()
     {
         $this->validate([
-            'assigned_to' => 'required',
+            'assigned_to'        => 'required',
             'assignment_remarks' => 'required|string',
         ]);
 
         DB::transaction(function () {
+
+            $result = result_error_form::where(
+                'id',
+                $this->result_id
+            )->first();
+
+            if (!$result) {
+                return;
+            }
+
+            $reportedBy = $result->reported_by;
 
             $mainResultAssignment = cpar_assignments::where(
                 'id',
                 $this->assignment_id
             )->first();
 
-            if ($mainResultAssignment) {
+            $oldAssignedTo = $mainResultAssignment
+                ? $mainResultAssignment->assigned_to
+                : null;
 
-                $mainResultAssignment->update([
-                    'assigned_to'   => (int) $this->assigned_to,
-                    'assigned_date' => now(),
-                    'remarks'       => $this->assignment_remarks,
-                    'status_id'     => 10,
-                ]);
-            } else {
-                $mainResultAssignment = cpar_assignments::create([
-                    'result_id'          => $this->result_id,
-                    'employee_no'        => $this->employee_no,
-                    'assigned_to'        => (int) $this->assigned_to,
-                    'department_id'      => $this->department_id,
-                    'dept_head_assigned' => $this->dept_head_assigned,
-                    'assigned_date'      => now(),
-                    'remarks'            => $this->assignment_remarks,
-                    'status_id'          => 10,
-                    'record_type'        => 10,
-                    'created_by'         => auth()->id(),
-                ]);
-            }
+            $allAssignees = collect([
+                $this->assigned_to,
+                ...($this->new_assignees ?? []),
+            ])
+                ->filter(fn($id) => filled($id))
+                ->map(fn($id) => (int) $id)
+                ->unique()
+                ->values()
+                ->toArray();
 
-            foreach ($this->new_assignees as $employeeId) {
+            $assignedEmployees = [];
 
-                // Skip empty select
-                if (blank($employeeId)) {
+            foreach ($allAssignees as $employeeId) {
+
+                if (
+                    $mainResultAssignment &&
+                    (int) $mainResultAssignment->assigned_to === $employeeId
+                ) {
+
+                    $mainResultAssignment->update([
+                        'assigned_date' => now(),
+                        'remarks'       => $this->assignment_remarks,
+                        'status_id'     => 10,
+                    ]);
+
+                    $assignedEmployees[] = $employeeId;
+
                     continue;
                 }
 
-                $employeeId = (int) $employeeId;
-
-                if ($employeeId === (int) $this->assigned_to) {
-                    continue;
-                }
-
-                $exists = cpar_assignments::where(
+                $existingAssignment = cpar_assignments::where(
                     'result_id',
                     $this->result_id
                 )
-                    ->where(
-                        'assigned_to',
-                        $employeeId
-                    )
-                    ->exists();
+                    ->where('record_type', 10)
+                    ->where('assigned_to', $employeeId)
+                    ->first();
 
+                if ($existingAssignment) {
 
-                if ($exists) {
+                    $existingAssignment->update([
+                        'assigned_date' => now(),
+                        'remarks'       => $this->assignment_remarks,
+                        'status_id'     => 10,
+                    ]);
+
+                    $assignedEmployees[] = $employeeId;
+
                     continue;
                 }
 
@@ -326,13 +343,46 @@ class HrReAssign extends Component
                     'remarks'            => $this->assignment_remarks,
                     'status_id'          => 10,
                     'record_type'        => 10,
-                    'created_by'         => auth()->id(),
+                    'created_by'         => Auth::id(),
                 ]);
+
+                $assignedEmployees[] = $employeeId;
             }
+
             cpar_assignments::where('result_id', $this->result_id)
+                ->where('record_type', 10)
                 ->update([
                     'status_id' => 10,
                 ]);
+
+            foreach ($assignedEmployees as $employeeId) {
+
+                $oldValue = [
+                    'assigned_to' => $oldAssignedTo,
+                    'status_id'   => 5,
+                ];
+
+                $newValue = [
+                    'user_reported_by'   => $reportedBy,
+                    'result_id'          => $this->result_id,
+                    'assigned_to'        => $employeeId,
+                    'assignment_remarks' => $this->assignment_remarks,
+                    'status_id'          => 10,
+                    'record_type'        => 10,
+                    'reassigned_by'      => Auth::id(),
+                    'date_reassigned'    => now(),
+                ];
+
+                audit_logs::create([
+                    'user_reported_by'  => $reportedBy,
+                    'user_reported'     => $employeeId,
+                    'action'            => 'REASSIGNED',
+                    'old_value'         => json_encode($oldValue),
+                    'new_value'         => json_encode($newValue),
+                    'status_changed_by' => Auth::id(),
+                    'date'              => now(),
+                ]);
+            }
         });
 
         $this->reset([
@@ -347,8 +397,16 @@ class HrReAssign extends Component
             message: 'Result successfully reassigned.'
         );
 
-        $this->dispatch('modal-close', name: 'hr-reassign-result');
-        $this->dispatch('modal-close', name: 'CPARHRModal');
+        $this->dispatch(
+            'modal-close',
+            name: 'hr-reassign-result'
+        );
+
+        $this->dispatch(
+            'modal-close',
+            name: 'CPARHRModal'
+        );
+
         $this->dispatch('refreshHRData');
         $this->dispatch('refreshHRCount');
     }

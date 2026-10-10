@@ -254,6 +254,7 @@ class HrDecisionModal extends Component
         $this->current_nte_attachment = $cpar->response_attachment ?? '';
         // Clear HR decision fields
         $this->hr_decision = '';
+        // nte attachment
         // Open modal
         $this->modal('hr-decision-cpar')->show();
     }
@@ -478,7 +479,7 @@ class HrDecisionModal extends Component
             'ir_attachment' =>
             $oldIr?->ir_attachment
                 ?? $this->current_ir_attachment,
-            'status' => $oldRecord?->status ?? 'FOR REVIEW',
+            'status' => $oldRecord?->status ?? 'ACKNOWLEDGED BY HR',
         ];
 
         cpar_employee_disciplinary_records::updateOrCreate(
@@ -529,7 +530,7 @@ class HrDecisionModal extends Component
         }
 
         DB::table('audit_logs')->insert([
-            'user_reported_by'       => $this->employeeName,
+            'user_reported_by'       => $this->reported_by,
             'user_reported'     => $this->assigned_to,
             'action' => 'HR DECISION',
             'old_value' => json_encode(
@@ -549,11 +550,11 @@ class HrDecisionModal extends Component
                 'nte_attachment' => $nteAttachment,
                 'ir_attachment' => $irAttachment,
                 'status' => 'HR DECISION',
-            ], JSON_UNESCAPED_UNICODE),
-            'status_changed_by' => $this->user_id,
-            'date'       => now(),
-            'created_at' => now(),
-            'updated_at' => now(),
+                ], JSON_UNESCAPED_UNICODE),
+                'status_changed_by' => $this->user_id,
+                'date'       => now(),
+                'created_at' => now(),
+                'updated_at' => now(),
         ]);
     }
 

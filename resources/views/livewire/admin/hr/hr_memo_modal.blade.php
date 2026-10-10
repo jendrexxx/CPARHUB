@@ -568,6 +568,24 @@
                         display: none;
                     }
 
+                    .memo-content-separator2 {
+                        display: none;
+                    }
+
+                    .memo-text-field {
+                        margin: 0 !important;
+                        padding: 0 !important;
+                        width: 100% !important;
+                        text-align: left !important;
+                        text-indent: 0 !important;
+                        white-space: pre-wrap !important;
+                        overflow-wrap: break-word !important;
+                        word-break: normal !important;
+                        font-family: Arial, Helvetica, sans-serif !important;
+                        font-size: 10pt !important;
+                        line-height: 1.3 !important;
+                    }
+
                     @media print {
 
                         @page {
@@ -578,20 +596,16 @@
                         html,
                         body {
                             width: 210mm !important;
-                            height: 297mm !important;
-
+                            min-height: 297mm !important;
                             margin: 0 !important;
                             padding: 0 !important;
-
                             background: #fff !important;
                         }
 
-                        /* Hide everything */
                         body.hr-memo-printing * {
                             visibility: hidden !important;
                         }
 
-                        /* Show memo only */
                         body.hr-memo-printing .memo-print-wrapper-sample,
                         body.hr-memo-printing .memo-print-wrapper-sample * {
                             visibility: visible !important;
@@ -599,41 +613,30 @@
 
                         body.hr-memo-printing .memo-print-wrapper-sample {
                             display: block !important;
-
                             position: absolute !important;
                             top: 0 !important;
                             left: 0 !important;
-
                             width: 180mm !important;
                             height: auto !important;
-
                             margin: 0 !important;
                             padding: 0 !important;
-
                             background: #fff !important;
-
                             overflow: visible !important;
                         }
 
                         body.hr-memo-printing .memo-form-sample {
                             display: block !important;
-
                             width: 180mm !important;
                             max-width: 180mm !important;
-
                             min-height: 0 !important;
                             height: auto !important;
-
                             margin: 0 !important;
                             padding: 0 !important;
-
                             background: #fff !important;
                             color: #000 !important;
-
                             font-family: Arial, Helvetica, sans-serif !important;
                             font-size: 10pt !important;
                             line-height: 1.25 !important;
-
                             box-sizing: border-box !important;
                         }
 
@@ -643,9 +646,10 @@
                             align-items: center !important;
                             width: 100% !important;
                             max-width: 100% !important;
-                            margin: 0 0 0px 55px !important;
+                            margin: 0 0 0 55px !important;
                             padding: 0 !important;
                             text-align: center !important;
+                            box-sizing: border-box !important;
                         }
 
                         body.hr-memo-printing .memo-logo img {
@@ -660,169 +664,201 @@
 
                         body.hr-memo-printing .memo-field {
                             display: grid !important;
-
                             grid-template-columns: 70px 1fr !important;
                             column-gap: 12px !important;
-
                             width: 100% !important;
-
                             margin: 0 0 7px 0 !important;
                             padding: 0 !important;
-
                             align-items: start !important;
-
+                            box-sizing: border-box !important;
                             break-inside: avoid !important;
                             page-break-inside: avoid !important;
                         }
 
                         body.hr-memo-printing .memo-label {
                             display: block !important;
-
                             width: auto !important;
                             min-width: 0 !important;
-
                             margin: 0 !important;
                             padding: 0 !important;
-
                             font-weight: 700 !important;
                             font-size: 10pt !important;
                             line-height: 1.25 !important;
-
                             color: #000 !important;
-
                             white-space: nowrap !important;
                         }
 
                         body.hr-memo-printing .memo-input {
                             display: block !important;
-
                             width: 100% !important;
                             min-height: 0 !important;
-
                             margin: 0 !important;
                             padding: 0 !important;
-
                             border: 0 !important;
                             border-radius: 0 !important;
-
                             background: transparent !important;
                             color: #000 !important;
-
                             font-size: 10pt !important;
                             line-height: 1.25 !important;
-
                             text-transform: uppercase !important;
-
                             overflow-wrap: break-word !important;
                             word-break: normal !important;
+                            box-sizing: border-box !important;
                         }
 
                         body.hr-memo-printing .memo-content {
                             display: block !important;
-
                             width: 100% !important;
-
                             margin: 18px 0 0 0 !important;
                             padding: 0 !important;
-
                             break-inside: avoid !important;
                             page-break-inside: avoid !important;
                         }
 
                         body.hr-memo-printing .memo-content-label {
                             display: block !important;
-
                             margin: 0 0 6px 0 !important;
                             padding: 0 !important;
-
                             font-weight: 700 !important;
                             font-size: 10pt !important;
-
                             color: #000 !important;
                         }
 
                         body.hr-memo-printing .memo-content .memo-input {
                             display: block !important;
-
                             width: 100% !important;
-
                             margin: 0 !important;
                             padding: 0 !important;
-
                             line-height: 1.3 !important;
-
                             white-space: pre-wrap !important;
-
                             text-transform: uppercase !important;
+                        }
+
+                        body.hr-memo-printing .memo-text-field {
+                            display: block !important;
+                            width: 100% !important;
+                            max-width: 100% !important;
+                            margin: 0 !important;
+                            padding: 0 !important;
+                            text-align: left !important;
+                            text-indent: 0 !important;
+                            white-space: pre-wrap !important;
+                            overflow-wrap: break-word !important;
+                            word-break: normal !important;
+                            font-family: Arial, Helvetica, sans-serif !important;
+                            font-size: 10pt !important;
+                            line-height: 1.3 !important;
+                            color: #000 !important;
+                            box-sizing: border-box !important;
+                        }
+
+                        body.hr-memo-printing .memo-content-separator2 {
+                            display: block !important;
+                            width: 100% !important;
+                            height: 1px !important;
+                            margin: 8px 0 12px 0 !important;
+                            padding: 0 !important;
+                            border: 0 !important;
+                            border-top: 1px solid #000 !important;
+                            box-sizing: border-box !important;
                         }
 
                         body.hr-memo-printing .memo-signatory {
                             display: block !important;
-
                             width: 100% !important;
-
-                            margin-top: 20px !important;
+                            margin: 20px 0 0 0 !important;
                             padding: 0 !important;
-
                             break-inside: avoid !important;
                             page-break-inside: avoid !important;
                         }
 
                         body.hr-memo-printing .memo-signatory .memo-label {
-                            margin-bottom: 6px !important;
+                            display: block !important;
+                            width: auto !important;
+                            margin: 0 0 6px 0 !important;
+                            padding: 0 !important;
+                        }
+
+                        body.hr-memo-printing .memo-signature1 {
+                            display: block !important;
+                            width: 245px !important;
+                            max-width: 245px !important;
+                            min-height: 14px !important;
+                            height: auto !important;
+                            margin: 0 !important;
+                            padding: 0 0 2px 0 !important;
+                            border: 0 !important;
+                            border-bottom: 1px solid #000 !important;
+                            border-radius: 0 !important;
+                            background: transparent !important;
+                            color: #000 !important;
+                            font-family: Arial, Helvetica, sans-serif !important;
+                            font-size: 10pt !important;
+                            font-weight: 700 !important;
+                            line-height: 1.2 !important;
+                            text-align: left !important;
+                            text-transform: uppercase !important;
+                            white-space: normal !important;
+                            overflow-wrap: break-word !important;
+                            word-break: normal !important;
+                            box-sizing: border-box !important;
+                        }
+
+                        body.hr-memo-printing .memo-signatory>.memo-input {
+                            display: block !important;
+                            width: 245px !important;
+                            max-width: 245px !important;
+                            margin: 3px 0 0 0 !important;
+                            padding: 0 !important;
+                            font-size: 10pt !important;
+                            line-height: 1.2 !important;
+                            color: #000 !important;
+                            text-transform: uppercase !important;
                         }
 
                         body.hr-memo-printing .memo-conforme {
                             display: block !important;
-
                             width: 100% !important;
-
-                            margin-top: 28px !important;
+                            margin: 28px 0 0 0 !important;
                             padding: 0 !important;
-
                             break-inside: avoid !important;
                             page-break-inside: avoid !important;
                         }
 
                         body.hr-memo-printing .memo-conforme-label {
                             display: block !important;
-
                             margin: 0 0 25px 0 !important;
                             padding: 0 !important;
-
                             font-weight: 700 !important;
                             font-size: 10pt !important;
-
+                            line-height: 1.2 !important;
                             color: #000 !important;
                         }
 
                         body.hr-memo-printing .memo-signature {
                             display: block !important;
-
                             width: 245px !important;
-
+                            max-width: 245px !important;
                             margin: 0 !important;
                             padding: 0 0 2px 0 !important;
-
                             border-bottom: 1px solid #000 !important;
-
                             font-weight: 700 !important;
                             font-size: 10pt !important;
-
+                            line-height: 1.2 !important;
                             color: #000 !important;
+                            box-sizing: border-box !important;
                         }
 
                         body.hr-memo-printing .memo-position {
                             display: block !important;
-
                             width: 245px !important;
-
-                            margin-top: 3px !important;
+                            max-width: 245px !important;
+                            margin: 3px 0 0 0 !important;
                             padding: 0 !important;
-
                             font-size: 10pt !important;
-
+                            line-height: 1.2 !important;
                             color: #000 !important;
+                            box-sizing: border-box !important;
                         }
 
                         body.hr-memo-printing .memo-logo,
@@ -840,87 +876,8 @@
                             background: #fff !important;
                             box-sizing: border-box !important;
                         }
-
-                        .memo-content-separator2 {
-                            display: block !important;
-                            width: 100% !important;
-                            margin: 0 !important;
-                            padding: 0 !important;
-                            border-bottom: 1px solid black !important;
-                            height: 1px !important;
-                        }
-
-                        .memo-content-separator2 {
-                            display: block !important;
-
-                            width: 120% !important;
-                            height: 1px !important;
-
-                            margin: 8px 0 12px 0 !important;
-                            padding: 0 !important;
-
-                            border-top: 1px solid black !important;
-                        }
-
-                        body.hr-memo-printing .memo-signature {
-                            display: block !important;
-                            width: 245px !important;
-                            margin: 0 !important;
-                            padding: 0 0 2px 0 !important;
-
-                            border-bottom: 1px solid #000 !important;
-
-                            font-weight: 700 !important;
-                            font-size: 10pt !important;
-                            line-height: 1.2 !important;
-
-                            color: #000 !important;
-                            text-align: left !important;
-                        }
-                    }
-
-                    .memo-text-field {
-                        margin: 0 !important;
-                        padding: 0 !important;
-
-                        width: 100% !important;
-
-                        text-align: left !important;
-                        text-indent: 0 !important;
-
-                        white-space: pre-wrap !important;
-                        overflow-wrap: break-word !important;
-                        word-break: normal !important;
-
-                        font-family: Arial, Helvetica, sans-serif !important;
-                        font-size: 10pt !important;
-                        line-height: 1.3 !important;
-                    }
-
-                    @media print {
-                        .memo-text-field {
-                            margin: 0 !important;
-                            padding: 0 !important;
-
-                            width: 100% !important;
-                            max-width: 100% !important;
-
-                            text-align: left !important;
-                            text-indent: 0 !important;
-
-                            white-space: pre-wrap !important;
-                            overflow-wrap: break-word !important;
-                            word-break: normal !important;
-
-                            line-height: 1.3 !important;
-                        }
-                    }
-
-                    .memo-content-separator2 {
-                        display: none;
                     }
                 </style>
-
 
                 {{-- MEMO ATTACHMENT --}}
                 <div
@@ -1058,7 +1015,6 @@
 
         <div class="memo-form-sample">
 
-            {{-- LOGO --}}
             <div class="memo-logo">
                 <img
                     src="{{ asset('logo/premierelaboratory_cover.jpg') }}"
@@ -1066,7 +1022,6 @@
                     class="mx-auto h-auto">
             </div>
 
-            {{-- SUBJECT --}}
             <div class="memo-field">
                 <div class="memo-label">
                     SUBJECT:
@@ -1077,7 +1032,6 @@
                 </div>
             </div>
 
-            {{-- DATE --}}
             <div class="memo-field">
                 <div class="memo-label">
                     DATE:
@@ -1088,8 +1042,6 @@
                 </div>
             </div>
 
-
-            {{-- TO --}}
             <div class="memo-field">
                 <div class="memo-label">
                     TO:
@@ -1100,8 +1052,6 @@
                 </div>
             </div>
 
-
-            {{-- FROM --}}
             <div class="memo-field">
                 <div class="memo-label">
                     FROM:
@@ -1112,8 +1062,6 @@
                 </div>
             </div>
 
-
-            {{-- RE --}}
             <div class="memo-field">
                 <div class="memo-label">
                     RE:
@@ -1126,26 +1074,28 @@
 
             <div class="memo-content-separator2"></div>
 
-            {{-- MEMO CONTENT --}}
             <div class="memo-content">
-                <div class="memo-text-field">{{ strtoupper($memo_content ?? '') }}</div>
+                <div class="">
+                    {{ strtoupper($memo_content ?? '') }}
+                </div>
             </div>
 
-
-            {{-- SIGNATORY --}}
             <div class="memo-signatory">
+
                 <div class="memo-label">
                     SIGNATORY:
                 </div>
-                <div class="memo-signature">
-                    {{ $signatory ?? '' }}
+
+                <div class="memo-signature1">
+                    {{ strtoupper($signatory ?? '') }}
                 </div>
+
                 <div class="memo-input">
-                    {{ $signatory_position ?? '' }}
+                    {{ strtoupper($signatory_position ?? '') }}
                 </div>
+
             </div>
 
-            {{-- CONFORME --}}
             <div class="memo-conforme">
 
                 <div class="memo-conforme-label">
@@ -1153,11 +1103,11 @@
                 </div>
 
                 <div class="memo-signature">
-                    {{ $full_name ?? '' }}
+                    {{ strtoupper($full_name ?? '') }}
                 </div>
 
                 <div class="memo-position">
-                    {{ $position_name ?? '' }}
+                    {{ strtoupper($position_name ?? '') }}
                 </div>
 
             </div>
@@ -1165,19 +1115,23 @@
         </div>
     </div>
 
-
     <script>
         function HRprintMemo(memoId) {
             const memo = document.getElementById('memo-print-test-' + memoId);
+
             if (!memo) {
                 console.error('Memo print element not found:', memoId);
                 return;
             }
+
             document.body.classList.add('hr-memo-printing');
+
             window.print();
+
             setTimeout(() => {
                 document.body.classList.remove('hr-memo-printing');
             }, 500);
         }
     </script>
+
 </div>

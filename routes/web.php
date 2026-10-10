@@ -11,6 +11,9 @@ use App\Livewire\Admin\Reports\ExcelAll;
 use App\Livewire\Admin\Reports\Pdf;
 use App\Livewire\Admin\Reports\PdfAll;
 use App\Livewire\Admin\Reports\ResultPdf;
+use App\Livewire\Admin\Setup\Index;
+use App\Livewire\Admin\Setup\OtherSetup;
+use App\Livewire\Admin\Setup\ResultSetup;
 use App\Livewire\System\Setup;
 use App\Livewire\User\UserDashboard;
 use Illuminate\Support\Facades\Route;
@@ -42,6 +45,8 @@ Route::middleware(['auth', 'verified', 'session.timeout'])->group(function () {
     Route::get('/cpar-report', CparReports::class)->name('cpar-report');
     Route::get('/cpar-master-file', CparMasterFile::class)->name('cpar-master-file');
     Route::get('/result-request-form', ResultRequestForm::class)->name('user.result.result_request_form');
+    Route::get('/result-setup', ResultSetup::class)->name('result-setup');
+    Route::get('/others-setup', OtherSetup::class)->name('others-setup');
 });
 
 Route::middleware([

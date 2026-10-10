@@ -99,7 +99,6 @@ class HrHeadDashboard extends Component
             ->where('d.record_type', 10)
             ->where('i.branch_id', $this->branch_id)
             ->count(DB::raw('DISTINCT a.id'));
-
         // Combined count
         $this->hr_request_count = $cparCount + $resultCount;
     }
@@ -157,6 +156,7 @@ class HrHeadDashboard extends Component
 
         $this->hr_decision_count = $cparCount + $resultCount;
     }
+    
     public function loadMemoCount()
     {
         // Regular CPAR

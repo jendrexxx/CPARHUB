@@ -157,14 +157,22 @@
 
                         @case('status')
 
-                        <span class="px-2 py-1 rounded-full text-xs text-white
-                                                {{ strtolower($record->status) == 'active'
-                                                    ? 'bg-green-600'
-                                                    : 'bg-red-600' }}">
+                        @if ((int) $record->status === 1)
 
-                            {{ $record->status }}
-
+                        <span class="inline-flex items-center gap-1 rounded-full bg-green-100 px-2.5 py-1 text-xs font-semibold text-green-700">
+                            <span class="h-1.5 w-1.5 rounded-full bg-green-500"></span>
+                            Active
                         </span>
+
+                        @else
+
+                        <span class="inline-flex items-center gap-1 rounded-full bg-red-100 px-2.5 py-1 text-xs font-semibold text-red-700">
+                            <span class="h-1.5 w-1.5 rounded-full bg-red-500"></span>
+                            Inactive
+                        </span>
+
+                        @endif
+
 
                         @break
 

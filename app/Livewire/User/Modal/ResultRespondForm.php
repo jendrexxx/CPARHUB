@@ -171,7 +171,7 @@ class ResultRespondForm extends Component
         $this->priority = $result_assigned->priority_name;
         $this->complainant_name = $result_assigned->complainant_name;
         $this->assigned_to = $result_assigned->assigned_to;
-        $this->assignment_remarks = $result_assigned->remarks;
+        $this->assignment_remarks = strtoupper($result_assigned->remarks ?? '');
         $this->status = $result_assigned->status_name;
         $this->dept_head_assigned = $result_assigned->dept_head_assigned;
         $this->identified_cause = $result_assigned->identified_cause;
@@ -340,7 +340,6 @@ class ResultRespondForm extends Component
                 'action_taken_by'   => $oldInvestigation?->action_taken_by,
                 'date_completed'    => $oldInvestigation?->date_completed,
                 'tat'               => $oldInvestigation?->tat,
-
                 'ir_id'             => $oldIR?->ir_id,
                 'employee_no'       => $oldIR?->employee_no,
                 'ir_attachment'     => $oldIR?->ir_attachment,
@@ -359,7 +358,6 @@ class ResultRespondForm extends Component
                 'action_taken_by'   => $this->action_taken_by,
                 'date_completed'    => $this->date_completed,
                 'tat'               => $this->tat,
-
                 'ir_id'             => $savedIrId,
                 'employee_no'       => $this->employee_no,
                 'ir_attachment'     => $newAttachmentPath,
@@ -401,7 +399,7 @@ class ResultRespondForm extends Component
             }
 
             DB::table('audit_logs')->insert([
-                'user_reported_by' => $this->employeeName,
+                'user_reported_by' => $this->reported_by,
                 'user_reported' => is_array($this->assigned_to)
                     ? json_encode($this->assigned_to)
                     : $this->assigned_to,
@@ -442,7 +440,7 @@ class ResultRespondForm extends Component
         $this->dispatch(
             'toast',
             type: 'success',
-            message: 'RESULT response submitted successfully.'
+            message: 'Result response submitted successfully.'
         );
 
         $this->dispatch(

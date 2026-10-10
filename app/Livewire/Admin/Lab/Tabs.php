@@ -3,357 +3,482 @@
 namespace App\Livewire\Admin\Lab;
 
 use Livewire\Component;
+use Livewire\WithPagination;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Layout;
+use App\Models\employee;
 
 #[Layout('components.layouts.app')]
 class Tabs extends Component
 {
-    public $offenseTab = 'ALL';
-    public $offenseCategories = [];
+    use WithPagination;
     public $search = '';
-    public $cpar_offense = '';
-    public $offenseFilter = 'ALL';
-    public $categoryFilter = 'ALL';
-    public $departmentFilter = 'ALL';
-    public $statusFilter = 'ALL';
-    public $validityFilter = 'ALL';
-    public $disciplinaryCategories = [];
+    public $perPage = 5;
+    public $department_name = '';
 
     public function mount()
     {
-        $this->offenseCategories = DB::table('cpar_decision_categories')
-            ->orderBy('id')
-            ->get();
-        $this->disciplinaryCategories = DB::table('cpar_disciplinary_categories')
-            ->orderBy('id')
-            ->get();
-        $this->loadPreviousOffense();
+        $user = Auth::user();
+
+        $info = employee::where('email', $user->email)->first();
+
+        if ($info) {
+            $this->department_name = $info->department_name;
+        }
+    }
+
+    public function updatedSearch()
+    {
+        $this->resetPage();
+    }
+
+    public function updatedPerPage()
+    {
+        $this->resetPage();
     }
 
     public function updatedOffenseTab()
     {
         $this->search = '';
-        $this->loadPreviousOffense();
+
+        $this->resetPage();
     }
 
-    public function loadPreviousOffense()
+    public function updatedOffenseFilter()
     {
-        $this->cpar_offense = DB::table('cpar_request_forms as a')
+        $this->resetPage();
+    }
 
-            ->join(
-                'cpar_assignments as b',
-                'a.id',
-                '=',
-                'b.cpar_id'
-            )
+    public function updatedCategoryFilter()
+    {
+        $this->resetPage();
+    }
 
-            ->join(
-                'cpar_investigations as c',
-                'b.id',
-                '=',
-                'c.assigned_id'
-            )
+    public function updatedDepartmentFilter()
+    {
+        $this->resetPage();
+    }
 
+    public function updatedStatusFilter()
+    {
+        $this->resetPage();
+    }
+
+    public function updatedValidityFilter()
+    {
+        $this->resetPage();
+    }
+
+    public function clearSearch()
+    {
+        $this->search = '';
+
+        $this->resetPage();
+    }
+
+    public function render()
+    {
+        $cparQuery = DB::table('cpar_request_forms as a')
+            ->join('cpar_assignments as b', 'a.id', '=', 'b.cpar_id')
+            ->leftJoin('departments as c', 'a.department_id', '=', 'c.id')
+            ->leftJoin('cpar_statuses as d', 'b.status_id', '=', 'd.id')
+            ->leftJoin('employees as r', 'a.employee_no', '=', 'r.employee_no')
+            ->leftJoin('employees as e', 'b.assigned_to', '=', 'e.id')
+            ->leftJoin('cpar_ir_requests as f', 'b.id', '=', 'f.assignment_ir_id')
+            ->leftJoin('cpar_employee_disciplinary_records as g', 'b.id', '=', 'g.assignment_id')
+            ->leftJoin('cpar_notice_to_explains as h', 'f.id', '=', 'h.assignment_id')
             ->leftJoin(
-                'cpar_notice_to_explains as d',
-                'b.id',
-                '=',
-                'd.assignment_id'
-            )
-
-            ->join(
-                'departments as g',
-                'a.department_id',
-                '=',
-                'g.id'
-            )
-
-            ->join(
-                'cpar_statuses as h',
-                'b.status_id',
-                '=',
-                'h.id'
-            )
-
-            ->join(
-                'employees as i',
-                'b.assigned_to',
-                '=',
-                'i.id'
-            )
-
-            ->leftJoin(
-                'cpar_ir_requests as j',
-                'b.id',
-                '=',
-                'j.assignment_ir_id'
-            )
-
-            ->leftJoin(
-                'cpar_employee_disciplinary_records as k',
-                'b.id',
-                '=',
-                'k.assignment_id'
-            )
-
-            // OFFENSE
-            ->leftJoin(
-                'cpar_decision_categories as l',
-                DB::raw("
-                JSON_CONTAINS(
-                    k.offense_ids,
-                    JSON_QUOTE(CAST(l.id AS CHAR))
-                )
-            "),
+                'cpar_decision_categories as i',
+                DB::raw("JSON_CONTAINS(g.decision_ids, JSON_QUOTE(CAST(i.id AS CHAR)))"),
                 '=',
                 DB::raw('1')
             )
-
-            // CATEGORY
             ->leftJoin(
-                'cpar_disciplinary_categories as m',
-                DB::raw("
-                JSON_CONTAINS(
-                    k.discipline_ids,
-                    JSON_QUOTE(CAST(m.id AS CHAR))
-                )
-            "),
+                'cpar_disciplinary_categories as j',
+                DB::raw("JSON_CONTAINS(g.discipline_ids, JSON_QUOTE(CAST(j.id AS CHAR)))"),
                 '=',
                 DB::raw('1')
             )
-
+            ->leftJoin(
+                'cpar_offense_levels as k',
+                DB::raw("JSON_CONTAINS(g.offense_ids, JSON_QUOTE(CAST(k.id AS CHAR)))"),
+                '=',
+                DB::raw('1')
+            )
+            ->leftJoin('employees as l', 'b.dept_head_assigned', '=', 'l.id')
             ->select(
-
                 'a.id',
-                'a.cpar_no',
+                'a.cpar_no as record_no',
                 'a.reported_by',
-                'a.date_open',
+                'r.employee_no as reporter_employee_no',
+                'r.department_name as reporter_department_name',
+
+                DB::raw("
+                TRIM(CONCAT(
+                    COALESCE(r.first_name, ''),
+                    ' ',
+                    COALESCE(r.last_name, '')
+                )) as reporter_name
+            "),
+
+                'a.date_open as record_date',
+                DB::raw("'CPAR' as record_type"),
 
                 'b.id as assignment_id',
+                'b.cpar_id as record_id',
                 'b.assigned_to',
+                'b.dept_head_assigned',
+                'b.status_id',
 
-                'i.employee_no',
+                'e.employee_no',
+                'e.branch_id',
+                'e.department_name as assigned_department_name',
+
+                'l.employee_no as dept_head_employee_no',
 
                 DB::raw("
-                CONCAT(
-                    i.first_name,
-                    ' ',
-                    i.last_name
-                ) as employee_name
+                CASE
+                    WHEN e.id IS NOT NULL
+                        AND TRIM(CONCAT(
+                            COALESCE(e.first_name, ''),
+                            ' ',
+                            COALESCE(e.last_name, '')
+                        )) <> ''
+                    THEN TRIM(CONCAT(
+                        COALESCE(e.first_name, ''),
+                        ' ',
+                        COALESCE(e.last_name, '')
+                    ))
+                    WHEN l.id IS NOT NULL
+                        AND TRIM(CONCAT(
+                            COALESCE(l.first_name, ''),
+                            ' ',
+                            COALESCE(l.last_name, '')
+                        )) <> ''
+                    THEN TRIM(CONCAT(
+                        COALESCE(l.first_name, ''),
+                        ' ',
+                        COALESCE(l.last_name, '')
+                    ))
+                    ELSE NULL
+                END as employee_name
             "),
 
-                'd.nte_no',
+                DB::raw("
+                NULLIF(
+                    TRIM(CONCAT(
+                        COALESCE(l.first_name, ''),
+                        ' ',
+                        COALESCE(l.last_name, '')
+                    )),
+                    ''
+                ) as dept_head_name
+            "),
 
-                'g.department_name',
+                'c.department_name as department_name',
 
-                'h.status_name',
-
-                'j.ir_id',
-
-                'k.incident_date',
-                'k.valid_until',
+                DB::raw("MAX(g.incident_date) as incident_date"),
+                DB::raw("MAX(g.valid_until) as valid_until"),
 
                 DB::raw("
                 GROUP_CONCAT(
-                    DISTINCT l.decision_name
-                    ORDER BY l.id
+                    DISTINCT d.status_name
+                    ORDER BY d.id
+                    SEPARATOR ', '
+                ) as status_name
+            "),
+
+                DB::raw("
+                GROUP_CONCAT(
+                    DISTINCT h.nte_no
+                    ORDER BY h.id
+                    SEPARATOR ', '
+                ) as nte_no
+            "),
+
+                DB::raw("
+                GROUP_CONCAT(
+                    DISTINCT f.ir_id
+                    ORDER BY f.id
+                    SEPARATOR ', '
+                ) as ir_id
+            "),
+
+                DB::raw("
+                GROUP_CONCAT(
+                    DISTINCT i.decision_name
+                    ORDER BY i.id
                     SEPARATOR ', '
                 ) as decision_name
             "),
 
                 DB::raw("
                 GROUP_CONCAT(
-                    DISTINCT m.category_name
-                    ORDER BY m.id
+                    DISTINCT j.category_name
+                    ORDER BY j.id
                     SEPARATOR ', '
                 ) as category_name
             "),
 
                 DB::raw("
-                (
-                    SELECT COUNT(*)
-                    FROM cpar_employee_disciplinary_records r
-                    INNER JOIN cpar_assignments ca
-                        ON ca.id = r.assignment_id
-                    WHERE ca.assigned_to = b.assigned_to
-                    AND r.status = 'FINAL'
-                    AND r.assignment_id != b.id
-                ) as offense_count
+                GROUP_CONCAT(
+                    DISTINCT k.offense_name
+                    ORDER BY k.id
+                    SEPARATOR ', '
+                ) as offense_name
             ")
             )
-
-            ->whereIn('b.status_id', [43, 45])
-            ->when(
-                !empty($this->search),
-                function ($query) {
-
-                    $search = '%' . $this->search . '%';
-
-                    $query->where(function ($q) use ($search) {
-
-                        $q->where(
-                            'a.cpar_no',
-                            'like',
-                            $search
-                        )
-
-                            ->orWhere(
-                                'i.employee_no',
-                                'like',
-                                $search
-                            )
-
-                            ->orWhere(
-                                'i.first_name',
-                                'like',
-                                $search
-                            )
-
-                            ->orWhere(
-                                'i.last_name',
-                                'like',
-                                $search
-                            )
-
-                            ->orWhere(
-                                'g.department_name',
-                                'like',
-                                $search
-                            );
-                    });
-                }
-            )
-            ->when(
-                $this->offenseFilter !== 'ALL',
-                function ($query) {
-
-                    $query->whereRaw(
-                        "
-                    JSON_CONTAINS(
-                        k.offense_ids,
-                        JSON_QUOTE(
-                            CAST(? AS CHAR)
-                        )
-                    )
-                    ",
-                        [$this->offenseFilter]
-                    );
-                }
-            )
-            ->when(
-                $this->categoryFilter !== 'ALL',
-                function ($query) {
-
-                    $query->whereRaw(
-                        "
-                    JSON_CONTAINS(
-                        k.discipline_ids,
-                        JSON_QUOTE(
-                            CAST(? AS CHAR)
-                        )
-                    )
-                    ",
-                        [$this->categoryFilter]
-                    );
-                }
-            )
-
-            ->when(
-                $this->statusFilter !== 'ALL',
-                function ($query) {
-
-                    $query->where(
-                        'b.status_id',
-                        $this->statusFilter
-                    );
-                }
-            )
-
-            ->when(
-                $this->validityFilter === 'VALID',
-                function ($query) {
-
-                    $query->whereDate(
-                        'k.valid_until',
-                        '>=',
-                        now()->toDateString()
-                    );
-                }
-            )
-
-            ->when(
-                $this->validityFilter === 'EXPIRED',
-                function ($query) {
-
-                    $query->whereDate(
-                        'k.valid_until',
-                        '<',
-                        now()->toDateString()
-                    );
-                }
-            )
-
+            ->where('b.record_type', 5)
+            ->where('b.status_id', '!=', 50)
             ->groupBy(
-
                 'a.id',
                 'a.cpar_no',
                 'a.reported_by',
                 'a.date_open',
-
+                'r.employee_no',
+                'r.first_name',
+                'r.last_name',
+                'r.department_name',
                 'b.id',
+                'b.cpar_id',
                 'b.assigned_to',
+                'b.dept_head_assigned',
+                'b.status_id',
+                'e.id',
+                'e.employee_no',
+                'e.first_name',
+                'e.last_name',
+                'e.branch_id',
+                'e.department_name',
+                'l.id',
+                'l.employee_no',
+                'l.first_name',
+                'l.last_name',
+                'c.department_name'
+            );
 
-                'i.employee_no',
-                'i.first_name',
-                'i.last_name',
-
-                'd.nte_no',
-
-                'g.department_name',
-                'h.status_name',
-
-                'j.ir_id',
-
-                'k.incident_date',
-                'k.valid_until'
+        $resultQuery = DB::table('result_error_forms as a')
+            ->join('cpar_assignments as b', 'a.id', '=', 'b.result_id')
+            ->leftJoin('departments as c', 'a.department_id', '=', 'c.id')
+            ->leftJoin('cpar_statuses as d', 'b.status_id', '=', 'd.id')
+            ->leftJoin('employees as r', 'a.employee_no', '=', 'r.employee_no')
+            ->leftJoin('employees as e', 'b.assigned_to', '=', 'e.id')
+            ->leftJoin('cpar_ir_requests as f', 'b.id', '=', 'f.assignment_ir_id')
+            ->leftJoin('cpar_employee_disciplinary_records as g', 'b.id', '=', 'g.assignment_id')
+            ->leftJoin('cpar_notice_to_explains as h', 'f.id', '=', 'h.assignment_id')
+            ->leftJoin(
+                'cpar_decision_categories as i',
+                DB::raw("JSON_CONTAINS(g.decision_ids, JSON_QUOTE(CAST(i.id AS CHAR)))"),
+                '=',
+                DB::raw('1')
             )
+            ->leftJoin(
+                'cpar_disciplinary_categories as j',
+                DB::raw("JSON_CONTAINS(g.discipline_ids, JSON_QUOTE(CAST(j.id AS CHAR)))"),
+                '=',
+                DB::raw('1')
+            )
+            ->leftJoin(
+                'cpar_offense_levels as k',
+                DB::raw("JSON_CONTAINS(g.offense_ids, JSON_QUOTE(CAST(k.id AS CHAR)))"),
+                '=',
+                DB::raw('1')
+            )
+            ->leftJoin('employees as l', 'b.dept_head_assigned', '=', 'l.id')
+            ->select(
+                'a.id',
+                'a.result_no as record_no',
+                'a.reported_by',
+                'r.employee_no as reporter_employee_no',
+                'r.department_name as reporter_department_name',
 
-            ->orderByDesc('b.id')
+                DB::raw("
+                TRIM(CONCAT(
+                    COALESCE(r.first_name, ''),
+                    ' ',
+                    COALESCE(r.last_name, '')
+                )) as reporter_name
+            "),
 
-            ->get();
-    }
+                'a.date_reported as record_date',
+                DB::raw("'RESULT' as record_type"),
 
-    public function clearOffenseFilters()
-    {
-        $this->search = '';
+                'b.id as assignment_id',
+                'b.result_id as record_id',
+                'b.assigned_to',
+                'b.dept_head_assigned',
+                'b.status_id',
 
-        $this->offenseFilter = 'ALL';
+                'e.employee_no',
+                'e.branch_id',
+                'e.department_name as assigned_department_name',
 
-        $this->categoryFilter = 'ALL';
+                'l.employee_no as dept_head_employee_no',
 
-        $this->departmentFilter = 'ALL';
+                DB::raw("
+                CASE
+                    WHEN e.id IS NOT NULL
+                        AND TRIM(CONCAT(
+                            COALESCE(e.first_name, ''),
+                            ' ',
+                            COALESCE(e.last_name, '')
+                        )) <> ''
+                    THEN TRIM(CONCAT(
+                        COALESCE(e.first_name, ''),
+                        ' ',
+                        COALESCE(e.last_name, '')
+                    ))
+                    WHEN l.id IS NOT NULL
+                        AND TRIM(CONCAT(
+                            COALESCE(l.first_name, ''),
+                            ' ',
+                            COALESCE(l.last_name, '')
+                        )) <> ''
+                    THEN TRIM(CONCAT(
+                        COALESCE(l.first_name, ''),
+                        ' ',
+                        COALESCE(l.last_name, '')
+                    ))
+                    ELSE NULL
+                END as employee_name
+            "),
 
-        $this->statusFilter = 'ALL';
+                DB::raw("
+                NULLIF(
+                    TRIM(CONCAT(
+                        COALESCE(l.first_name, ''),
+                        ' ',
+                        COALESCE(l.last_name, '')
+                    )),
+                    ''
+                ) as dept_head_name
+            "),
 
-        $this->loadPreviousOffense();
-    }
+                'c.department_name as department_name',
 
-    public function updated($property)
-    {
-        if (in_array($property, [
-            'search',
-            'offenseFilter',
-            'categoryFilter',
-            'statusFilter',
-            'validityFilter',
-        ])) {
-            $this->loadPreviousOffense();
+                DB::raw("MAX(g.incident_date) as incident_date"),
+                DB::raw("MAX(g.valid_until) as valid_until"),
+
+                DB::raw("
+                GROUP_CONCAT(
+                    DISTINCT d.status_name
+                    ORDER BY d.id
+                    SEPARATOR ', '
+                ) as status_name
+            "),
+
+                DB::raw("
+                GROUP_CONCAT(
+                    DISTINCT h.nte_no
+                    ORDER BY h.id
+                    SEPARATOR ', '
+                ) as nte_no
+            "),
+
+                DB::raw("
+                GROUP_CONCAT(
+                    DISTINCT f.ir_id
+                    ORDER BY f.id
+                    SEPARATOR ', '
+                ) as ir_id
+            "),
+
+                DB::raw("
+                GROUP_CONCAT(
+                    DISTINCT i.decision_name
+                    ORDER BY i.id
+                    SEPARATOR ', '
+                ) as decision_name
+            "),
+
+                DB::raw("
+                GROUP_CONCAT(
+                    DISTINCT j.category_name
+                    ORDER BY j.id
+                    SEPARATOR ', '
+                ) as category_name
+            "),
+
+                DB::raw("
+                GROUP_CONCAT(
+                    DISTINCT k.offense_name
+                    ORDER BY k.id
+                    SEPARATOR ', '
+                ) as offense_name
+            ")
+            )
+            ->where('b.record_type', 10)
+            ->where('b.status_id', '!=', 50)
+            ->groupBy(
+                'a.id',
+                'a.result_no',
+                'a.reported_by',
+                'a.date_reported',
+                'r.employee_no',
+                'r.first_name',
+                'r.last_name',
+                'r.department_name',
+                'b.id',
+                'b.result_id',
+                'b.assigned_to',
+                'b.dept_head_assigned',
+                'b.status_id',
+                'e.id',
+                'e.employee_no',
+                'e.first_name',
+                'e.last_name',
+                'e.branch_id',
+                'e.department_name',
+                'l.id',
+                'l.employee_no',
+                'l.first_name',
+                'l.last_name',
+                'c.department_name'
+            );
+
+        $query = DB::query()
+            ->fromSub(
+                $cparQuery->unionAll($resultQuery),
+                'records'
+            );
+
+        $search = trim($this->search ?? '');
+
+        if ($search !== '') {
+            $search = '%' . $search . '%';
+
+            $query->where(function ($q) use ($search) {
+                $q->where('record_no', 'like', $search)
+                    ->orWhere('reported_by', 'like', $search)
+                    ->orWhere('reporter_name', 'like', $search)
+                    ->orWhere('reporter_employee_no', 'like', $search)
+                    ->orWhere('reporter_department_name', 'like', $search)
+                    ->orWhere('employee_name', 'like', $search)
+                    ->orWhere('employee_no', 'like', $search)
+                    ->orWhere('assigned_department_name', 'like', $search)
+                    ->orWhere('dept_head_name', 'like', $search)
+                    ->orWhere('dept_head_employee_no', 'like', $search)
+                    ->orWhere('department_name', 'like', $search)
+                    ->orWhere('record_type', 'like', $search)
+                    ->orWhere('status_name', 'like', $search)
+                    ->orWhere('decision_name', 'like', $search)
+                    ->orWhere('category_name', 'like', $search)
+                    ->orWhere('offense_name', 'like', $search)
+                    ->orWhere('nte_no', 'like', $search)
+                    ->orWhere('ir_id', 'like', $search);
+            });
         }
-    }
 
-    public function render()
-    {
-        return view('livewire.admin.lab.tabs');
+        $query->orderByDesc('assignment_id');
+
+        $cpar_offense = $query->paginate($this->perPage);
+
+        return view(
+            'livewire.admin.lab.tabs',
+            [
+                'cpar_offense' => $cpar_offense,
+            ]
+        );
     }
 }

@@ -694,7 +694,7 @@ class HrDecisionModal extends Component
             );
 
             DB::table('audit_logs')->insert([
-                'user_reported_by' => $this->employeeName,
+                'user_reported_by' => $this->reported_by,
                 'user_reported' => is_array($this->assigned_to)
                     ? json_encode($this->assigned_to)
                     : $this->assigned_to,
@@ -704,19 +704,19 @@ class HrDecisionModal extends Component
                     JSON_UNESCAPED_UNICODE
                 ),
                 'new_value' => json_encode([
-                    'result_no' => $this->result_no,
-                    'assigned_id' => $this->id,
-                    'discipline_ids' => $this->selectedCategories,
-                    'offense_ids' => $this->selectedOffenseLevels,
-                    'decision_ids' => $this->selectedHRDecisions,
-                    'incident_date' => $currentDate->format('Y-m-d'),
-                    'valid_until' => $validUntil->format('Y-m-d'),
-                    'offense_number' => $offenseCount,
-                    'hr_decision_remarks' => $this->hr_decision_remarks,
-                    'decision_status' => $status,
-                    'status' => 'HR DECISION RESULT',
+                'result_no' => $this->result_no,
+                'assigned_id' => $this->id,
+                'discipline_ids' => $this->selectedCategories,
+                'offense_ids' => $this->selectedOffenseLevels,
+                'decision_ids' => $this->selectedHRDecisions,
+                'incident_date' => $currentDate->format('Y-m-d'),
+                'valid_until' => $validUntil->format('Y-m-d'),
+                'offense_number' => $offenseCount,
+                'hr_decision_remarks' => $this->hr_decision_remarks,
+                'decision_status' => $status,
+                'status' => 'HR DECISION RESULT',
                 ], JSON_UNESCAPED_UNICODE),
-                'status_changed_by' => $this->employee_id,
+                'status_changed_by' => $this->user_id,
                 'date' => now(),
                 'created_at' => now(),
                 'updated_at' => now(),

@@ -1,168 +1,121 @@
 <div>
+
     <flux:modal
         name="HRMemoModal"
-        class="w-[120%] max-w-[1500px] mt-6 top-0 z-50">
-        <div class="space-y-6">
+        class="mt-4 w-[95vw] max-w-[1500px] sm:mt-6">
 
-            {{-- HEADER --}}
-            <div>
+        <div class="flex max-h-[85vh] min-w-0 flex-col">
+
+            <div class="shrink-0 space-y-1 pb-4">
                 <flux:heading size="lg">
                     Employees for Memo
                 </flux:heading>
 
-                <flux:text class="mt-1">
+                <flux:text>
                     Review employees who are subject to a memo based on the HR decision.
                 </flux:text>
             </div>
 
             <flux:separator />
 
-            {{-- SEARCH --}}
-            <div class="flex items-center gap-2">
+            <div
+                class="min-w-0 max-w-full overflow-x-auto overflow-y-auto
+                       overscroll-x-contain rounded-lg
+                       border border-zinc-200 dark:border-zinc-700">
 
-                <div class="flex-1">
-                    <flux:input
-                        wire:model.live.debounce.300ms="search"
-                        placeholder="Search CPAR / Result No., employee, department..."
-                        icon="magnifying-glass" />
-                </div>
+                <table class="min-w-[950px] w-full text-center text-sm">
 
-                @if ($search)
-                <flux:button
-                    variant="ghost"
-                    icon="x-mark"
-                    wire:click="$set('search', '')">
-                    Clear
-                </flux:button>
-                @endif
+                    <thead class="bg-red-800 text-xs tracking-wider text-white">
+                        <tr class="border-b-2 border-white/30">
 
-            </div>
-
-            {{-- TABLE --}}
-            <div class="w-full overflow-x-auto rounded-lg border border-zinc-200 dark:border-zinc-700">
-                <table class="w-full text-sm">
-
-                    {{-- TABLE HEADER --}}
-                    <thead class="bg-zinc-50 dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-700">
-
-                        <tr>
-
-                            <th class="px-4 py-3 text-center font-semibold">
+                            <th class="whitespace-nowrap px-3 py-3 font-bold text-white sm:px-4">
                                 Request No.
                             </th>
 
-                            <th class="px-4 py-3 text-center font-semibold">
+                            <th class="whitespace-nowrap px-3 py-3 font-bold text-white sm:px-4">
                                 Reported Employee
                             </th>
 
-                            <th class="px-4 py-3 text-center font-semibold">
-                                Priority level
+                            <th class="whitespace-nowrap px-3 py-3 font-bold text-white sm:px-4">
+                                Priority Level
                             </th>
 
-                            <th class="px-4 py-3 text-center font-semibold">
+                            <th class="whitespace-nowrap px-3 py-3 font-bold text-white sm:px-4">
                                 Documents
                             </th>
 
-                            <th class="px-4 py-3 text-center font-semibold">
+                            <th class="whitespace-nowrap px-3 py-3 font-bold text-white sm:px-4">
                                 Status
                             </th>
 
-                            <th class="px-4 py-3 text-center font-semibold">
+                            <th class="sticky right-0 whitespace-nowrap bg-red-800 px-3 py-3 text-center font-bold text-white sm:px-4">
                                 Action
                             </th>
 
                         </tr>
-
                     </thead>
 
-                    {{-- TABLE BODY --}}
                     <tbody class="divide-y divide-zinc-200 dark:divide-zinc-700">
 
                         @forelse ($hrMemoList as $record)
 
-                        <tr class="hover:bg-zinc-50 dark:hover:bg-zinc-800 transition text-center">
+                        <tr
+                            wire:key="hr-memo-{{ $record->record_type }}-{{ $record->assignment_id }}"
+                            class="transition hover:bg-zinc-50 dark:hover:bg-zinc-800/50">
 
-                            <!-- <td class="px-4 py-4 text-center">
-                                @php
-                                $offenseCount = (int) ($record->employee_disciplinary_count ?? 0);
-                                if ($offenseCount % 100 >= 11 && $offenseCount % 100 <= 13) {
-                                    $suffix='th' ;
-                                    } else {
-                                    $suffix=match ($offenseCount % 10) {
-                                    1=> 'st',
-                                    2 => 'nd',
-                                    3 => 'rd',
-                                    default => 'th',
-                                    };
-                                    }
+                            <td class="whitespace-nowrap px-3 py-4 sm:px-4">
 
-                                    $offenseOrdinal = $offenseCount > 0
-                                    ? $offenseCount . $suffix
-                                    : '0';
-
-                                    $offenseClass = match (true) {
-                                    $offenseCount === 0 =>
-                                    'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
-
-                                    $offenseCount >= 1 && $offenseCount <= 3=>
-                                        'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400',
-
-                                        $offenseCount >= 4 =>
-                                        'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400',
-
-                                        default =>
-                                        'bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300',
-                                        };
-                                        @endphp
-
-                                        <span
-                                            class="inline-flex size-8 items-center justify-center rounded-full text-sm font-bold {{ $offenseClass }}">
-                                            {{ $offenseOrdinal }}
-                                        </span>
-                            </td> -->
-
-                            {{-- RECORD NO --}}
-                            <td class="px-4 py-4 whitespace-nowrap">
                                 <div class="flex flex-col items-center gap-1">
+
                                     <div class="font-semibold text-zinc-900 dark:text-white">
                                         {{ $record->record_no }}
                                     </div>
 
-                                    <div class="mt-1 text-center">
-                                        @if ($record->record_type === 'CPAR')
-                                        <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-[10px] font-semibold
-                                            bg-red-100 text-red-700
-                                            dark:bg-red-950 dark:text-red-400">
-                                            CPAR
-                                        </span>
-                                        @else
-                                        <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-[10px] font-semibold
-                                            bg-blue-100 text-blue-700
-                                            dark:bg-blue-950 dark:text-blue-400">
-                                            RESULT
-                                        </span>
-                                        @endif
-                                    </div>
+                                    @if ($record->record_type === 'CPAR')
+
+                                    <span
+                                        class="inline-flex items-center rounded-full
+                                                       bg-red-100 px-2.5 py-0.5
+                                                       text-[10px] font-semibold text-red-700
+                                                       dark:bg-red-950 dark:text-red-400">
+                                        CPAR
+                                    </span>
+
+                                    @else
+
+                                    <span
+                                        class="inline-flex items-center rounded-full
+                                                       bg-blue-100 px-2.5 py-0.5
+                                                       text-[10px] font-semibold text-blue-700
+                                                       dark:bg-blue-950 dark:text-blue-400">
+                                        RESULT
+                                    </span>
+
+                                    @endif
+
                                 </div>
+
                             </td>
 
-                            {{-- EMPLOYEE --}}
-                            <td class="px-4 py-4">
+                            <td class="px-3 py-4 sm:px-4">
 
-                                <div class="font-medium text-zinc-900 dark:text-white">
+                                <div
+                                    class="font-medium text-zinc-900 dark:text-white"
+                                    title="{{ $record->employee_name }}">
                                     {{ $record->employee_name }}
                                 </div>
 
                                 @if (!empty($record->employee_no))
-                                <div class="text-xs text-zinc-500 dark:text-zinc-400">
+
+                                <div class="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
                                     {{ $record->employee_no }}
                                 </div>
+
                                 @endif
 
                             </td>
 
-                            {{-- PRIORITY --}}
-                            <td class="px-4 py-3">
+                            <td class="whitespace-nowrap px-3 py-4 sm:px-4">
 
                                 @php
                                 $priorityColor = match (
@@ -188,8 +141,8 @@
 
                                 <span
                                     class="inline-flex items-center gap-1.5
-                                               rounded-full px-2.5 py-1
-                                               text-xs font-semibold
+                                               whitespace-nowrap rounded-full
+                                               px-2.5 py-1 text-xs font-semibold
                                                ring-1 ring-inset
                                                {{ $priorityColor }}">
                                     {{ $record->priority_name ?? 'N/A' }}
@@ -197,11 +150,9 @@
 
                             </td>
 
+                            <td class="px-3 py-4 sm:px-4">
 
-                            {{-- DOCUMENTS --}}
-                            <td class="px-4 py-4">
-
-                                <div class="flex justify-center gap-2">
+                                <div class="flex flex-wrap justify-center gap-2">
 
                                     @if (!empty($record->ir_id))
 
@@ -224,7 +175,7 @@
                                     empty($record->nte_no)
                                     )
 
-                                    <span class="text-zinc-400">
+                                    <span class="text-zinc-400 dark:text-zinc-500">
                                         —
                                     </span>
 
@@ -234,9 +185,7 @@
 
                             </td>
 
-
-                            {{-- STATUS --}}
-                            <td class="px-4 py-4 text-center">
+                            <td class="whitespace-nowrap px-3 py-4 sm:px-4">
 
                                 <flux:badge color="yellow">
                                     {{ $record->status_name }}
@@ -244,9 +193,11 @@
 
                             </td>
 
+                            <td
+                                class="sticky right-0 whitespace-nowrap
+                                           bg-white px-3 py-4 text-center
+                                           dark:bg-zinc-900 sm:px-4">
 
-                            {{-- ACTION --}}
-                            <td class="px-4 py-3 text-center">
                                 <flux:dropdown align="end">
 
                                     <flux:button
@@ -256,31 +207,40 @@
                                         aria-label="Actions" />
 
                                     <flux:menu>
+
                                         @if ($record->record_type === 'CPAR')
+
                                         <flux:menu.item
                                             icon="eye"
                                             wire:click="viewMemo({{ $record->assignment_id }})">
                                             View Memo
                                         </flux:menu.item>
+
                                         @elseif ($record->record_type === 'RESULT')
+
                                         <flux:menu.item
                                             icon="eye"
                                             wire:click="viewResultMemo({{ $record->assignment_id }})">
                                             View Memo
                                         </flux:menu.item>
+
                                         @endif
+
                                     </flux:menu>
+
                                 </flux:dropdown>
+
                             </td>
 
                         </tr>
 
                         @empty
 
-                        {{-- EMPTY STATE --}}
                         <tr>
 
-                            <td colspan="8" class="px-4 py-12 text-center">
+                            <td
+                                colspan="6"
+                                class="px-4 py-12 text-center">
 
                                 <flux:icon
                                     name="check-circle"
@@ -289,29 +249,11 @@
                                 <flux:heading
                                     size="sm"
                                     class="mt-3">
-
-                                    @if ($search)
-                                    No Records Found
-                                    @else
                                     No Employees for Memo
-                                    @endif
-
                                 </flux:heading>
 
-                                <flux:text class="mt-1 text-zinc-500">
-
-                                    @if ($search)
-
-                                    No results found for
-                                    <strong>"{{ $search }}"</strong>.
-
-                                    @else
-
-                                    No employees are currently pending
-                                    for memo issuance.
-
-                                    @endif
-
+                                <flux:text class="mt-1 text-zinc-500 dark:text-zinc-400">
+                                    No employees are currently pending for HR memo.
                                 </flux:text>
 
                             </td>
@@ -323,7 +265,15 @@
                     </tbody>
 
                 </table>
+
             </div>
+
+            <div class="pt-2 text-xs text-zinc-500 dark:text-zinc-400 sm:hidden">
+                Swipe left or right to view all columns.
+            </div>
+
         </div>
+
     </flux:modal>
+
 </div>

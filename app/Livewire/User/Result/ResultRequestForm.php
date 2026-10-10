@@ -17,6 +17,7 @@ use App\Models\employee;
 use App\Models\result_complain_categories;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
+use App\Models\audit_logs;
 use Livewire\WithFileUploads;
 
 class ResultRequestForm extends Component
@@ -126,17 +127,17 @@ class ResultRequestForm extends Component
     public function save()
     {
         $this->validate([
-            'patient_name' => 'required',
+            'patient_name'          => 'required',
             'source_of_information' => 'required',
-            'concern_description' => 'required',
-            'attending_physician' => 'required',
-            'actual_released_date' => 'required',
-            'test_procedure' => 'required',
-            'complain_category_id' => 'required',
-            'complain_name' => 'required',
-            'priority' => 'required',
-            'dept_head_assigned' => 'required',
-            'department_name' => 'required',
+            'concern_description'   => 'required',
+            'attending_physician'   => 'required',
+            'actual_released_date'  => 'required',
+            'test_procedure'        => 'required',
+            'complain_category_id'  => 'required',
+            'complain_name'         => 'required',
+            'priority'              => 'required',
+            'dept_head_assigned'    => 'required',
+            'department_name'       => 'required',
         ]);
 
         $attachmentPath = null;
@@ -146,72 +147,117 @@ class ResultRequestForm extends Component
         }
 
         $result = result_error_form::create([
-            'result_no' => $this->result_no,
-            'employee_no' => $this->employee_no,
-            'reported_by' => $this->reported_by,
-            'date_reported' => now(),
-            'patient_name' => $this->patient_name,
-            'attending_physician' => $this->attending_physician,
-            'test_procedure' => $this->test_procedure,
-            'actual_released_date' => $this->actual_released_date,
-            'source_of_information' => $this->source_of_information,
-            'data_information' => json_encode($this->selectedData),
-            'technical_information' => json_encode($this->selectedTechnical),
-            'quality_information' => json_encode($this->selectedQuality),
-            'complainant_category' => $this->complain_category_id,
-            'complain_name' => $this->complain_name,
-            'concern_description' => $this->concern_description,
-            'department_id' => $this->department_id,
-            'priority_level' => $this->priority,
+            'result_no'               => $this->result_no,
+            'employee_no'             => $this->employee_no,
+            'reported_by'             => $this->reported_by,
+            'date_reported'           => now(),
+            'patient_name'            => $this->patient_name,
+            'attending_physician'     => $this->attending_physician,
+            'test_procedure'          => $this->test_procedure,
+            'actual_released_date'    => $this->actual_released_date,
+            'source_of_information'   => $this->source_of_information,
+            'data_information'       => json_encode($this->selectedData),
+            'technical_information'  => json_encode($this->selectedTechnical),
+            'quality_information'    => json_encode($this->selectedQuality),
+            'complainant_category'   => $this->complain_category_id,
+            'complain_name'          => $this->complain_name,
+            'concern_description'    => $this->concern_description,
+            'department_id'          => $this->department_id,
+            'priority_level'         => $this->priority,
         ]);
 
         cpar_assignments::create([
-            'result_id' => $result->id,
+            'result_id'          => $result->id,
             'dept_head_assigned' => $this->dept_head_assigned,
-            'department_id' => $this->department_id,
-            'status_id' => 1,
-            'record_type' => 10,
-            'created_by' => Auth::id(),
+            'department_id'     => $this->department_id,
+            'status_id'         => 1,
+            'record_type'       => 10,
+            'created_by'        => Auth::id(),
         ]);
 
         if ($attachmentPath) {
             cpar_attachments::create([
-                'result_id' => $result->id,
-                'file_name' => $this->concern_attachment->getClientOriginalName(),
-                'file_path' => $attachmentPath,
-                'file_type' => $this->concern_attachment->getMimeType(),
+                'result_id'   => $result->id,
+                'file_name'  => $this->concern_attachment->getClientOriginalName(),
+                'file_path'  => $attachmentPath,
+                'file_type'  => $this->concern_attachment->getMimeType(),
                 'uploaded_by' => Auth::id(),
             ]);
         } else {
             cpar_attachments::create([
-                'result_id' => $result->id,
+                'result_id'   => $result->id,
                 'uploaded_by' => Auth::id(),
             ]);
         }
 
+        $newValue = [
+            'result_no'              => $this->result_no,
+            'date_reported'          => now(),
+            'employee_no'            => $this->employee_no,
+            'reported_by'            => $this->reported_by,
+            'patient_name'           => $this->patient_name,
+            'attending_physician'    => $this->attending_physician,
+            'test_procedure'         => $this->test_procedure,
+            'actual_released_date'   => $this->actual_released_date,
+            'source_of_information'  => $this->source_of_information,
+            'data_information'       => $this->selectedData,
+            'technical_information'  => $this->selectedTechnical,
+            'quality_information'    => $this->selectedQuality,
+            'complain_category_id'   => $this->complain_category_id,
+            'complain_name'          => $this->complain_name,
+            'concern_description'    => $this->concern_description,
+            'department_id'          => $this->department_id,
+            'department_name'        => $this->department_name,
+            'priority_level'         => $this->priority,
+            'dept_head_assigned'     => $this->dept_head_assigned,
+            'attachment'             => $attachmentPath,
+        ];
+
+        audit_logs::create([
+            'user_reported_by'  => $this->reported_by,
+            'user_reported'     => $this->dept_head_assigned,
+            'action'            => 'CREATED',
+            'old_value'         => null,
+            'new_value'         => json_encode($newValue),
+            'status_changed_by' => Auth::id(),
+            'date'              => now(),
+        ]);
+
         $deptHead = DB::table('employees')
             ->where('id', $this->dept_head_assigned)
-            ->select(
-                'first_name',
-                'last_name',
-                'email'
-            )
+            ->select('first_name', 'last_name', 'email')
+            ->first();
+
+        $labSupervisor = DB::table('employees')
+            ->where('branch_id', $this->branch_id)
+            ->where('is_lab_sup', 1)
+            ->select('first_name', 'last_name', 'email')
             ->first();
 
         $prioritylevel = DB::table('priority_levels')
             ->where('id', $this->priority)
             ->value('priority_name');
+
         $recordType = 10;
 
-        if ($deptHead && !empty($deptHead->email)) {
+        foreach (
+            [
+                $deptHead,
+                $labSupervisor,
+            ] as $recipient
+        ) {
 
-            Mail::to($deptHead->email)
-                ->queue(new CparAssignedMail(
-                    $result,
-                    $deptHead,
-                    $prioritylevel,
-                    $recordType
-                ));
+            if ($recipient && !empty($recipient->email)) {
+                Mail::to($recipient->email)->queue(
+                    new CparAssignedMail(
+                        $result,
+                        $recipient,
+                        $prioritylevel,
+                        $recordType,
+                        $this->branch_id
+                    )
+                );
+            }
         }
 
         return redirect()

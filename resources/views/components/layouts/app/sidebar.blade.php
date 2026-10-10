@@ -8,7 +8,9 @@ $isAdminView = request()->routeIs([
     'hr_dashboard',
     'cpar-report',
     'cpar-master-file',
-    'lab_supervisor'
+    'lab_supervisor',
+    'result-setup',
+    'others-setup',
 ]);
 @endphp
 

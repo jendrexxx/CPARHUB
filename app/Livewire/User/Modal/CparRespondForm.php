@@ -703,8 +703,8 @@ class CparRespondForm extends Component
                 ]);
             }
         });
-        $this->dispatch('toast',type: 'success',message: 'CPAR response saved as draft.');
-        $this->dispatch('modal-close',name: 'respond-cpar');
+        $this->dispatch('toast', type: 'success', message: 'CPAR response saved as draft.');
+        $this->dispatch('modal-close', name: 'respond-cpar');
         $this->dispatch('refreshAssignedData');
         $this->dispatch('refreshAssignedCount');
     }

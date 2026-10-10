@@ -271,7 +271,7 @@ class ResultNte extends Component
             ];
 
             DB::table('audit_logs')->insert([
-                'user_reported_by'       => $this->employeeName,
+                'user_reported_by'       => $this->reported_by,
                 'user_reported'     => $this->assigned_to,
                 'action' => 'NTE RESPONSE SUBMITTED',
                 'old_value' => json_encode(

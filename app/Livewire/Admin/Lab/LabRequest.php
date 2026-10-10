@@ -282,7 +282,7 @@ class LabRequest extends Component
         $this->dispatch(
             'toast',
             type: 'success',
-            message: 'Others successfully verified by laboratory.'
+            message: 'CPAR successfully verified by laboratory.'
         );
 
         $this->dispatch(

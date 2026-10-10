@@ -278,12 +278,11 @@
                                     </flux:text>
                                 </div>
                             </div>
-
                             <flux:button
                                 size="sm"
                                 variant="ghost"
                                 icon="eye"
-                                href="{{ Storage::url($ir_attachment) }}"
+                                href="{{ Storage::url($existing_ir_attachment) }}"
                                 target="_blank">
                                 View PDF
                             </flux:button>

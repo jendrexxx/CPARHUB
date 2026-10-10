@@ -1,5 +1,7 @@
 <div>
-    <flux:modal name="LABrequest" class="w-[120%] max-w-[1500px] mt-6 top-0 z-50">
+    <flux:modal name="LABrequest" 
+        class="w-[120%] max-w-[1500px] mt-6 top-0 z-50">
+
         <div class="space-y-6">
             <div>
                 <flux:heading size="xl" class="font-bold">
@@ -67,7 +69,6 @@
                         wire:model="source_name"
                         readonly
                         class="opacity-60 cursor-not-allowed bg-zinc-100 dark:bg-zinc-800" />
-
 
                     {{-- COMPLAINANT --}}
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">

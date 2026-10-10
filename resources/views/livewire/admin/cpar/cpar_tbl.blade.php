@@ -56,52 +56,50 @@
 
             <table class="w-full min-w-[1200px] text-sm">
 
-                <thead class="bg-zinc-50 dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-700">
+                <thead class="bg-red-800 text-xs tracking-wider text-white">
+                    <tr class="border-b-2 border-white/30">
 
-                    <tr>
-
-                        <th class="px-4 py-3 text-center font-semibold text-zinc-700 dark:text-zinc-300">
+                        <th class="px-4 py-3 text-center font-bold uppercase text-white">
                             Type
                         </th>
 
-                        <th class="px-4 py-3 text-center font-semibold text-zinc-700 dark:text-zinc-300">
+                        <th class="px-4 py-3 text-center font-bold uppercase text-white">
                             Reported By
                         </th>
 
-                        <th class="px-4 py-3 text-center font-semibold text-zinc-700 dark:text-zinc-300">
+                        <th class="px-4 py-3 text-center font-bold uppercase text-white">
                             Employee Reported
                         </th>
 
-                        <th class="px-4 py-3 text-center font-semibold text-zinc-700 dark:text-zinc-300">
+                        <th class="px-4 py-3 text-center font-bold uppercase text-white">
                             Date Reported
                         </th>
 
-                        <th class="px-4 py-3 text-center font-semibold text-zinc-700 dark:text-zinc-300">
+                        <th class="px-4 py-3 text-center font-bold uppercase text-white">
                             Decision Name
                         </th>
 
-                        <th class="px-4 py-3 text-center font-semibold text-zinc-700 dark:text-zinc-300">
+                        <th class="px-4 py-3 text-center font-bold uppercase text-white">
                             Category Name
                         </th>
 
-                        <th class="px-4 py-3 text-center font-semibold text-zinc-700 dark:text-zinc-300">
+                        <th class="px-4 py-3 text-center font-bold uppercase text-white">
                             Offense Level
                         </th>
 
-                        <th class="px-4 py-3 text-center font-semibold text-zinc-700 dark:text-zinc-300">
+                        <th class="px-4 py-3 text-center font-bold uppercase text-white">
                             Documents
                         </th>
 
-                        <th class="px-4 py-3 text-center font-semibold text-zinc-700 dark:text-zinc-300">
+                        <th class="px-4 py-3 text-center font-bold uppercase text-white">
                             Status
                         </th>
 
-                        <th class="px-4 py-3 text-center font-semibold text-zinc-700 dark:text-zinc-300">
+                        <th class="px-4 py-3 text-center font-bold uppercase text-white">
                             Tracker
                         </th>
 
                     </tr>
-
                 </thead>
 
 

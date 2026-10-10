@@ -8,6 +8,7 @@ use Livewire\Component;
 use Illuminate\Support\Facades\Auth;
 use App\Models\employee;
 use App\Models\result_error_data_informations;
+use App\Models\result_error_form;
 use App\Models\result_error_quality_accuracies;
 use App\Models\result_error_technical_equipments;
 
@@ -20,7 +21,7 @@ class ResultAssign extends Component
         'assigned_to' => 'array',
     ];
     public $result_no = '', $reported_by = '', $patient_name = '', $attending_physician = '', $actual_released_date = '', $source_name = '', $complain_name = '', $concern_description = '', $department_name = '', $priority = '', $remarks = '', $status = '', $dept_head_assigned = '', $date_reported = '', $test_procedure = '', $complainant_name = '';
-    public $employeeName = '',$emp_reported = '',$id = '', $employee_no = '', $branch_id = '', $department_id = '', $assignment_remarks = '', $assignment_id = '', $result_id = '';
+    public $employeeName = '', $emp_reported = '', $id = '', $employee_no = '', $branch_id = '', $department_id = '', $assignment_remarks = '', $assignment_id = '', $result_id = '';
     public $employees = [];
     public $assigned_to = [];
     public $new_assignees = [];
@@ -161,26 +162,34 @@ class ResultAssign extends Component
     public function reassignResult()
     {
         $this->validate([
-            'assigned_to'       => 'required',
+            'assigned_to'        => 'required',
             'assignment_remarks' => 'required|string',
         ]);
+
         $mainAssignee = (int) $this->assigned_to;
+
         $additionalAssignees = collect($this->new_assignees ?? [])
-            ->filter(fn($id) => !empty($id))
+            ->filter(fn($id) => filled($id))
             ->map(fn($id) => (int) $id)
             ->values()
             ->toArray();
 
-        $allAssignees = array_merge(
-            [$mainAssignee],
-            $additionalAssignees
-        );
+        $allAssignees = collect([
+            $mainAssignee,
+            ...$additionalAssignees,
+        ])
+            ->unique()
+            ->values()
+            ->toArray();
 
-        if (count($allAssignees) !== count(array_unique($allAssignees))) {
+        if (count($allAssignees) !== count(
+            array_unique($allAssignees)
+        )) {
             $this->addError(
                 'assigned_to',
                 'The same employee cannot be assigned more than once.'
             );
+
             return;
         }
 
@@ -208,33 +217,49 @@ class ResultAssign extends Component
                 'assigned_to',
                 'One or more selected employees are already assigned to this Result.'
             );
+
             return;
         }
 
-        DB::transaction(function () use (
-            $mainAssignee,$additionalAssignees) {
+        DB::transaction(function () use ($mainAssignee, $additionalAssignees, $allAssignees) {
+
+            $result = cpar_assignments::where(
+                'id',
+                $this->result_id
+            )->first();
+
+            if (!$result) {
+                return;
+            }
+
             $mainAssignment = cpar_assignments::where(
                 'id',
                 $this->assignment_id
             )->first();
+
+            $oldStatus = null;
             $oldValue = null;
 
             if ($mainAssignment) {
+
                 $oldStatus = DB::table('cpar_statuses')
                     ->where('id', $mainAssignment->status_id)
                     ->value('status_name');
 
                 $oldValue = [
-                    'result_id'           => $this->result_id,
-                    'assigned_to'         => $mainAssignment->assigned_to,
-                    'additional_assignees' => [],
-                    'remarks'             => $mainAssignment->remarks,
-                    'status_id'           => $mainAssignment->status_id,
-                    'status_name'         => $oldStatus ?? 'UNKNOWN',
+                    'result_id'    => $this->result_id,
+                    'assigned_to'  => $mainAssignment->assigned_to,
+                    'remarks'      => $mainAssignment->remarks,
+                    'status_id'    => 1,
+                    'status_name'  => $oldStatus ?? 'UNKNOWN',
                 ];
             }
 
+            /*
+         * Create or update main assignment
+         */
             if (!$mainAssignment) {
+
                 $mainAssignment = cpar_assignments::create([
                     'result_id'          => $this->result_id,
                     'employee_no'        => $this->employee_no,
@@ -247,7 +272,10 @@ class ResultAssign extends Component
                     'record_type'        => 10,
                     'created_by'         => auth()->id(),
                 ]);
+
+                $mainAction = 'CREATED';
             } else {
+
                 $mainAssignment->update([
                     'employee_no'   => $this->employee_no,
                     'assigned_to'   => $mainAssignee,
@@ -256,9 +284,15 @@ class ResultAssign extends Component
                     'status_id'     => 5,
                     'record_type'   => 10,
                 ]);
+
+                $mainAction = 'ASSIGNED';
             }
 
+            /*
+         * Create assignments for additional employees
+         */
             foreach ($additionalAssignees as $employeeId) {
+
                 cpar_assignments::create([
                     'result_id'          => $this->result_id,
                     'employee_no'        => $this->employee_no,
@@ -273,47 +307,81 @@ class ResultAssign extends Component
                 ]);
             }
 
-            $newValue = [
-                'result_id'            => $this->result_id,
-                'assigned_to'          => $mainAssignee,
-                'additional_assignees' => array_values(
-                    $additionalAssignees
-                ),
-                'remarks'              => $this->assignment_remarks,
-                'status_id'            => 5,
-                'status_name'          => 'ASSIGNED',
-            ];
+            /*
+         * Create one audit log for EACH employee
+         */
+            foreach ($allAssignees as $employeeId) {
 
-            DB::table('audit_logs')->insert([
-                'user_reported_by'  => $this->employeeName,
-                'user_reported'     => json_encode(
-                    array_values(
-                        array_merge(
-                            [$mainAssignee],
-                            $additionalAssignees
-                        )
-                    )
-                ),
+                $employeeOldValue = null;
 
-                'action'            => $mainAssignment->wasRecentlyCreated
-                    ? 'CREATED'
-                    : 'ASSIGNED',
+                /*
+             * Old value is only applicable to the
+             * existing main assignment.
+             */
+                if (
+                    $mainAssignment &&
+                    (int) $mainAssignment->getOriginal('assigned_to') === $employeeId
+                ) {
+                    $employeeOldValue = [
+                        'result_id'   => $this->result_id,
+                        'assigned_to' => $mainAssignment->getOriginal('assigned_to'),
+                        'remarks'     => $mainAssignment->getOriginal('remarks'),
+                        'status_id'   => $mainAssignment->getOriginal('status_id'),
+                        'status_name' => $oldStatus ?? 'UNKNOWN',
+                    ];
+                }
 
-                'old_value'         => $oldValue
-                    ? json_encode($oldValue)
-                    : null,
-                'new_value'         => json_encode($newValue),
-                'status_changed_by' => $this->id,
-                'date'              => now(),
-                'created_at'        => now(),
-                'updated_at'        => now(),
-            ]);
+                $newValue = [
+                    'result_id'          => $this->result_id,
+                    'assigned_to'        => $employeeId,
+                    'remarks'            => $this->assignment_remarks,
+                    'status_id'          => 5,
+                    'status_name'        => 'ASSIGNED',
+                    'record_type'        => 10,
+                    'assigned_by'        => auth()->id(),
+                    'date_assigned'      => now(),
+                ];
+
+                DB::table('audit_logs')->insert([
+                    'user_reported_by'  => $this->reported_by,
+                    'user_reported'     => $employeeId,
+                    'action'            => $employeeId === $mainAssignee
+                        ? $mainAction
+                        : 'ASSIGNED',
+                    'old_value'         => $employeeOldValue
+                        ? json_encode($employeeOldValue)
+                        : ($oldValue ? json_encode($oldValue) : null),
+                    'new_value'         => json_encode($newValue),
+                    'status_changed_by' => auth()->id(),
+                    'date'              => now(),
+                    'created_at'        => now(),
+                    'updated_at'        => now(),
+                ]);
+            }
         });
 
-        $this->reset(['assigned_to','new_assignees','assignment_remarks',]);
-        $this->dispatch('toast', type: 'success', message: 'Result successfully assigned.');
-        $this->dispatch('modal-close', name: 'reassign-cpar');
-        $this->dispatch('modal-close', name: 'CPARHRModal');
+        $this->reset([
+            'assigned_to',
+            'new_assignees',
+            'assignment_remarks',
+        ]);
+
+        $this->dispatch(
+            'toast',
+            type: 'success',
+            message: 'Result successfully assigned.'
+        );
+
+        $this->dispatch(
+            'modal-close',
+            name: 'reassign-cpar'
+        );
+
+        $this->dispatch(
+            'modal-close',
+            name: 'CPARHRModal'
+        );
+
         $this->dispatch('refreshHeadRecords');
         $this->dispatch('refreshHeadCount');
     }

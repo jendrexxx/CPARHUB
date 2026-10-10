@@ -45,27 +45,24 @@ class Employees extends Component
                         ],
 
                         [
-
+                            'is_dept_head' => $emp['is_dept_head'] ?? null,
+                            'is_lab_sup' => $emp['is_lab_sup'] ?? null,
+                            'is_hr_head' => $emp['is_hr_head'] ?? null,
                             'first_name' => $emp['first_name'] ?? null,
                             'middle_name' => $emp['middle_name'] ?? null,
                             'last_name' => $emp['last_name'] ?? null,
                             'birth_date' => $emp['birth_date'] ?? null,
-
                             'department_name' => $emp['department'] ?? null,
                             'department_id' => $emp['department_id'] ?? null,
 
                             'date_hired' => $emp['date_hired'] ?? null,
                             'regularization_date' => $emp['regularization_date'] ?? null,
                             'probationary_date' => $emp['probationary_date'] ?? null,
-
                             'dept_head' => $emp['dept_head_id'] ?? null,
-
                             'branch_id' => $emp['branch_id'] ?? null,
                             'branch_name' => $emp['branch_name'] ?? null,
-
                             'position_id' => $emp['position_id'] ?? null,
                             'position_name' => $emp['position'] ?? null,
-
                             'status' => $emp['status'] ?? null,
                             'email' => $emp['email'] ?? null,
 

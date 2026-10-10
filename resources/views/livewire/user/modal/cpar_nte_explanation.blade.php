@@ -131,8 +131,6 @@
                         @endif
                     </div>
 
-
-                    {{-- NTE ATTACHMENT --}}
                     {{-- NTE ISSUED BY HR --}}
                     <div>
 

@@ -48,11 +48,12 @@
 
             </div>
 
-            <div class="overflow-x-auto rounded-lg border border-zinc-200 dark:border-zinc-700">
+            <div
+                class="w-full overflow-x-auto overflow-y-auto rounded-xl border border-zinc-200 dark:border-zinc-700"
+                style="max-height: 55vh;">
+                <table class="min-w-[1150px] w-full table-auto text-sm">
 
-                <table class="w-full text-sm text-center">
-
-                    <thead class="bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 uppercase text-xs tracking-wider">
+                    <thead class="bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 text-xs tracking-wider">
 
                         <tr>
 

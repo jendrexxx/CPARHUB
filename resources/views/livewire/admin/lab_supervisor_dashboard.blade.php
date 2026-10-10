@@ -30,8 +30,7 @@
                     <div class="text-2xl font-bold text-gray-900 dark:text-white">
                         {{ $assigned_count }}
                     </div>
-
-                    <div class="text-sm font-medium text-gray-600 dark:text-gray-400">
+                    <div class="text-[15px] font-bold text-gray-500 dark:text-zinc-400">
                         Re-Assigned Concern
                     </div>
                 </div>
@@ -58,7 +57,7 @@
                         {{ $cpar_request_count }}
                     </div>
 
-                    <div class="text-sm font-medium text-gray-600 dark:text-gray-400">
+                    <div class="text-[15px] font-bold text-gray-500 dark:text-zinc-400">
                         Reported Concern
                     </div>
                 </div>

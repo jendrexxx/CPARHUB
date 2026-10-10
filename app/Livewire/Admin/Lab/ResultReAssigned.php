@@ -10,6 +10,7 @@ use App\Models\result_error_quality_accuracies;
 use App\Models\result_error_technical_equipments;
 use App\Models\cpar_assignments;
 use Illuminate\Support\Facades\DB;
+use App\Models\audit_logs;
 
 class ResultReAssigned extends Component
 {
@@ -197,16 +198,28 @@ class ResultReAssigned extends Component
     public function reassignResult()
     {
         $this->validate([
-            'assigned_to' => 'required',
+            'assigned_to'        => 'required',
             'assignment_remarks' => 'required|string',
         ]);
 
         DB::transaction(function () {
 
+            $result = DB::table('result_error_forms')
+                ->where('id', $this->result_id)
+                ->first();
+
+            $reportedBy = $result?->reported_by;
+
             $mainResultAssignment = cpar_assignments::where(
                 'id',
                 $this->assignment_id
             )->first();
+
+            $oldAssignedTo = $mainResultAssignment
+                ? $mainResultAssignment->assigned_to
+                : null;
+
+            $assignedEmployees = [];
 
             if ($mainResultAssignment) {
 
@@ -215,7 +228,10 @@ class ResultReAssigned extends Component
                     'assigned_date' => now(),
                     'remarks'       => $this->assignment_remarks,
                 ]);
+
+                $assignedEmployees[] = (int) $this->assigned_to;
             } else {
+
                 $mainResultAssignment = cpar_assignments::create([
                     'result_id'          => $this->result_id,
                     'employee_no'        => $this->employee_no,
@@ -226,10 +242,12 @@ class ResultReAssigned extends Component
                     'remarks'            => $this->assignment_remarks,
                     'status_id'          => 5,
                     'record_type'        => 10,
-                    'created_by'         => auth()->id(),
+                    'created_by'         => Auth::id(),
                 ]);
 
                 $this->assignment_id = $mainResultAssignment->id;
+
+                $assignedEmployees[] = (int) $this->assigned_to;
             }
 
             foreach ($this->new_assignees as $employeeId) {
@@ -244,7 +262,10 @@ class ResultReAssigned extends Component
                     continue;
                 }
 
-                $exists = cpar_assignments::where('result_id', $this->result_id)
+                $exists = cpar_assignments::where(
+                    'result_id',
+                    $this->result_id
+                )
                     ->where('record_type', 10)
                     ->where('assigned_to', $employeeId)
                     ->exists();
@@ -263,9 +284,37 @@ class ResultReAssigned extends Component
                     'remarks'            => $this->assignment_remarks,
                     'status_id'          => 5,
                     'record_type'        => 10,
-                    'created_by'         => auth()->id(),
+                    'created_by'         => Auth::id(),
                 ]);
+
+                $assignedEmployees[] = $employeeId;
             }
+
+            $oldValue = [
+                'assigned_to' => $oldAssignedTo,
+            ];
+
+            $newValue = [
+                'result_id'          => $this->result_id,
+                'result_no'          => $result?->result_no,
+                'reported_by'        => $reportedBy,
+                'assigned_to'        => $assignedEmployees,
+                'assignment_remarks' => $this->assignment_remarks,
+                'status_id'          => 5,
+                'record_type'        => 10,
+                'reassigned_by'      => Auth::id(),
+                'date_reassigned'    => now(),
+            ];
+
+            audit_logs::create([
+                'user_reported_by'  => $reportedBy,
+                'user_reported'     => $this->assigned_to,
+                'action'            => 'CREATE_REASSIGNED',
+                'old_value'         => json_encode($oldValue),
+                'new_value'         => json_encode($newValue),
+                'status_changed_by' => Auth::id(),
+                'date'              => now(),
+            ]);
         });
 
         $this->reset([
@@ -280,8 +329,16 @@ class ResultReAssigned extends Component
             message: 'Result successfully reassigned.'
         );
 
-        $this->dispatch('modal-close', name: 'lab-reassign-result');
-        $this->dispatch('modal-close', name: 'LABAssignedModal');
+        $this->dispatch(
+            'modal-close',
+            name: 'lab-reassign-result'
+        );
+
+        $this->dispatch(
+            'modal-close',
+            name: 'LABAssignedModal'
+        );
+
         $this->dispatch('refresLABRData');
         $this->dispatch('refreshAssignedCount');
     }

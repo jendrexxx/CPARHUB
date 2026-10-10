@@ -9,7 +9,7 @@
         </p>
     </div>
     <livewire:common.custom-table
-        :model="'App\Models\Department'"
+        :model="'App\Models\department'"
         refreshEvent="refreshDepartments"
         :columns="[
             'id' => '#',

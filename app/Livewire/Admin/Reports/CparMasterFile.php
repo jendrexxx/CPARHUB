@@ -28,6 +28,11 @@ class CparMasterFile extends Component
         $this->dispatch('open-master-file', id: $assignment_id);
     }
 
+    public function viewResult($assignment_id = '')
+    {
+        $this->dispatch('result-master-file', id: $assignment_id);
+    }
+
     public function render()
     {
         $cpar = DB::table('cpar_request_forms as a')
@@ -196,6 +201,6 @@ class CparMasterFile extends Component
 
         $cpars = $records->paginate($this->perPage);
 
-        return view('livewire.admin.reports.cpar_master_file',['cpars' => $cpars,])->layout('layouts.app');
+        return view('livewire.admin.reports.cpar_master_file', ['cpars' => $cpars,])->layout('layouts.app');
     }
 }

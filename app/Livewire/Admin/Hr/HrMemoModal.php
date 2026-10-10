@@ -342,7 +342,7 @@ class HrMemoModal extends Component
             ],
 
             'memo_attachment' => [
-                'nullable',
+                'required',
                 'file',
                 'mimes:pdf',
                 'max:10240',

@@ -15,14 +15,9 @@
             </flux:text>
         </div>
 
-
         {{-- MAIN GRID --}}
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
-
-            {{-- ====================================================== --}}
-            {{-- LEFT : RESULT DETAILS --}}
-            {{-- ====================================================== --}}
             <div class="min-w-0 rounded-lg border-zinc-200 dark:border-zinc-700 p-5">
 
                 <div class="border-b border-zinc-200 dark:border-zinc-700 pb-4">
@@ -236,7 +231,6 @@
 
                 </div>
 
-
                 <div class="mt-5 space-y-5">
 
                     {{-- IDENTIFIED CAUSE --}}
@@ -343,7 +337,6 @@
                                 readonly
                                 class="opacity-60 cursor-not-allowed bg-zinc-100 dark:bg-zinc-800" />
                         </div>
-
 
                         {{-- REMARKS --}}
                         <div class="mt-4">

@@ -1,14 +1,12 @@
 <div>
 
-    {{-- CPAR / Result Error Submission Modal --}}
     <flux:modal
         name="CPARSubmissionModal"
-        class="w-[120%] max-w-[1500px] mt-6 top-0 z-50">
+        class="mt-4 w-[95vw] max-w-[1500px] sm:mt-6">
 
-        <div class="space-y-6">
+        <div class="flex max-h-[85vh] min-w-0 flex-col">
 
-            {{-- Header --}}
-            <div>
+            <div class="shrink-0 space-y-1 pb-4">
                 <flux:heading size="lg">
                     Acknowledgment Concern
                 </flux:heading>
@@ -18,67 +16,74 @@
                 </flux:text>
             </div>
 
+            <div
+                class="min-w-0 max-w-full overflow-x-auto overflow-y-auto
+                       overscroll-x-contain rounded-lg
+                       border border-zinc-200 dark:border-zinc-700">
 
-            {{-- Table --}}
-            <div class="w-full overflow-x-auto rounded-lg border border-zinc-200 dark:border-zinc-700">
+                <table class="min-w-[950px] w-full text-center text-sm">
 
-                <table class="w-full text-sm text-center">
+                    <thead class="bg-red-800 text-sm text-white">
+                        <tr class="border-b-2 border-white/30">
 
-                    <thead class="bg-zinc-100 dark:bg-zinc-800">
-
-                        <tr>
-
-                            <th class="px-4 py-3">
+                            <th class="whitespace-nowrap px-3 py-3 text-left font-bold text-white sm:px-4">
                                 Type
                             </th>
 
-                            <th class="px-4 py-3">
+                            <th class="whitespace-nowrap px-3 py-3 text-left font-bold text-white sm:px-4">
                                 Request No.
                             </th>
 
-                            <th class="px-4 py-3">
+                            <th class="whitespace-nowrap px-3 py-3 text-left font-bold text-white sm:px-4">
                                 Reported By
                             </th>
 
-                            <th class="px-4 py-3">
+                            <th class="whitespace-nowrap px-3 py-3 text-left font-bold text-white sm:px-4">
                                 Date Reported
                             </th>
 
-                            <th class="px-4 py-3">
+                            <th class="whitespace-nowrap px-3 py-3 text-left font-bold text-white sm:px-4">
                                 Assigned To
                             </th>
 
-                            <th class="px-4 py-3">
+                            <th class="whitespace-nowrap px-3 py-3 text-left font-bold text-white sm:px-4">
                                 Status
                             </th>
 
-                            <th class="px-4 py-3">
+                            <th class="sticky right-0 whitespace-nowrap bg-red-800 px-3 py-3 text-center font-bold text-white sm:px-4">
                                 Action
                             </th>
 
                         </tr>
-
                     </thead>
-
 
                     <tbody class="divide-y divide-zinc-200 dark:divide-zinc-700">
 
                         @forelse ($acknowledgment_requests as $request)
 
-                        <tr wire:key="acknowledgment-{{ $request->record_type }}-{{ $request->assignment_id }}">
+                        <tr
+                            wire:key="acknowledgment-{{ $request->record_type }}-{{ $request->assignment_id }}"
+                            class="hover:bg-zinc-50 dark:hover:bg-zinc-800/50">
 
-                            {{-- Type --}}
-                            <td class="px-4 py-3">
+                            <td class="whitespace-nowrap px-3 py-3 sm:px-4">
 
                                 @if ($request->record_type === 'CPAR')
 
-                                <span class="inline-flex items-center rounded-full bg-red-100 px-2.5 py-1 text-xs font-semibold text-red-700 dark:bg-red-900 dark:text-red-200">
+                                <span
+                                    class="inline-flex items-center rounded-full
+                                                   bg-red-100 px-2.5 py-1
+                                                   text-xs font-semibold text-red-700
+                                                   dark:bg-red-900 dark:text-red-200">
                                     CPAR
                                 </span>
 
                                 @else
 
-                                <span class="inline-flex items-center rounded-full bg-purple-100 px-2.5 py-1 text-xs font-semibold text-purple-700 dark:bg-purple-900 dark:text-purple-200">
+                                <span
+                                    class="inline-flex items-center rounded-full
+                                                   bg-purple-100 px-2.5 py-1
+                                                   text-xs font-semibold text-purple-700
+                                                   dark:bg-purple-900 dark:text-purple-200">
                                     RESULT ERROR
                                 </span>
 
@@ -86,57 +91,60 @@
 
                             </td>
 
-
-                            {{-- Request No --}}
-                            <td class="px-4 py-3 font-medium text-zinc-900 dark:text-zinc-100">
-
+                            <td
+                                class="whitespace-nowrap px-3 py-3 font-medium
+                                           text-zinc-900 dark:text-zinc-100 sm:px-4">
                                 {{ $request->record_no }}
-
                             </td>
 
-
-                            {{-- Reported By --}}
-                            <td class="px-4 py-3 text-zinc-700 dark:text-zinc-300">
-
+                            <td
+                                class="whitespace-nowrap px-3 py-3
+                                           text-zinc-700 dark:text-zinc-300 sm:px-4">
                                 {{ $request->reported_by }}
-
                             </td>
 
-
-                            {{-- Date Reported --}}
-                            <td class="px-4 py-3 text-zinc-700 dark:text-zinc-300">
-
+                            <td
+                                class="whitespace-nowrap px-3 py-3
+                                           text-zinc-700 dark:text-zinc-300 sm:px-4">
                                 {{ \Carbon\Carbon::parse($request->record_date)->format('M d, Y') }}
-
                             </td>
 
-                            {{-- Assigned Employee --}}
-                            <td class="px-4 py-3 text-zinc-700 dark:text-zinc-300">
-
+                            <td
+                                class="whitespace-nowrap px-3 py-3
+                                           text-zinc-700 dark:text-zinc-300 sm:px-4">
                                 {{ $request->first_name }}
                                 {{ $request->last_name }}
-
                             </td>
 
-
-                            {{-- Status --}}
-                            <td class="px-4 py-3">
+                            <td class="whitespace-nowrap px-3 py-3 sm:px-4">
 
                                 @if (in_array($request->status_name, ['PENDING', 'UNRESOLVED']))
 
-                                <span class="inline-flex items-center rounded-full bg-yellow-100 px-2.5 py-0.5 text-xs font-medium text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">
+                                <span
+                                    class="inline-flex items-center rounded-full
+                                                   bg-yellow-100 px-2.5 py-0.5
+                                                   text-xs font-medium text-yellow-800
+                                                   dark:bg-yellow-900 dark:text-yellow-200">
                                     {{ $request->status_name }}
                                 </span>
 
                                 @elseif ($request->status_name === 'APPROVED')
 
-                                <span class="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800 dark:bg-green-900 dark:text-green-200">
+                                <span
+                                    class="inline-flex items-center rounded-full
+                                                   bg-green-100 px-2.5 py-0.5
+                                                   text-xs font-medium text-green-800
+                                                   dark:bg-green-900 dark:text-green-200">
                                     {{ $request->status_name }}
                                 </span>
 
                                 @else
 
-                                <span class="inline-flex items-center rounded-full bg-zinc-100 px-2.5 py-0.5 text-xs font-medium text-zinc-800 dark:bg-zinc-700 dark:text-zinc-300">
+                                <span
+                                    class="inline-flex items-center rounded-full
+                                                   bg-zinc-100 px-2.5 py-0.5
+                                                   text-xs font-medium text-zinc-800
+                                                   dark:bg-zinc-700 dark:text-zinc-300">
                                     {{ $request->status_name }}
                                 </span>
 
@@ -144,9 +152,10 @@
 
                             </td>
 
-
-                            {{-- Action --}}
-                            <td class="px-4 py-3 text-center">
+                            <td
+                                class="sticky right-0 whitespace-nowrap
+                                           bg-white px-3 py-3 text-center
+                                           dark:bg-zinc-900 sm:px-4">
 
                                 <flux:dropdown align="end">
 
@@ -189,8 +198,9 @@
                         <tr>
 
                             <td
-                                colspan="8"
-                                class="px-4 py-10 text-center text-zinc-500 dark:text-zinc-400">
+                                colspan="7"
+                                class="px-4 py-10 text-center
+                                           text-zinc-500 dark:text-zinc-400">
                                 No acknowledgment requests found.
                             </td>
 
@@ -202,6 +212,10 @@
 
                 </table>
 
+            </div>
+
+            <div class="pt-2 text-xs text-zinc-500 dark:text-zinc-400 sm:hidden">
+                Swipe left or right to view all columns.
             </div>
 
         </div>

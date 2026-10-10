@@ -212,15 +212,13 @@ class ResultConcernModal extends Component
             ];
 
             DB::table('audit_logs')->insert([
-                'user_reported_by'  => $this->employeeName,
+                'user_reported_by'  => $this->reported_by,
 
                 // If assigned_to is an array, convert it to JSON
                 'user_reported'     => is_array($this->assigned_to)
                     ? json_encode($this->assigned_to)
                     : $this->assigned_to,
-
                 'action'            => 'RESULT ACKNOWLEDGED',
-
                 'old_value'         => json_encode($oldValue),
                 'new_value'         => json_encode($newValue),
 

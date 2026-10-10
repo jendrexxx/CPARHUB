@@ -171,7 +171,8 @@ class CparAllExport implements
 
     public function styles(Worksheet $sheet)
     {
-        $highestColumn = $this->typeId == 10 ? 'W' : 'P';
+        $highestColumn = 'AB';
+        $highestRow = $this->cparReports->count() + 1;
 
         $sheet->getStyle("A1:{$highestColumn}1")
             ->getFont()
@@ -182,9 +183,7 @@ class CparAllExport implements
             ->setHorizontal('center')
             ->setVertical('center');
 
-        $sheet->getStyle(
-            "A1:{$highestColumn}" . ($this->cparReports->count() + 1)
-        )
+        $sheet->getStyle("A1:{$highestColumn}{$highestRow}")
             ->getAlignment()
             ->setVertical('center');
 

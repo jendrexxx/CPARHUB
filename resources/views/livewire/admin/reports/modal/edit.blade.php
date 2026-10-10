@@ -13,7 +13,7 @@
 
             <div class="mb-6">
                 <h2 class="text-xl font-semibold text-gray-900 dark:text-white">
-                    RESULT/OTHERS Master File
+                    OTHERS Master File
                 </h2>
 
                 <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
@@ -216,19 +216,16 @@
                         wire:model.live="reported_by"
                         placeholder="Select Reported By">
                         @foreach ($employees as $employee)
-
                         @php
                         $fullName = trim(
                         $employee->first_name . ' ' . $employee->last_name
                         );
                         @endphp
-
                         <flux:select.option
                             value="{{ $fullName }}"
                             wire:key="reported-by-{{ $employee->id }}">
                             {{ $fullName }}
                         </flux:select.option>
-
                         @endforeach
                     </flux:select>
 

@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Admin\Lab;
 
+use App\Models\audit_logs;
 use Livewire\Component;
 use Illuminate\Support\Facades\Auth;
 use App\Models\employee;
@@ -177,16 +178,28 @@ class LabReAssigned extends Component
     public function LabAssigned()
     {
         $this->validate([
-            'assigned' => 'required',
-            'remarks' => 'required|string',
+            'assigned_to' => 'required',
+            'remarks'     => 'required|string',
         ]);
 
         DB::transaction(function () {
+
+            $cpar = DB::table('cpar_request_forms')
+                ->where('id', $this->cpar_id)
+                ->first();
+
+            $reportedBy = $cpar?->reported_by;
 
             $mainResultAssignment = cpar_assignments::where(
                 'id',
                 $this->assignment_id
             )->first();
+
+            $oldAssignedTo = $mainResultAssignment
+                ? $mainResultAssignment->assigned_to
+                : null;
+
+            $assignedEmployees = [];
 
             if ($mainResultAssignment) {
 
@@ -195,21 +208,26 @@ class LabReAssigned extends Component
                     'assigned_date' => now(),
                     'remarks'       => $this->remarks,
                 ]);
+
+                $assignedEmployees[] = (int) $this->assigned_to;
             } else {
+
                 $mainResultAssignment = cpar_assignments::create([
-                    'cpar_id'          => $this->cpar_id,
-                    'employee_no'        => $this->employee_no,
-                    'assigned_to'        => (int) $this->assigned_to,
-                    'department_id'      => $this->department_id,
+                    'cpar_id'           => $this->cpar_id,
+                    'employee_no'       => $this->employee_no,
+                    'assigned_to'       => (int) $this->assigned_to,
+                    'department_id'     => $this->department_id,
                     'dept_head_assigned' => $this->dept_head_assigned,
-                    'assigned_date'      => now(),
-                    'remarks'            => $this->remarks,
-                    'status_id'          => 5,
-                    'record_type'        => 5,
-                    'created_by'         => auth()->id(),
+                    'assigned_date'     => now(),
+                    'remarks'           => $this->remarks,
+                    'status_id'         => 5,
+                    'record_type'       => 5,
+                    'created_by'        => Auth::id(),
                 ]);
 
                 $this->assignment_id = $mainResultAssignment->id;
+
+                $assignedEmployees[] = (int) $this->assigned_to;
             }
 
             foreach ($this->new_assignees as $employeeId) {
@@ -225,7 +243,7 @@ class LabReAssigned extends Component
                 }
 
                 $exists = cpar_assignments::where('cpar_id', $this->cpar_id)
-                    ->where('record_type', 10)
+                    ->where('record_type', 5)
                     ->where('assigned_to', $employeeId)
                     ->exists();
 
@@ -234,18 +252,47 @@ class LabReAssigned extends Component
                 }
 
                 cpar_assignments::create([
-                    'cpar_id'          => $this->cpar_id,
-                    'employee_no'        => $this->employee_no,
-                    'assigned_to'        => $employeeId,
-                    'department_id'      => $this->department_id,
+                    'cpar_id'           => $this->cpar_id,
+                    'employee_no'       => $this->employee_no,
+                    'assigned_to'       => $employeeId,
+                    'department_id'     => $this->department_id,
                     'dept_head_assigned' => $this->dept_head_assigned,
-                    'assigned_date'      => now(),
-                    'remarks'            => $this->remarks,
-                    'status_id'          => $this->status_id,
-                    'record_type'        => 5,
-                    'created_by'         => auth()->id(),
+                    'assigned_date'     => now(),
+                    'remarks'           => $this->remarks,
+                    'status_id'         => 5,
+                    'record_type'       => 5,
+                    'created_by'        => Auth::id(),
                 ]);
+
+                $assignedEmployees[] = $employeeId;
             }
+
+            $oldValue = [
+                'assigned_to' => $oldAssignedTo,
+            ];
+
+            $newValue = [
+                'cpar_id'          => $this->cpar_id,
+                'reported_by'      => $reportedBy,
+                'assigned_to'      => $assignedEmployees,
+                'department_id'    => $this->department_id,
+                'dept_head_assigned' => $this->dept_head_assigned,
+                'remarks'          => $this->remarks,
+                'status_id'        => 5,
+                'record_type'      => 5,
+                'reassigned_by'    => Auth::id(),
+                'date_reassigned' => now(),
+            ];
+
+            audit_logs::create([
+                'user_reported_by'  => $reportedBy,
+                'user_reported'     => $this->assigned_to,
+                'action'            => 'CREATE_REASSIGNED',
+                'old_value'         => json_encode($oldValue),
+                'new_value'         => json_encode($newValue),
+                'status_changed_by' => Auth::id(),
+                'date'              => now(),
+            ]);
         });
 
         $this->reset([
@@ -260,8 +307,16 @@ class LabReAssigned extends Component
             message: 'Result successfully reassigned.'
         );
 
-        $this->dispatch('modal-close', name: 'lab-reassign-result');
-        $this->dispatch('modal-close', name: 'LABAssignedModal');
+        $this->dispatch(
+            'modal-close',
+            name: 'lab-reassign-result'
+        );
+
+        $this->dispatch(
+            'modal-close',
+            name: 'LABAssignedModal'
+        );
+
         $this->dispatch('refresLABRData');
         $this->dispatch('refreshAssignedCount');
     }
