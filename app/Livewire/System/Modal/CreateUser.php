@@ -213,85 +213,109 @@ class CreateUser extends Component
         $this->modal('user-permission')->show();
     }
 
+
     public function save()
     {
-        if ($this->user_id) {
+        DB::beginTransaction();
 
-            $user = User::findOrFail($this->user_id);
+        try {
+            if ($this->user_id) {
+                // UPDATE EXISTING USER
+                $user = User::findOrFail($this->user_id);
 
-            $oldEmail = $user->email;
+                $oldEmail = $user->email;
 
-            $data = [
-                'name'     => $this->name,
-                'email'    => $this->email,
-                'username' => $this->username,
-                'status'   => $this->status,
-            ];
+                $data = [
+                    'name'     => $this->name,
+                    'email'    => $this->email,
+                    'username' => $this->username,
+                    'status'   => $this->status,
+                ];
 
-            // Update password only if entered
-            if (!empty($this->password)) {
-                $data['password'] = Hash::make($this->password);
-            }
+                // Update password only if entered
+                if (!empty($this->password)) {
+                    $data['password'] = Hash::make($this->password);
+                }
 
-            $user->update($data);
+                $user->update($data);
 
-            DB::table('employees')
-                ->where('email', $oldEmail)
-                ->update([
-                    'email'            => $this->email,
-                    'employee_no'      => $this->employee_no,
-                    'department_name'  => $this->department_name,
-                    'branch_name'      => $this->branch_name,
+                // Update existing employee only; do not insert a duplicate
+                DB::table('employees')
+                    ->where('email', $oldEmail)
+                    ->update([
+                        'email'           => $this->email,
+                        'employee_no'     => $this->employee_no,
+                        'department_name' => $this->department_name,
+                        'branch_name'     => $this->branch_name,
+                    ]);
+
+                if ($this->role) {
+                    $user->syncRoles([$this->role]);
+                }
+
+                $successMessage = 'User successfully updated.';
+            } else {
+                // CREATE USER ACCOUNT ONLY
+                $user = User::create([
+                    'name'     => $this->name,
+                    'email'    => $this->email,
+                    'username' => $this->username,
+                    'password' => Hash::make($this->password),
+                    'status'   => $this->status,
                 ]);
 
-            if ($this->role) {
-                $user->syncRoles([$this->role]);
+                // Check whether the employee already exists
+                $employeeExists = DB::table('employees')
+                    ->where(function ($query) {
+                        $query->where('email', $this->email);
+
+                        if (!empty($this->employee_no)) {
+                            $query->orWhere(
+                                'employee_no',
+                                $this->employee_no
+                            );
+                        }
+                    })
+                    ->exists();
+
+                if (!$employeeExists) {
+                    // Insert only when employee does not exist
+                    DB::table('employees')->insert([
+                        'employee_no'     => $this->employee_no,
+                        'email'           => $this->email,
+                        'department_name' => $this->department_name,
+                        'branch_name'     => $this->branch_name,
+                    ]);
+                }
+
+                if ($this->role) {
+                    $user->assignRole($this->role);
+                }
+
+                $successMessage = $employeeExists
+                    ? 'User account created. Existing employee record was retained.'
+                    : 'User account and employee record created.';
             }
 
-            $this->dispatch(
-                'modal-close',
-                name: 'user-create'
-            );
+            DB::commit();
 
+            $this->dispatch('modal-close', name: 'user-create');
             $this->dispatch('refreshUsers');
 
             $this->dispatch(
                 'toast',
                 type: 'success',
-                message: 'User successfully updated.'
+                message: $successMessage
             );
-        } else {
+        } catch (\Throwable $e) {
+            DB::rollBack();
 
-            $user = User::create([
-                'name'     => $this->name,
-                'email'    => $this->email,
-                'username' => $this->username,
-                'password' => Hash::make($this->password),
-                'status'   => $this->status,
-            ]);
-
-            DB::table('employees')->insert([
-                'employee_no'     => $this->employee_no,
-                'email'           => $this->email,
-                'department_name' => $this->department_name,
-                'branch_name'     => $this->branch_name,
-            ]);
-
-            if ($this->role) {
-                $user->assignRole($this->role);
-            }
-
-            $this->dispatch(
-                'modal-close',
-                name: 'user-create'
-            );
-
-            $this->dispatch('refreshUsers');
+            report($e);
 
             $this->dispatch(
                 'toast',
-                type: 'success',
-                message: 'User successfully created.'
+                type: 'error',
+                message: 'Unable to save user. Please check the submitted information.'
             );
         }
     }

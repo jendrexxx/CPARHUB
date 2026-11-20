@@ -1,5 +1,5 @@
 <div>
-    
+
     <div class="mb-6">
         <h2 class="text-xl font-semibold text-gray-900 dark:text-white">
             User Setup
@@ -8,6 +8,10 @@
         <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
             Manage system users, employee accounts, departments, branches, and assigned roles.
         </p>
+    </div>
+    <div>
+
+        <h2 class="text-xl font-semibold">Users</h2>
     </div>
 
     <livewire:common.custom-table

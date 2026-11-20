@@ -93,14 +93,56 @@
                                 readonly
                                 class="opacity-60 cursor-not-allowed bg-zinc-100 dark:bg-zinc-800" />
                         </div>
-                        <flux:textarea
-                            label="Remarks"
-                            wire:model="remarks" class="uppercase" />
+                        @if($existion_attachment)
+                        <div class="mt-4">
+                            <flux:text class="mb-2 font-semibold">
+                                Concern Attachment (Optional)
+                            </flux:text>
+                            <div
+                                class="flex items-center justify-between rounded-lg
+                                border border-zinc-200 bg-zinc-50 px-4 py-3
+                                dark:border-zinc-700 dark:bg-zinc-800">
+
+                                <div class="flex items-center gap-3">
+
+                                    <flux:icon.document-text
+                                        class="size-5 text-red-600" />
+
+                                    <div>
+
+                                        <flux:text class="font-medium">
+                                            Concern Attachment
+                                        </flux:text>
+
+                                        <flux:text
+                                            size="sm"
+                                            class="text-zinc-500">
+
+                                            Concern Attachment PDF is already uploaded.
+
+                                        </flux:text>
+
+                                    </div>
+
+                                </div>
+
+                                <flux:button
+                                    size="sm"
+                                    variant="ghost"
+                                    icon="eye"
+                                    href="{{ Storage::url($existion_attachment) }}"
+                                    target="_blank">
+                                    View PDF
+                                </flux:button>
+
+                            </div>
+                        </div>
+                        @endif
+                        <flux:textarea label="Remarks" wire:model="remarks" class="uppercase" />
                     </div>
 
                 </div>
 
-                {{-- ================= RIGHT SIDE ================= --}}
                 <div class="space-y-4">
 
                     <div class="rounded-lg p-5 space-y-4">

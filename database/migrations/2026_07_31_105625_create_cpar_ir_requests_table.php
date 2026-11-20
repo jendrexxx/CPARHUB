@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('cpar_ir_requests', function (Blueprint $table) {
             $table->increments('id');
             $table->unsignedInteger('assignment_ir_id');
-            $table->string('ir_id');
+            $table->string('ir_id')->nullable();
             $table->string('employee_no')->nullable();
             $table->string('ir_attachment')->nullable();
             $table->string('issued_at')->nullable();

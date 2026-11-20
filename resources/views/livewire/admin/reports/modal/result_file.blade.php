@@ -174,6 +174,38 @@
                 </div>
 
                 <div class="mt-4">
+                    <flux:input
+                        type="file"
+                        label="Concern Attachment"
+                        wire:model="concern_attachment"
+                        accept=".pdf,application/pdf" />
+
+                    @if ($existingFilePath)
+                    <div class="mt-2 flex items-center gap-2">
+                        <flux:button
+                            type="button"
+                            icon="eye"
+                            variant="primary"
+                            size="sm"
+                            href="{{ Storage::disk('public')->url($existingFilePath) }}"
+                            target="_blank">
+                            View Existing Attachment
+                        </flux:button>
+
+                        <flux:text class="text-sm text-zinc-500">
+                            {{ $existingFileName }}
+                        </flux:text>
+                    </div>
+                    @endif
+
+                    @error('existingFilePath')
+                    <flux:text class="mt-1 text-sm text-red-600">
+                        {{ $message }}
+                    </flux:text>
+                    @enderror
+                </div>
+
+                <div class="mt-4">
                     <flux:label>Test Procedure</flux:label>
 
                     <flux:textarea

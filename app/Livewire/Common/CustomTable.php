@@ -96,7 +96,7 @@ class CustomTable extends Component
             $response = Http::timeout(5)->withHeaders([
                 'X-API-KEY1' => env('API_KEY1'),
                 'X-API-KEY2' => env('API_KEY2'),
-            ])->get('http://127.0.0.1:8000/api/api_testing_user');
+            ])->get('http://127.0.0.1:8000/api/user');
             if ($response->successful()) {
                 $data = $response->json();
                 $user = $data['data'];

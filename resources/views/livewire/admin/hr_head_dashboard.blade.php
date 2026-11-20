@@ -191,44 +191,37 @@
             :branch_id="$branch_id"
             :key="'hr-tabs-'.$branch_id"
             lazy />
-
+        <livewire:admin.hr.hr_notif
+            :branch_id="$branch_id"
+            :key="'hr-notif-'.$branch_id"
+            lazy />
+        <livewire:admin.hr.hr_reassign
+            :branch_id="$branch_id"
+            :key="'hr-assign-'.$branch_id"
+            lazy />
+        <livewire:admin.hr.hr_acknowledge_notif
+            :branch_id="$branch_id"
+            :key="'hr-acknowledge-notif-'.$branch_id"
+            lazy />
+        <livewire:admin.hr.hr_decision_notif
+            :branch_id="$branch_id"
+            :key="'hr-decision-notif-'.$branch_id"
+            lazy />
+        <livewire:admin.hr.hr_memo_notif
+            :branch_id="$branch_id"
+            :key="'hr-memo-notif-'.$branch_id"
+            lazy />
         <livewire:admin.hr.hr_acknowledge_modal />
         <livewire:admin.hr.hr_notice_explain_modal />
         <livewire:admin.hr.hr_decision_modal />
         <livewire:admin.hr.hr_memo_modal />
         <livewire:admin.hr.hr_ir_request />
         <livewire:user.modal.cpar_edit />
-        <livewire:admin.hr.hr_notif
-            :branch_id="$branch_id"
-            :key="'hr-notif-'.$branch_id"
-            lazy />
-
-        <livewire:admin.hr.hr_reassign
-            :branch_id="$branch_id"
-            :key="'hr-assign-'.$branch_id"
-            lazy />
-
-        <livewire:admin.hr.hr_acknowledge_notif
-            :branch_id="$branch_id"
-            :key="'hr-acknowledge-notif-'.$branch_id"
-            lazy />
-
-        <livewire:admin.hr.hr_decision_notif
-            :branch_id="$branch_id"
-            :key="'hr-decision-notif-'.$branch_id"
-            lazy />
-
-        <livewire:admin.hr.hr_memo_notif
-            :branch_id="$branch_id"
-            :key="'hr-memo-notif-'.$branch_id"
-            lazy />
-
         <livewire:admin.result.hr_re-assign />
         <livewire:admin.hr_result.result_ir_modal />
         <livewire:admin.hr_result.hr_decision_modal />
         <livewire:admin.hr_result.hr_memo_modal />
         <livewire:admin.hr.hr_offense_tbl />
-
+        <livewire:notification.message :branch_id="$branch_id"/>
     </div>
-
 </div>

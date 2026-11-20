@@ -158,15 +158,39 @@
 
                     <flux:textarea
                         class="mt-2"
-                        rows="4"
+                        rows="10"
                         disabled>{{ $concern_description ?? 'N/A' }}</flux:textarea>
                 </div>
+
+                <div class="mt-4">
+                    <flux:label>Concern Attachment</flux:label>
+                    @if (!empty($existing_attachment))
+                    <div class="mt-2 flex items-center gap-3 rounded-lg border border-zinc-200 p-3 dark:border-zinc-700">
+                        <flux:icon name="paper-clip" class="size-5 text-zinc-500" />
+
+                        <div class="min-w-0 flex-1">
+                            <p class="truncate text-sm text-zinc-700 dark:text-zinc-300">
+                                {{ basename($existing_attachment) }}
+                            </p>
+
+                            <a
+                                href="{{ \Illuminate\Support\Facades\Storage::disk('public')->url($existing_attachment) }}"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                class="text-sm font-medium text-blue-600 hover:underline dark:text-blue-400">
+                                View Attachment
+                            </a>
+                        </div>
+                    </div>
+                    @else
+                    <p class="mt-2 text-sm text-zinc-500">
+                        N/A
+                    </p>
+                    @endif
+                </div>
+
             </div>
 
-
-            {{-- ========================================= --}}
-            {{-- RIGHT : ASSIGNMENT --}}
-            {{-- ========================================= --}}
             <div>
 
                 <div class="mb-5 border-b border-zinc-200 pb-3 dark:border-zinc-700">

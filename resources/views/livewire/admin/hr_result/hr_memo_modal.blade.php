@@ -1070,18 +1070,38 @@
 
                         .memo-signature {
                             display: block !important;
-
                             width: 245px !important;
-
                             margin: 0 !important;
                             padding: 0 0 2px 0 !important;
-
                             border-bottom: 1px solid black !important;
-
                             font-weight: 700 !important;
                             font-size: 10pt !important;
-
                             color: black !important;
+                        }
+
+                        .memo-signature1 {
+                            display: block !important;
+                            width: 245px !important;
+                            max-width: 245px !important;
+                            min-height: 14px !important;
+                            height: auto !important;
+                            margin: 0 !important;
+                            padding: 0 0 2px 0 !important;
+                            border: 0 !important;
+                            border-bottom: 1px solid #000 !important;
+                            border-radius: 0 !important;
+                            background: transparent !important;
+                            color: #000 !important;
+                            font-family: Arial, Helvetica, sans-serif !important;
+                            font-size: 10pt !important;
+                            font-weight: 700 !important;
+                            line-height: 1.2 !important;
+                            text-align: left !important;
+                            text-transform: uppercase !important;
+                            white-space: normal !important;
+                            overflow-wrap: break-word !important;
+                            word-break: normal !important;
+                            box-sizing: border-box !important;
                         }
 
                         .memo-position {
@@ -1138,16 +1158,12 @@
                     .memo-text-field1 {
                         margin: 0 !important;
                         padding: 0 !important;
-
-                        width: 100% !important;
-
+                        width: 120% !important;
                         text-align: left !important;
                         text-indent: 0 !important;
-
                         white-space: pre-wrap !important;
                         overflow-wrap: break-word !important;
                         word-break: normal !important;
-
                         font-family: Arial, Helvetica, sans-serif !important;
                         font-size: 10pt !important;
                         line-height: 1.3 !important;
@@ -1157,17 +1173,13 @@
                         .memo-text-field1 {
                             margin: 0 !important;
                             padding: 0 !important;
-
-                            width: 100% !important;
-                            max-width: 100% !important;
-
+                            width: 120% !important;
+                            max-width: 120% !important;
                             text-align: left !important;
                             text-indent: 0 !important;
-
                             white-space: pre-wrap !important;
                             overflow-wrap: break-word !important;
                             word-break: normal !important;
-
                             line-height: 1.3 !important;
                         }
                     }
@@ -1381,7 +1393,7 @@
                 <div class="memo-label">
                     SIGNATORY:
                 </div>
-                <div class="memo-signature">
+                <div class="memo-signature1">
                     {{ $signatory ?? '' }}
                 </div>
                 <div class="memo-input">

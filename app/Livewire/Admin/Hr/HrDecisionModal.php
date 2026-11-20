@@ -248,14 +248,9 @@ class HrDecisionModal extends Component
         $this->head_remarks = $cpar->head_remarks;
         $this->assigned_to = $cpar->assigned_to;
         $this->management_remarks = $cpar->management_remarks;
-        // IR Response 
         $this->current_ir_attachment = $cpar->ir_attachment ?? '';
-        // NTE Response
         $this->current_nte_attachment = $cpar->response_attachment ?? '';
-        // Clear HR decision fields
         $this->hr_decision = '';
-        // nte attachment
-        // Open modal
         $this->modal('hr-decision-cpar')->show();
     }
 

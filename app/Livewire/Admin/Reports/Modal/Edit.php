@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Admin\Reports\Modal;
 
+use App\Livewire\Admin\Hr\HrOffenseTbl;
 use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 use Livewire\WithFileUploads;
@@ -9,9 +10,15 @@ use App\Models\employee;
 use Illuminate\Support\Facades\Auth;
 use App\Models\cpar_complain_categories;
 use App\Models\cpar_concern_categories;
+use App\Models\cpar_decision_categories;
+use App\Models\cpar_disciplinary_categories;
+use App\Models\cpar_employee_disciplinary_records;
+use App\Models\cpar_hr_decision;
+use App\Models\cpar_offense_levels;
 use App\Models\priority_level;
 use App\Models\cpar_source_origins;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Storage;
 
 class Edit extends Component
 {
@@ -27,21 +34,15 @@ class Edit extends Component
     public $emp_reported = '', $employeeName = '', $user_id = '', $assigned_to = '', $employees = '', $priority = '', $complain_name_disabled = '';
     public $source_origin = [], $cpar_complain = [], $cpar_concern = [], $priority_level = [], $branch = [], $decision = [], $status = [];
     public $branch_id = '1005', $employee_id = '', $status_id = '', $investigation_id = '', $assigned_remarks = '', $nte_no = '';
-    public $year = '', $assignment_ir_id = '', $response_attachment = '', $ir_attachment = '', $assigned_employee_no = '';
+    public $year = '', $assignment_ir_id = '', $response_attachment = '', $ir_attachment = '', $assigned_employee_no = '', $concern_attachment = '', $existing_concern_attachment = '';
+    public $existing_ir_attachment = '';
+    public $statuses = [];
+    public $nte_attachment = '';
+    public $isNoDisciplinaryAction = [];
+
     protected $listeners = [
         'open-master-file' => 'open',
     ];
-
-    public function updatedSelectedHRDecisions($value)
-    {
-        if ((int) $value === 1) {
-            $this->selectedCategories = 9;
-            $this->selectedOffenseLevels = 6;
-        } else {
-            $this->selectedCategories = null;
-            $this->selectedOffenseLevels = null;
-        }
-    }
 
     public function mount()
     {
@@ -66,10 +67,13 @@ class Edit extends Component
         $this->cpar_complain = cpar_complain_categories::select('id', 'complain_name')->get();
         $this->cpar_concern = cpar_concern_categories::select('id', 'concern_name')->get();
         $this->priority_level = priority_level::select('id', 'priority_name')->get();
-        $this->decision = DB::table('cpar_decision_categories')->select('id', 'decision_name')->get();
-        $this->disciplinaryCategories = DB::table('cpar_disciplinary_categories')->select('id', 'category_name')->get();
-        $this->offenseLevels = DB::table('cpar_offense_levels')->select('id', 'offense_name')->get();
-        $this->status = DB::table('cpar_statuses')->select('id', 'status_name')->get();
+        $this->decisionCategories = cpar_decision_categories::all();
+        $this->disciplinaryCategories = cpar_disciplinary_categories::all();
+        $this->offenseLevels = cpar_offense_levels::all();
+        $this->statuses = DB::table('cpar_statuses')
+            ->select('id', 'status_name')
+            ->orderBy('id')
+            ->get();
         $this->memo_no = $this->generateMemoNo();
         $this->memo_date = now()->format('m-d-Y');
         $this->calculateTAT();
@@ -90,6 +94,87 @@ class Edit extends Component
         }
 
         $this->ir_id = 'IR-' . $this->year . '-' . str_pad($nextNumber, 5, '0', STR_PAD_LEFT);
+    }
+
+    public function updatedSelectedHRDecisions($value, $key)
+    {
+        $key = (int) $key;
+
+        $decision = collect($this->decisionCategories)
+            ->firstWhere('id', $value);
+
+        $decisionName = strtoupper(trim($decision->decision_name ?? ''));
+
+        if ($decisionName === 'NO DISCIPLINARY ACTION') {
+
+            $this->isNoDisciplinaryAction[$key] = true;
+
+            // Get N/A Category
+            $naCategory = collect($this->disciplinaryCategories)
+                ->first(function ($item) {
+                    return strtoupper(trim($item->category_name)) === 'N/A';
+                });
+
+            // Get N/A Offense
+            $naOffense = collect($this->offenseLevels)
+                ->first(function ($item) {
+                    return strtoupper(trim($item->offense_name)) === 'N/A';
+                });
+
+            // Update only the selected row
+            $this->selectedCategories[$key] = $naCategory?->id ?? '';
+            $this->selectedOffenseLevels[$key] = $naOffense?->id ?? '';
+        } else {
+
+            $this->isNoDisciplinaryAction[$key] = false;
+            // Reset only the selected row
+            $this->selectedCategories[$key] = '';
+            $this->selectedOffenseLevels[$key] = '';
+        }
+        $this->resetErrorBag('rows');
+    }
+
+    public function addCategory()
+    {
+        $last = count($this->selectedCategories) - 1;
+
+        if (
+            empty($this->selectedCategories[$last]) ||
+            empty($this->selectedOffenseLevels[$last]) ||
+            empty($this->selectedHRDecisions[$last])
+        ) {
+            $this->addError(
+                'rows',
+                'Please complete the current row before adding another.'
+            );
+
+            return;
+        }
+
+        $this->resetErrorBag('rows');
+
+        $this->selectedCategories[] = '';
+        $this->selectedOffenseLevels[] = '';
+        $this->selectedHRDecisions[] = '';
+    }
+
+    public function removeCategory($index)
+    {
+        unset($this->selectedCategories[$index]);
+        unset($this->selectedOffenseLevels[$index]);
+        unset($this->selectedHRDecisions[$index]);
+
+        $this->selectedCategories = array_values(
+            $this->selectedCategories
+        );
+
+        $this->selectedOffenseLevels = array_values(
+            $this->selectedOffenseLevels
+        );
+
+        $this->selectedHRDecisions = array_values(
+            $this->selectedHRDecisions
+        );
     }
 
     public function calculateTat()
@@ -171,7 +256,9 @@ class Edit extends Component
                 'b.dept_head_assigned',
                 'b.department_id',
                 'b.status_id',
+                'c.file_name',
                 'c.file_path',
+                'c.file_type',
                 'd.source_name',
                 'e.complain_name',
                 'f.concern_name',
@@ -240,6 +327,7 @@ class Edit extends Component
             );
             return;
         }
+        $this->ir_ids = $open_file->ir_ids ?? '';
         $this->priority = $open_file->priority_level;
         $this->id = $open_file->assignment_id;
         $this->cpar_id = $open_file->cpar_id;
@@ -250,7 +338,7 @@ class Edit extends Component
         $this->source_name = $open_file->source_name ?? '';
         $this->complain_name = $open_file->complain_name ?? '';
         $this->concern_name = $open_file->concern_name ?? '';
-        $this->status_name = $open_file->status_name ?? '';
+        $this->status = $open_file->status_id ?? '';
         $this->emp_reported = $open_file->emp_reported ?? '';
         $this->employeeName = $open_file->reported_employee ?? '';
         $this->assigned_to = $open_file->assigned_to ?? '';
@@ -265,29 +353,8 @@ class Edit extends Component
         $this->action_taken_by = $open_file->action_taken_by ?? $open_file->assigned_employee;
         $this->assignment_ir_id = $open_file->assignment_ir_id ?? '';
         $this->response_attachment = $open_file->response_attachment ?? '';
-        $this->ir_attachment = $open_file->ir_attachment ?? '';
+        $this->existing_ir_attachment = $open_file->ir_attachment ?? '';
         $this->assigned_employee_no = $open_file->assigned_employee_no ?? '';
-        $this->year = now()->year;
-        $lastNte = DB::table('cpar_notice_to_explains')
-            ->whereYear('created_at', $this->year)
-            ->orderByDesc('id')
-            ->value('nte_no');
-
-        if (empty($lastNte)) {
-            $nextNumber = 1;
-        } else {
-            $lastNumber = (int) substr($lastNte, -5);
-            $nextNumber = $lastNumber + 1;
-        }
-
-        // Use existing NTE number if there is already one.
-        // Generate a new NTE number only if empty.
-        if (filled($open_file?->nte_no)) {
-            $this->nte_no = $open_file->nte_no;
-        } else {
-            $this->nte_no = 'NTE-' . $this->year . '-' . str_pad($nextNumber, 5, '0', STR_PAD_LEFT);
-        }
-
         $this->date_open = !empty($open_file->date_open) ? Carbon::parse($open_file->date_open)->format('m-d-Y') : '';
         $this->date_completed = !empty($open_file->date_completed)
             ? Carbon::createFromFormat('m-d-Y', $open_file->date_completed)->format('m-d-Y')
@@ -301,12 +368,36 @@ class Edit extends Component
         $this->assigned_remarks = $open_file->remarks ?? '';
         $this->hr_decision_remarks = $open_file->decision_remarks ?? '';
         $this->management_remarks = $open_file->management_remarks ?? '';
-        $this->selectedCategories = $open_file->discipline_ids ?? '';
-        $this->selectedOffenseLevels = $open_file->offense_ids ?? '';
-        $this->selectedHRDecisions = $open_file->decision_ids ?? '';
+        $this->selectedCategories = $open_file->discipline_ids ?? [];
+        $this->selectedOffenseLevels = $open_file->offense_ids ?? [];
+        $this->selectedHRDecisions = $open_file->decision_ids ?? [];
+
+        // Ensure all fields are arrays
+        $this->selectedCategories = is_array($this->selectedCategories)
+            ? $this->selectedCategories
+            : [];
+
+        $this->selectedOffenseLevels = is_array($this->selectedOffenseLevels)
+            ? $this->selectedOffenseLevels
+            : [];
+
+        $this->selectedHRDecisions = is_array($this->selectedHRDecisions)
+            ? $this->selectedHRDecisions
+            : [];
+
+        // Display at least one row even if all fields are empty
+        $rowCount = max(
+            1,
+            count($this->selectedCategories),
+            count($this->selectedOffenseLevels),
+            count($this->selectedHRDecisions)
+        );
+
+        $this->selectedCategories = array_pad($this->selectedCategories, $rowCount, '');
+        $this->selectedOffenseLevels = array_pad($this->selectedOffenseLevels, $rowCount, '');
+        $this->selectedHRDecisions = array_pad($this->selectedHRDecisions, $rowCount, '');
         $this->nte_id = $open_file->nte_id ?? '';
         $this->current_nte_attachment = $open_file->nte_attachment ?? '';
-        $this->ir_ids = $open_file->ir_ids ?? '';
         $this->current_ir_attachment = $open_file->ir_attachment ?? '';
         $this->memo_no = $open_memo->memo_no ?? $this->generateMemoNo();
         $this->memo_date = !empty($open_memo->memo_date) ? \Carbon\Carbon::parse($open_memo->memo_date)->format('m-d-Y') : now()->format('m-d-Y');
@@ -315,6 +406,36 @@ class Edit extends Component
         $this->current_memo_attachment = $open_file->memo_attachment ?? '';
         $this->status_id = $open_file->status_id ?? '';
         $this->investigation_id = $open_file->investigation_id ?? '';
+        // file path
+        $this->existing_concern_attachment = $open_file->file_path ?? '';
+        // Check existing NTE record
+        $open_file = DB::table('cpar_notice_to_explains')
+            ->where('assignment_id', $this->id)
+            ->first();
+
+        if (!empty($open_file?->nte_no)) {
+            // May existing NTE number: gamitin ang existing
+            $this->nte_no = $open_file->nte_no;
+        } else {
+            // Walang existing NTE number: generate ng bago
+            $year = now()->year;
+
+            $lastNte = DB::table('cpar_notice_to_explains')
+                ->whereYear('created_at', $year)
+                ->where('nte_no', 'like', 'NTE-' . $year . '-%')
+                ->orderByDesc('id')
+                ->value('nte_no');
+
+            if (empty($lastNte)) {
+                $nextNumber = 1;
+            } else {
+                $lastNumber = (int) substr($lastNte, -5);
+                $nextNumber = $lastNumber + 1;
+            }
+
+            $this->nte_no = 'NTE-' . $year . '-' .
+                str_pad($nextNumber, 5, '0', STR_PAD_LEFT);
+        }
         $this->dispatch('$refresh');
         $this->modal('master-file-modal')->show();
     }
@@ -345,7 +466,7 @@ class Edit extends Component
 
     public function updatedComplainName($value = '')
     {
-        if ($value === 'Employee') {
+        if ($value === 'EMPLOYEE') {
             $this->complainant_name = $this->reported_by;
             $this->complain_name_disabled = true;
         } else {
@@ -356,50 +477,36 @@ class Edit extends Component
 
     public function update()
     {
-        $submittedAt = now();
+        $newFilePath = null;
+        $oldFilePath = null;
+
+        $newIRFilePath = null;
+        $oldIRFilePath = null;
+
+        $committed = false;
 
         DB::beginTransaction();
 
         try {
-
-            $oldMemo = DB::table('cpar_memos')
-                ->where('assignment_id', $this->id)
-                ->first();
-
+            // 1. Get existing CPAR request.
             $oldRequest = DB::table('cpar_request_forms')
                 ->where('id', $this->cpar_id)
                 ->first();
 
+            if (!$oldRequest) {
+                throw new \RuntimeException('CPAR request not found.');
+            }
+
+            // 2. Get existing assignment.
             $oldAssignment = DB::table('cpar_assignments')
                 ->where('id', $this->id)
                 ->first();
 
-            $oldInvestigation = null;
-
-            if (!empty($this->investigation_id)) {
-                $oldInvestigation = DB::table('cpar_investigations')
-                    ->where('id', $this->investigation_id)
-                    ->first();
+            if (!$oldAssignment) {
+                throw new \RuntimeException('CPAR assignment not found.');
             }
 
-            $oldNteResponse = null;
-
-            if (!empty($this->nte_id)) {
-                $oldNteResponse = DB::table('cpar_nte_responses')
-                    ->where('nte_id', $this->nte_id)
-                    ->first();
-            }
-
-            $oldIrRequest = DB::table('cpar_ir_requests')
-                ->where('assignment_ir_id', $this->id)
-                ->first();
-
-            /*
-        |--------------------------------------------------------------------------
-        | CPAR REQUEST
-        |--------------------------------------------------------------------------
-        */
-
+            // 3. Look up selected categories.
             $source = DB::table('cpar_source_origins')
                 ->where('source_name', $this->source_name)
                 ->first();
@@ -412,456 +519,326 @@ class Edit extends Component
                 ->where('concern_name', $this->concern_name)
                 ->first();
 
+            // 4. Find the reported employee.
             $reportedByEmployee = DB::table('employees')
                 ->whereRaw(
                     "TRIM(CONCAT_WS(' ', first_name, last_name)) = ?",
-                    [trim($this->reported_by)]
+                    [trim((string) $this->reported_by)]
                 )
                 ->first();
 
-            /*
-        |--------------------------------------------------------------------------
-        | ASSIGNED EMPLOYEE
-        |--------------------------------------------------------------------------
-        |
-        | employee_id from the Blade is employees.id.
-        |
-        */
-
-            $assignedEmployee = null;
-
-            if (!empty($this->employee_id)) {
-                $assignedEmployee = DB::table('employees')
-                    ->where('id', $this->employee_id)
+            // 5. Update concern attachment only if a new file was selected.
+            if ($this->concern_attachment) {
+                $existingAttachment = DB::table('cpar_attachments')
+                    ->where('cpar_id', $this->cpar_id)
                     ->first();
-            }
 
-            $assignedEmployeeName = $assignedEmployee
-                ? trim(
-                    ($assignedEmployee->first_name ?? '') . ' ' .
-                        ($assignedEmployee->last_name ?? '')
-                )
-                : ($this->assigned_to ?? null);
+                $oldFilePath = $existingAttachment->file_path ?? null;
 
-            $newRequest = [
-                'employee_no'           => $reportedByEmployee?->employee_no,
-                'reported_by'           => $this->reported_by,
-                'source_id'             => $source?->id,
-                'complaint_category_id' => $complainCategory?->id,
-                'complainant_name'      => $this->complainant_name,
-                'concern_category_id'   => $concernCategory?->id,
-                'concern_description'   => $this->concern_description,
-                'priority_level'        => $this->priority,
-            ];
+                $newFilePath = $this->concern_attachment
+                    ->store('cpar/concern', 'public');
 
-            $this->auditChanges(
-                'CPAR REQUEST UPDATED',
-                $oldRequest,
-                $newRequest,
-                $assignedEmployeeName
-            );
-
-            DB::table('cpar_request_forms')
-                ->where('id', $this->cpar_id)
-                ->update([
-                    ...$newRequest,
-                    'updated_at' => now(),
-                ]);
-
-            /*
-        |--------------------------------------------------------------------------
-        | ASSIGNMENT
-        |--------------------------------------------------------------------------
-        */
-
-            $assignment = DB::table('cpar_assignments')
-                ->where('id', $this->id)
-                ->first();
-
-            if (!$assignment) {
-                throw new \Exception('CPAR assignment not found.');
-            }
-
-            $newAssignmentValues = [
-                'assigned_to' => $this->employee_id,
-                'status_id'   => $this->status_id,
-                'remarks'     => $this->assigned_remarks,
-            ];
-
-            $this->auditChanges(
-                'CPAR ASSIGNMENT UPDATED',
-                $oldAssignment,
-                $newAssignmentValues,
-                $assignedEmployeeName
-            );
-
-            DB::table('cpar_assignments')
-                ->where('id', $this->id)
-                ->update([
-                    'assigned_to'   => $this->employee_id,
-                    'status_id'     => $this->status_id,
-                    'remarks'       => $this->assigned_remarks,
-                    'assigned_date' => $assignment->assigned_date ?? now(),
-                    'updated_at'    => now(),
-                ]);
-
-            /*
-        |--------------------------------------------------------------------------
-        | DATE COMPLETED
-        |--------------------------------------------------------------------------
-        */
-
-            $dateCompleted = null;
-
-            if (!empty($this->date_completed)) {
-
-                try {
-
-                    if ($this->date_completed instanceof \Carbon\CarbonInterface) {
-
-                        $dateCompleted = $this->date_completed->format('Y-m-d');
-                    } else {
-
-                        $dateCompleted = Carbon::parse(
-                            $this->date_completed
-                        )->format('Y-m-d');
-                    }
-                } catch (\Throwable $e) {
-
-                    throw new \Exception(
-                        'Invalid Date Completed: ' . $this->date_completed
+                if (!$newFilePath) {
+                    throw new \RuntimeException(
+                        'Failed to upload concern attachment.'
                     );
+                }
+
+                $attachmentData = [
+                    'file_name' => $this->concern_attachment
+                        ->getClientOriginalName(),
+                    'file_path' => $newFilePath,
+                    'file_type' => $this->concern_attachment->getMimeType(),
+                    'updated_at' => now(),
+                ];
+
+                if ($existingAttachment) {
+                    DB::table('cpar_attachments')
+                        ->where('cpar_id', $this->cpar_id)
+                        ->update($attachmentData);
+                } else {
+                    DB::table('cpar_attachments')->insert([
+                        'cpar_id' => $this->cpar_id,
+                        ...$attachmentData,
+                        'created_at' => now(),
+                    ]);
                 }
             }
 
-            /*
-        |--------------------------------------------------------------------------
-        | INVESTIGATION
-        |--------------------------------------------------------------------------
-        */
+            // 6. Update CPAR request details.
+            DB::table('cpar_request_forms')
+                ->where('id', $this->cpar_id)
+                ->update([
+                    'employee_no' => $reportedByEmployee?->employee_no,
+                    'reported_by' => $this->reported_by,
+                    'source_id' => $source?->id,
+                    'complaint_category_id' => $complainCategory?->id,
+                    'complainant_name' => $this->complainant_name,
+                    'concern_category_id' => $concernCategory?->id,
+                    'concern_description' => $this->concern_description,
+                    'priority_level' => $this->priority,
+                    'updated_at' => now(),
+                ]);
 
+            // 7. Update assignment details.
+            DB::table('cpar_assignments')
+                ->where('id', $this->id)
+                ->update([
+                    'assigned_to' => $this->assigned_to,
+                    'status_id' => $this->status,
+                    'remarks' => $this->assigned_remarks,
+                    'assigned_date' => $oldAssignment->assigned_date ?? now(),
+                    'updated_at' => now(),
+                ]);
+
+            // 8. Insert or update investigation.
             $investigationData = [
-                'identified_cause'  => $this->identified_cause,
-                'provided_solution' => $this->provided_solution,
-                'recommendation'    => $this->recommendation,
-                'action_taken_by'   => $this->action_taken_by,
-                'date_completed'    => $dateCompleted,
-                'tat'               => $this->tat,
-                'remarks'           => $this->head_remarks,
+                'identified_cause' => $this->identified_cause ?: null,
+                'provided_solution' => $this->provided_solution ?: null,
+                'recommendation' => $this->recommendation ?: null,
+                'action_taken_by' => $this->action_taken_by ?: null,
+                'date_completed' => $this->date_completed,
+                'tat' => $this->tat ?: null,
+                'remarks' => $this->head_remarks ?: null,
+                'updated_at' => now(),
             ];
 
-            /*
-        |--------------------------------------------------------------------------
-        | NTE ATTACHMENT
-        |--------------------------------------------------------------------------
-        */
-
-            $responsePath = $oldNteResponse?->response_attachment
-                ?? $this->current_nte_attachment
-                ?? null;
-
-            if (
-                $this->nte_attachment instanceof
-                \Livewire\Features\SupportFileUploads\TemporaryUploadedFile
-            ) {
-
-                $responsePath = $this->nte_attachment->store(
-                    'cpar/response',
-                    'public'
-                );
-            }
-
-            /*
-        |--------------------------------------------------------------------------
-        | IR ATTACHMENT
-        |--------------------------------------------------------------------------
-        */
-
-            $irPath = $oldIrRequest?->ir_attachment
-                ?? $this->current_ir_attachment
-                ?? null;
-
-            if (
-                $this->ir_attachment instanceof
-                \Livewire\Features\SupportFileUploads\TemporaryUploadedFile
-            ) {
-
-                $irPath = $this->ir_attachment->store(
-                    'cpar/ir',
-                    'public'
-                );
-            }
-
-            /*
-        |--------------------------------------------------------------------------
-        | INVESTIGATION CREATE / UPDATE
-        |--------------------------------------------------------------------------
-        */
-
-            if (empty($this->investigation_id)) {
-
-                $investigationId = DB::table('cpar_investigations')
-                    ->insertGetId([
-                        'assigned_id'       => $this->id,
-                        'identified_cause'  => $this->identified_cause,
-                        'provided_solution' => $this->provided_solution,
-                        'recommendation'    => $this->recommendation,
-                        'action_taken_by'   => $this->action_taken_by,
-                        'date_completed'    => $dateCompleted,
-                        'tat'               => $this->tat,
-                        'remarks'           => $this->head_remarks,
-                        'created_at'        => now(),
-                        'updated_at'        => now(),
-                    ]);
-
-                $this->investigation_id = $investigationId;
-
-                $this->auditChanges(
-                    'INVESTIGATION CREATED',
-                    null,
-                    [
-                        'assigned_id'       => $this->id,
-                        'identified_cause'  => $this->identified_cause,
-                        'provided_solution' => $this->provided_solution,
-                        'recommendation'    => $this->recommendation,
-                        'action_taken_by'   => $this->action_taken_by,
-                        'date_completed'    => $dateCompleted,
-                        'tat'               => $this->tat,
-                        'remarks'           => $this->head_remarks,
-                    ],
-                    $assignedEmployeeName
-                );
-            } else {
-
-                $this->auditChanges(
-                    'INVESTIGATION UPDATED',
-                    $oldInvestigation,
-                    $investigationData,
-                    $assignedEmployeeName
-                );
-
-                DB::table('cpar_investigations')
-                    ->where('id', $this->investigation_id)
-                    ->update([
-                        ...$investigationData,
-                        'updated_at' => now(),
-                    ]);
-            }
-
-            /*
-        |--------------------------------------------------------------------------
-        | NTE RESPONSE
-        |--------------------------------------------------------------------------
-        */
-
-            $nteResponse = DB::table('cpar_nte_responses')
-                ->where('nte_id', $this->nte_id)
+            $existingInvestigation = DB::table('cpar_investigations')
+                ->where('assigned_id', $this->id)
                 ->first();
 
-            $newNteValues = [
-                'nte_id'              => $this->nte_id,
-                'employee_no'         => $this->assigned_employee_no,
-                'response_attachment' => $responsePath,
-            ];
+            if ($existingInvestigation) {
+                DB::table('cpar_investigations')
+                    ->where('assigned_id', $this->id)
+                    ->update($investigationData);
 
-            if ($nteResponse) {
-
-                $this->auditChanges(
-                    'NTE RESPONSE UPDATED',
-                    $nteResponse,
-                    [
-                        'employee_no'         => $this->assigned_employee_no,
-                        'response_attachment' => $responsePath,
-                    ],
-                    $assignedEmployeeName
-                );
-
-                DB::table('cpar_nte_responses')
-                    ->where('id', $nteResponse->id)
-                    ->update([
-                        'employee_no'         => $this->assigned_employee_no,
-                        'response_attachment' => $responsePath,
-                        'updated_at'          => $submittedAt,
-                    ]);
+                $this->investigation_id = $existingInvestigation->id;
             } else {
-
-                DB::table('cpar_nte_responses')
-                    ->insert([
-                        'nte_id'              => $this->nte_id,
-                        'employee_no'         => $this->assigned_employee_no,
-                        'response_attachment' => $responsePath,
-                        'submitted_at'        => $submittedAt,
-                        'created_at'          => $submittedAt,
-                        'updated_at'          => $submittedAt,
+                $this->investigation_id = DB::table('cpar_investigations')
+                    ->insertGetId([
+                        'assigned_id' => $this->id,
+                        ...$investigationData,
+                        'created_at' => now(),
                     ]);
-
-                $this->auditChanges(
-                    'NTE RESPONSE CREATED',
-                    null,
-                    $newNteValues + [
-                        'submitted_at' => $submittedAt,
-                    ],
-                    $assignedEmployeeName
-                );
             }
 
-            /*
-        |--------------------------------------------------------------------------
-        | IR REQUEST
-        |--------------------------------------------------------------------------
-        */
-
-            $irRequest = DB::table('cpar_ir_requests')
+            // 9. Get existing IR request.
+            $oldIR = DB::table('cpar_ir_requests')
                 ->where('assignment_ir_id', $this->id)
                 ->first();
 
-            $newIrValues = [
-                'assignment_ir_id' => $this->id,
-                'ir_id'            => $this->ir_id,
-                'ir_attachment'    => $irPath,
-            ];
+            $oldIRFilePath = $oldIR->ir_attachment ?? null;
+            // Preserve existing attachment unless a new one is uploaded.
+            $irFilePath = $oldIRFilePath;
 
-            if ($irRequest) {
+            if ($this->ir_attachment) {
+                $newIRFilePath = $this->ir_attachment
+                    ->store('cpar/ir', 'public');
 
-                $this->auditChanges(
-                    'IR REQUEST UPDATED',
-                    $irRequest,
-                    [
-                        'ir_id'         => $this->ir_id,
-                        'ir_attachment' => $irPath,
-                    ],
-                    $assignedEmployeeName
-                );
+                if (!$newIRFilePath) {
+                    throw new \RuntimeException(
+                        'Failed to upload IR attachment.'
+                    );
+                }
 
-                DB::table('cpar_ir_requests')
-                    ->where('id', $irRequest->id)
-                    ->update([
-                        'ir_id'         => $this->ir_id,
-                        'ir_attachment' => $irPath,
-                        'issued_at'     => $irRequest->issued_at ?? now(),
-                        'due_date'      => $irRequest->due_date ?? now()->addDay(),
-                        'updated_at'    => $submittedAt,
-                    ]);
-            } else {
-
-                DB::table('cpar_ir_requests')
-                    ->insert([
-                        'assignment_ir_id' => $this->id,
-                        'ir_id'            => $this->ir_id,
-                        'ir_attachment'    => $irPath,
-                        'issued_at'        => now(),
-                        'due_date'         => now()->addDay(),
-                        'submitted_at'     => $submittedAt,
-                        'created_at'       => $submittedAt,
-                        'updated_at'       => $submittedAt,
-                    ]);
-
-                $this->auditChanges(
-                    'IR REQUEST CREATED',
-                    null,
-                    $newIrValues,
-                    $assignedEmployeeName
-                );
+                $irFilePath = $newIRFilePath;
             }
 
-            /*
-        |--------------------------------------------------------------------------
-        | MEMO ATTACHMENT
-        |--------------------------------------------------------------------------
-        */
+            // Generate them only when creating a new IR request.
+            $issuedAt = $oldIR->issued_at ?? now();
+            $dueDate = $oldIR->due_date ?? now()->addDay();
 
-            $memoAttachment = $oldMemo?->memo_attachment
-                ?? $this->current_memo_attachment
-                ?? null;
+            $irData = [
+                'ir_id' => $this->ir_id,
+                'employee_no' => $this->emp_reported,
+                'ir_attachment' => $irFilePath,
+                'issued_at' => $issuedAt,
+                'due_date' => $dueDate,
+                'updated_at' => now(),
+            ];
+
+            if ($oldIR) {
+                // Existing IR request: UPDATE.
+                DB::table('cpar_ir_requests')
+                    ->where('assignment_ir_id', $this->id)
+                    ->update($irData);
+            } else {
+                // No existing IR request: INSERT, even without an attachment.
+                DB::table('cpar_ir_requests')->insert([
+                    'assignment_ir_id' => $this->id,
+                    ...$irData,
+                    'status' => 'SUBMITTED',
+                    'submitted_at' => now(),
+                    'created_at' => now(),
+                ]);
+            }
+
+            $oldNTE = DB::table('cpar_notice_to_explains')
+                ->where('assignment_id', $this->ir_ids)
+                ->first();
+            $oldNTEFilePath = $oldNTE->nte_attachment ?? null;
+            // Preserve existing attachment unless a new one is uploaded.
+            $nteFilePath = $oldNTEFilePath;
+
+            if ($this->nte_attachment) {
+                $newNTEFilePath = $this->nte_attachment
+                    ->store('cpar/nte', 'public');
+
+                if (!$newNTEFilePath) {
+                    throw new \RuntimeException(
+                        'Failed to upload IR attachment.'
+                    );
+                }
+
+                $nteFilePath = $newNTEFilePath;
+            }
+
+            // Generate them only when creating a new IR request.
+            $issuedAt = $oldNTE->issued_at ?? now();
+            $dueDate = $oldNTE->due_date ?? now()->addDay();
+
+            $NTEData = [
+                'assignment_id' => $this->ir_ids,
+                'nte_attachment' => $nteFilePath,
+                'issued_at' => $issuedAt,
+                'due_date' => $dueDate,
+                'updated_at' => now(),
+            ];
+
+            if ($oldNTE) {
+                // Existing IR request: UPDATE.
+                DB::table('cpar_notice_to_explains')
+                    ->where('assignment_id', $this->ir_ids)
+                    ->update($NTEData);
+            } else {
+                // No existing IR request: INSERT, even without an attachment.
+                DB::table('cpar_notice_to_explains')->insert([
+                    'assignment_id' => $this->id,
+                    'nte_no' => $this->nte_no,
+                    ...$NTEData,
+                    'status' => 'FOR EXPLANATION',
+                    'created_by' => auth()->id(),
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            }
+
+            $oldNTE = DB::table('cpar_notice_to_explains')
+                ->where('assignment_id', $this->ir_ids)
+                ->first();
+            $oldNTEFilePath = $oldNTE->nte_attachment ?? null;
+            // Preserve existing attachment unless a new one is uploaded.
+            $nteFilePath = $oldNTEFilePath;
+
+            if ($this->nte_attachment) {
+                $newNTEFilePath = $this->nte_attachment
+                    ->store('cpar/nte', 'public');
+
+                if (!$newNTEFilePath) {
+                    throw new \RuntimeException(
+                        'Failed to upload IR attachment.'
+                    );
+                }
+
+                $nteFilePath = $newNTEFilePath;
+            }
+
+            // Generate them only when creating a new IR request.
+            $issuedAt = $oldNTE->issued_at ?? now();
+            $dueDate = $oldNTE->due_date ?? now()->addDay();
+
+            $NTEData = [
+                'assignment_id' => $this->ir_ids,
+                'nte_attachment' => $nteFilePath,
+                'issued_at' => $issuedAt,
+                'due_date' => $dueDate,
+                'updated_at' => now(),
+            ];
+
+            if ($oldNTE) {
+                // Existing IR request: UPDATE.
+                DB::table('cpar_notice_to_explains')
+                    ->where('assignment_id', $this->ir_ids)
+                    ->update($NTEData);
+            } else {
+                // No existing IR request: INSERT, even without an attachment.
+                DB::table('cpar_notice_to_explains')->insert([
+                    'assignment_id' => $this->id,
+                    'nte_no' => $this->nte_no,
+                    ...$NTEData,
+                    'status' => 'FOR EXPLANATION',
+                    'created_by' => auth()->id(),
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            }
+
+            $oldDisciplinary = DB::table('cpar_employee_disciplinary_records')
+                ->where('assignment_id', $this->id)
+                ->first();
+
+            $incidentDate = Carbon::parse($this->date_open);
+
+            $validUntil = $incidentDate->month <= 6
+                ? $incidentDate->copy()->month(6)->endOfMonth()
+                : $incidentDate->copy()->month(12)->endOfMonth();
+
+            if (empty($oldDisciplinary)) {
+                // CREATE NEW RECORD
+                cpar_employee_disciplinary_records::create([
+                    'assignment_id' => $this->id,
+                    'discipline_ids' => json_encode($this->selectedCategories),
+                    'offense_ids' => json_encode($this->selectedOffenseLevels),
+                    'decision_ids' => json_encode($this->selectedHRDecisions),
+                    'incident_date' => $incidentDate->format('Y-m-d'),
+                    'valid_until' => $validUntil->format('Y-m-d'),
+                    'remarks' => $this->hr_decision_remarks,
+                    'status' => 'FINAL',
+                    'created_by' => auth()->id(),
+                    'updated_at' => now(),
+                ]);
+            } else {
+                // UPDATE EXISTING RECORD
+                cpar_employee_disciplinary_records::where(
+                    'assignment_id',
+                    $this->id
+                )->update([
+                    'discipline_ids' => json_encode($this->selectedCategories),
+                    'offense_ids' => json_encode($this->selectedOffenseLevels),
+                    'decision_ids' => json_encode($this->selectedHRDecisions),
+                    'incident_date' => $incidentDate->format('Y-m-d'),
+                    'valid_until' => $validUntil->format('Y-m-d'),
+                    'remarks' => $this->hr_decision_remarks,
+                    'status' => 'FINAL UPDATED',
+                    'created_by' => auth()->id(),
+                    'updated_at' => now(),
+                ]);
+            }
+
+            // 10. Commit database changes.
+            DB::commit();
+            $committed = true;
+
+            // 11. Delete replaced files only after a successful commit.
+            if (
+                $oldFilePath &&
+                $newFilePath &&
+                $oldFilePath !== $newFilePath
+            ) {
+                Storage::disk('public')->delete($oldFilePath);
+            }
 
             if (
-                $this->memo_attachment instanceof
-                \Livewire\Features\SupportFileUploads\TemporaryUploadedFile
+                $oldIRFilePath &&
+                $newIRFilePath &&
+                $oldIRFilePath !== $newIRFilePath
             ) {
-
-                $memoAttachment = $this->memo_attachment->store(
-                    'cpar/memos',
-                    'public'
-                );
+                Storage::disk('public')->delete($oldIRFilePath);
             }
 
-            /*
-        |--------------------------------------------------------------------------
-        | MEMO
-        |--------------------------------------------------------------------------
-        */
-
-            $newMemoValues = [
-                'cpar_id'         => $this->cpar_id,
-                'assignment_id'   => $this->id,
-                'memo_no'         => $this->memo_no,
-                'memo_date'       => $this->memo_date,
-                'subject'         => $this->memo_subject,
-                'memo_content'    => $this->memo_content,
-                'memo_attachment' => $memoAttachment,
-                'status'          => 'ISSUED',
-            ];
-
-            if ($oldMemo) {
-
-                $this->auditChanges(
-                    'OTHERS MEMO ISSUED',
-                    $oldMemo,
-                    [
-                        'memo_no'         => $this->memo_no,
-                        'memo_date'       => $this->memo_date,
-                        'subject'         => $this->memo_subject,
-                        'memo_content'    => $this->memo_content,
-                        'memo_attachment' => $memoAttachment,
-                        'status'          => 'ISSUED',
-                    ],
-                    $assignedEmployeeName
-                );
-
-                DB::table('cpar_memos')
-                    ->where('assignment_id', $this->id)
-                    ->update([
-                        'cpar_id'         => $this->cpar_id,
-                        'assignment_id'   => $this->id,
-                        'memo_no'         => $this->memo_no,
-                        'memo_date'       => $this->memo_date,
-                        'subject'         => $this->memo_subject,
-                        'memo_content'    => $this->memo_content,
-                        'memo_attachment' => $memoAttachment,
-                        'status'          => 'ISSUED',
-                        'updated_at'      => now(),
-                    ]);
-            } else {
-
-                DB::table('cpar_memos')
-                    ->insert([
-                        'cpar_id'         => $this->cpar_id,
-                        'assignment_id'   => $this->id,
-                        'memo_no'         => $this->memo_no,
-                        'memo_date'       => $this->memo_date,
-                        'subject'         => $this->memo_subject,
-                        'memo_content'    => $this->memo_content,
-                        'memo_attachment' => $memoAttachment,
-                        'status'          => 'ISSUED',
-                        'created_at'      => now(),
-                        'updated_at'      => now(),
-                    ]);
-
-                $this->auditChanges(
-                    'OTHERS MEMO ISSUED',
-                    null,
-                    $newMemoValues,
-                    $assignedEmployeeName
-                );
-            }
-
-            /*
-        |--------------------------------------------------------------------------
-        | COMMIT
-        |--------------------------------------------------------------------------
-        */
-
-            DB::commit();
+            // 12. Reset upload properties.
+            $this->concern_attachment = null;
+            $this->ir_attachment = null;
 
             $this->dispatch(
                 'toast',
@@ -869,20 +846,30 @@ class Edit extends Component
                 message: 'CPAR Master File updated successfully!'
             );
 
-            $this->dispatch(
-                'modal-close',
-                name: 'master-file-modal'
-            );
-
+            $this->dispatch('modal-close', name: 'master-file-modal');
             $this->dispatch('refresh');
         } catch (\Throwable $e) {
+            if (DB::transactionLevel() > 0) {
+                DB::rollBack();
+            }
 
-            DB::rollBack();
+            // Delete newly uploaded files if the database transaction failed.
+            if (!$committed) {
+                if ($newFilePath) {
+                    Storage::disk('public')->delete($newFilePath);
+                }
+
+                if ($newIRFilePath) {
+                    Storage::disk('public')->delete($newIRFilePath);
+                }
+            }
+
+            report($e);
 
             $this->dispatch(
                 'toast',
                 type: 'error',
-                message: 'Failed to update CPAR Master File: ' . $e->getMessage()
+                message: 'Failed to update CPAR Master File. Check the application logs.'
             );
         }
     }

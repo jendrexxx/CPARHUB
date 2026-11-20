@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Admin;
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 use Livewire\Attributes\Layout;
@@ -40,12 +41,15 @@ class LabSupervisorDashboard extends Component
 
     public function loadAssignedCount()
     {
+        $credentials = Auth::user()?->employee;
+
         $cparCount = DB::table('cpar_request_forms as a')
             ->join('cpar_assignments as b', 'a.id', '=', 'b.cpar_id')
             ->leftJoin('employees as c', 'b.assigned_to', '=', 'c.id')
             ->leftJoin('employees as d', 'b.dept_head_assigned', '=', 'd.id')
             ->where('b.status_id', '!=', 50)
             ->where('b.record_type', 5)
+            ->where('c.branch_id', $credentials->branch_id)
             ->count('b.id');
 
         $resultCount = DB::table('result_error_forms as a')
@@ -54,6 +58,7 @@ class LabSupervisorDashboard extends Component
             ->leftJoin('employees as d', 'b.dept_head_assigned', '=', 'd.id')
             ->where('b.status_id', '!=', 50)
             ->where('b.record_type', 10)
+            ->where('c.branch_id', $credentials->branch_id)
             ->count('b.id');
 
         $this->assigned_count = $cparCount + $resultCount;
@@ -61,6 +66,7 @@ class LabSupervisorDashboard extends Component
 
     public function loadLABCount()
     {
+        $credentials = Auth::user()?->employee;
         // CPAR count
         $cparCount = DB::table('cpar_request_forms as a')
             ->join('cpar_assignments as b', 'a.id', '=', 'b.cpar_id')
@@ -70,6 +76,8 @@ class LabSupervisorDashboard extends Component
             ->join('cpar_concern_categories as f', 'a.concern_category_id', '=', 'f.id')
             ->join('departments as g', 'a.department_id', '=', 'g.id')
             ->join('cpar_statuses as h', 'b.status_id', '=', 'h.id')
+            ->leftJoin('employees as r', 'a.employee_no', '=', 'r.employee_no')
+            ->where('r.branch_id', $credentials->branch_id)
             ->where('b.status_id', 35)
             ->count();
 
@@ -78,6 +86,8 @@ class LabSupervisorDashboard extends Component
             ->join('cpar_assignments as b', 'a.id', '=', 'b.result_id')
             ->join('departments as g', 'a.department_id', '=', 'g.id')
             ->join('cpar_statuses as h', 'b.status_id', '=', 'h.id')
+            ->leftJoin('employees as r', 'a.employee_no', '=', 'r.employee_no')
+            ->where('r.branch_id', $credentials->branch_id)
             ->where('b.status_id', 35)
             ->count();
         // Combined count

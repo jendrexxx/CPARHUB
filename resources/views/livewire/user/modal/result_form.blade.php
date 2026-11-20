@@ -131,6 +131,26 @@
                     </div>
 
                     <div class="mt-4">
+                        <flux:label>Concern Attachment</flux:label>
+
+                        @if (!empty($existing_attachment))
+                        <a
+                            href="{{ \Illuminate\Support\Facades\Storage::disk('public')->url($existing_attachment) }}"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="mt-2 inline-flex items-center gap-2 text-sm font-medium text-blue-600 hover:text-blue-800 hover:underline">
+                            <flux:icon name="paper-clip" class="size-4" />
+                            View Attachment
+                        </a>
+                        @else
+                        <span class="mt-2 block text-sm text-gray-500">
+                            N/A
+                        </span>
+                        @endif
+                    </div>
+
+
+                    <div class="mt-4">
                         <flux:label>Test Procedure</flux:label>
 
                         <flux:textarea

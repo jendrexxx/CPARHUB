@@ -2,12 +2,13 @@
 
 namespace App\Livewire\Admin;
 
-use App\Models\Employee;
+use App\Models\employee;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
-use Livewire\Attributes\On;
+use Livewire\Attributes\Layout;
 use Livewire\Component;
 
+#[Layout('components.layouts.app')]
 class Employees extends Component
 {
 
@@ -38,23 +39,22 @@ class Employees extends Component
 
                 foreach ($employees as $emp) {
 
-                    Employee::updateOrCreate(
+                    employee::updateOrCreate(
 
                         [
                             'employee_no' => $emp['employee_no'] ?? null,
                         ],
 
                         [
-                            'is_dept_head' => $emp['is_dept_head'] ?? null,
-                            'is_lab_sup' => $emp['is_lab_sup'] ?? null,
-                            'is_hr_head' => $emp['is_hr_head'] ?? null,
+                            'is_dept_head' => (int) ($emp['is_dept_head'] ?? 0),
+                            'is_lab_sup' => (int) ($emp['is_lab_sup'] ?? 0),
+                            'is_hr_head' => (int) ($emp['is_hr_head'] ?? 0),
                             'first_name' => $emp['first_name'] ?? null,
                             'middle_name' => $emp['middle_name'] ?? null,
                             'last_name' => $emp['last_name'] ?? null,
                             'birth_date' => $emp['birth_date'] ?? null,
                             'department_name' => $emp['department'] ?? null,
                             'department_id' => $emp['department_id'] ?? null,
-
                             'date_hired' => $emp['date_hired'] ?? null,
                             'regularization_date' => $emp['regularization_date'] ?? null,
                             'probationary_date' => $emp['probationary_date'] ?? null,
@@ -65,7 +65,6 @@ class Employees extends Component
                             'position_name' => $emp['position'] ?? null,
                             'status' => $emp['status'] ?? null,
                             'email' => $emp['email'] ?? null,
-
                         ]
 
                     );
@@ -91,6 +90,6 @@ class Employees extends Component
 
     public function render()
     {
-        return view('livewire.admin.employees')->layout('layouts.app');
+        return view('livewire.admin.employees');
     }
 }

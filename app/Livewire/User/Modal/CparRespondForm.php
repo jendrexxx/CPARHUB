@@ -204,12 +204,6 @@ class CparRespondForm extends Component
 
         DB::transaction(function () {
 
-            /*
-        |--------------------------------------------------------------------------
-        | OLD RECORDS
-        |--------------------------------------------------------------------------
-        */
-
             $oldInvestigation = DB::table('cpar_investigations')
                 ->where('assigned_id', $this->id)
                 ->first();
@@ -221,13 +215,6 @@ class CparRespondForm extends Component
             $oldIR = DB::table('cpar_ir_requests')
                 ->where('assignment_ir_id', $this->id)
                 ->first();
-
-
-            /*
-        |--------------------------------------------------------------------------
-        | ATTACHMENT
-        |--------------------------------------------------------------------------
-        */
 
             $irAttachmentPath = null;
 
@@ -285,28 +272,11 @@ class CparRespondForm extends Component
                     'updated_at'  => now(),
                 ]);
 
-
-            /*
-        |--------------------------------------------------------------------------
-        | IR REQUEST
-        |--------------------------------------------------------------------------
-        */
-
             $issuedAt = now();
             $dueDate  = now()->addDay();
 
 
             if ($oldIR) {
-
-                /*
-            |--------------------------------------------------------------------------
-            | EXISTING IR
-            |--------------------------------------------------------------------------
-            |
-            | IMPORTANT:
-            | Do NOT update ir_id here.
-            |
-            */
 
                 $savedIrId = $oldIR->ir_id;
 
@@ -319,9 +289,6 @@ class CparRespondForm extends Component
                     'updated_at'   => now(),
                 ];
 
-                /*
-             * Only update attachment if a new file was uploaded.
-             */
                 if ($irAttachmentPath) {
                     $updateData['ir_attachment'] = $irAttachmentPath;
                 }
@@ -330,21 +297,9 @@ class CparRespondForm extends Component
                     ->where('id', $oldIR->id)
                     ->update($updateData);
 
-                /*
-             * Retain old attachment if no new attachment was uploaded.
-             */
                 $newAttachmentPath = $irAttachmentPath
                     ?? $oldIR->ir_attachment;
             } else {
-
-                /*
-            |--------------------------------------------------------------------------
-            | NO EXISTING IR
-            |--------------------------------------------------------------------------
-            |
-            | Use the current/generated $this->ir_id.
-            |
-            */
 
                 $savedIrId = $this->ir_id;
 

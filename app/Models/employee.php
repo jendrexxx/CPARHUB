@@ -9,6 +9,9 @@ class employee extends Model
     protected $fillable = [
         'id',
         'employee_no',
+        'is_dept_head',
+        'is_lab_sup',
+        'is_hr_head',
         'first_name',
         'middle_name',
         'last_name',
@@ -29,6 +32,15 @@ class employee extends Model
         'created_at',
         'updated_at'
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'is_dept_head' => 'boolean',
+            'is_lab_sup' => 'boolean',
+            'is_hr_head' => 'boolean',
+        ];
+    }
 
     public function user()
     {

@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('result_error_forms', function (Blueprint $table) {
             $table->increments('id');
             $table->string('result_no')->unique();
-            $table->string('employee_no');
+            $table->string('employee_no')->nullable();
             $table->string('reported_by');
             $table->string('date_reported');
             $table->text('patient_name');
@@ -28,7 +28,7 @@ return new class extends Migration
             $table->string('complainant_category');
             $table->text('complain_name');
             $table->text('concern_description');
-            $table->integer('department_id');
+            $table->integer('department_id')->nullable();
             $table->string('priority_level');
             $table->timestamps();
         });

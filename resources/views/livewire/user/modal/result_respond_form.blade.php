@@ -95,6 +95,62 @@
                         readonly
                         class="opacity-60 cursor-not-allowed bg-zinc-100 dark:bg-zinc-800" />
 
+                    {{-- COMPLAINANT --}}
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+                        <flux:input
+                            label="Complainant Category"
+                            wire:model="complain_name"
+                            readonly
+                            class="opacity-60 cursor-not-allowed bg-zinc-100 dark:bg-zinc-800" />
+
+                        <flux:input
+                            label="Complainant Name"
+                            wire:model="complain_name"
+                            readonly
+                            class="opacity-60 cursor-not-allowed bg-zinc-100 dark:bg-zinc-800" />
+
+                        <flux:input
+                            label="Priority"
+                            wire:model="priority"
+                            readonly
+                            class="opacity-60 cursor-not-allowed bg-zinc-100 dark:bg-zinc-800" />
+
+                    </div>
+
+                    <div>
+                        <flux:label>
+                            Concern Attachment
+                        </flux:label>
+                        
+                        @if ($attachment)
+
+                        <div class="mt-2">
+                            <flux:button
+                                icon="arrow-down-tray"
+                                variant="primary"
+                                size="sm"
+                                href="{{ Storage::url($attachment) }}"
+                                target="_blank">
+
+                                Download
+
+                            </flux:button>
+                        </div>
+
+                        @else
+
+                        <div class="mt-2 rounded-lg border border-gray-200 bg-gray-100 px-3 py-2.5 dark:border-zinc-700 dark:bg-zinc-800">
+
+                            <flux:text>
+                                N/A
+                            </flux:text>
+
+                        </div>
+
+                        @endif
+
+                    </div>
 
                     {{-- ERROR CATEGORIES --}}
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -188,29 +244,6 @@
                             </label>
                             @endforeach
                         </div>
-                    </div>
-
-                    {{-- COMPLAINANT --}}
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-
-                        <flux:input
-                            label="Complainant Category"
-                            wire:model="complain_name"
-                            readonly
-                            class="opacity-60 cursor-not-allowed bg-zinc-100 dark:bg-zinc-800" />
-
-                        <flux:input
-                            label="Complainant Name"
-                            wire:model="complain_name"
-                            readonly
-                            class="opacity-60 cursor-not-allowed bg-zinc-100 dark:bg-zinc-800" />
-
-                        <flux:input
-                            label="Priority"
-                            wire:model="priority"
-                            readonly
-                            class="opacity-60 cursor-not-allowed bg-zinc-100 dark:bg-zinc-800" />
-
                     </div>
 
                 </div>

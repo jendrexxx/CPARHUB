@@ -30,6 +30,7 @@ class ResultForm extends Component
     public $data_information = [];
     public $technical_information = [];
     public $quality_information = [];
+    public $existing_attachment = '';
 
     public function mount()
     {
@@ -63,6 +64,7 @@ class ResultForm extends Component
             ->join('result_error_source_of_infos as b', 'a.source_of_information', '=', 'b.id')
             ->join('result_complain_categories as c', 'a.complainant_category', '=', 'c.id')
             ->join('cpar_assignments as d', 'a.id', '=', 'd.result_id')
+            ->join('cpar_attachments as e', 'd.result_id', '=', 'e.result_id')
             ->join('cpar_statuses as h', 'd.status_id', '=', 'h.id')
             ->leftJoin('employees as i', 'd.dept_head_assigned', '=', 'i.id')
             ->join('priority_levels as m', 'a.priority_level', '=', 'm.id')
@@ -88,6 +90,9 @@ class ResultForm extends Component
                 'd.remarks',
                 'd.dept_head_assigned',
                 'd.department_id',
+                'e.file_name',
+                'e.file_path',
+                'e.file_type',
                 'h.status_name',
                 'i.branch_id',
                 'i.department_name',
@@ -113,6 +118,7 @@ class ResultForm extends Component
         if ($cpar_info) {
             $this->employeeName = trim($cpar_info->first_name . ' ' . $cpar_info->last_name);
         }
+        $this->existing_attachment = $result->file_path ?? null;
         $this->assignment_id = $result->assignment_id;
         $this->result_no = $result->result_no;
         $this->date_reported = $result->date_reported;

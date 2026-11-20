@@ -30,6 +30,7 @@ class CparSubmissionModal extends Component
     public $tat = '', $emp_reported = '', $employeeName = '', $user_id = '';
     public $attachment = '', $priority = '';
     public $ir_attachment = '', $complainant_name = '', $concern_description = '';
+    public $existion_attachment = '';
     protected $listeners = [
         'open-submission-cpar' => 'open_submission'
     ];
@@ -126,7 +127,7 @@ class CparSubmissionModal extends Component
         $this->action_taken_by = $cpar->action_taken_by ?? null;
         $this->date_completed = $cpar->date_completed ?? null;
         $this->tat = $cpar->tat ?? null;
-        $this->attachment = $cpar->file_path ?? null;
+        $this->existion_attachment = $cpar->file_path ?? null;
         $this->ir_attachment = $cpar->ir_attachment ?? null;
         $this->assigned_to = $cpar->assigned_to;
         $this->remarks = $cpar->remarks;

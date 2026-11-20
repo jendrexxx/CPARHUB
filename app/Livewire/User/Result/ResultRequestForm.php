@@ -143,7 +143,7 @@ class ResultRequestForm extends Component
         $attachmentPath = null;
 
         if ($this->concern_attachment) {
-            $attachmentPath = $this->concern_attachment->store('cpar', 'public');
+            $attachmentPath = $this->concern_attachment->store('result', 'public');
         }
 
         $result = result_error_form::create([

@@ -102,51 +102,41 @@
                         readonly
                         class="opacity-60 cursor-not-allowed bg-zinc-100 dark:bg-zinc-800" />
 
+                    <flux:input
+                        label="Concern Category"
+                        wire:model="concern_name"
+                        readonly
+                        class="opacity-60 cursor-not-allowed bg-zinc-100 dark:bg-zinc-800" />
 
-                    {{-- CATEGORY + STATUS --}}
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {{-- ATTACHMENT --}}
-                        <div>
-                            <flux:label>
-                                Attachment
-                            </flux:label>
-
-                            @if ($attachment)
-
-                            <div class="mt-2">
-                                <flux:button
-                                    icon="arrow-down-tray"
-                                    variant="primary"
-                                    size="sm"
-                                    href="{{ Storage::url($attachment) }}"
-                                    target="_blank">
-
-                                    Download
-
-                                </flux:button>
+                    @if($attachment)
+                    <div class="mt-4">
+                        <flux:text class="mb-2 font-semibold">
+                            Concern Attachment (Optional)
+                        </flux:text>
+                        <div class="flex items-center justify-between rounded-lg border border-zinc-200 bg-zinc-50 px-4 py-3 dark:border-zinc-700 dark:bg-zinc-800">
+                            <div class="flex items-center gap-3">
+                                <flux:icon.document-text class="size-5 text-red-600" />
+                                <div>
+                                    <flux:text class="font-medium">
+                                        Concern Attachment
+                                    </flux:text>
+                                    <flux:text size="sm" class="text-zinc-500">
+                                        Concern Attachment PDF is already uploaded.
+                                    </flux:text>
+                                </div>
                             </div>
 
-                            @else
-
-                            <div
-                                class="mt-2 rounded-lg border border-zinc-200
-                                       bg-zinc-100 px-3 py-2.5
-                                       dark:border-zinc-700 dark:bg-zinc-800">
-
-                                <flux:text>
-                                    N/A
-                                </flux:text>
-
-                            </div>
-
-                            @endif
+                            <flux:button
+                                size="sm"
+                                variant="ghost"
+                                icon="eye"
+                                href="{{ Storage::url($attachment) }}"
+                                target="_blank">
+                                View PDF
+                            </flux:button>
                         </div>
-                        <flux:input
-                            label="Concern Category"
-                            wire:model="concern_name"
-                            readonly
-                            class="opacity-60 cursor-not-allowed bg-zinc-100 dark:bg-zinc-800" />
                     </div>
+                    @endif
 
                     <flux:textarea
                         label="Dept Head Remarks"

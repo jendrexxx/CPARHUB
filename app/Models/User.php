@@ -58,7 +58,7 @@ public function isAdminSide(): bool
 
     public function employee()
     {
-        return $this->hasOne(Employee::class, 'email', 'email');
+        return $this->hasOne(employee::class, 'email', 'email');
     }
 
     /**

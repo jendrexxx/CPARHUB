@@ -1,50 +1,57 @@
 <div>
 
     {{-- SEARCH + ROWS --}}
+    <div class="flex flex-col gap-4 mb-4 lg:flex-row lg:items-center lg:justify-between">
 
-    <div class="mb-4 rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-700 dark:bg-zinc-900">
+        <div class="flex items-center gap-2 shrink-0">
 
-        <div class="flex flex-col gap-4 md:flex-row md:items-end">
+            <span class="text-sm text-zinc-500 dark:text-zinc-400 whitespace-nowrap">
+                Rows per page
+            </span>
 
-            <div class="flex-1">
+            <flux:select
+                wire:model.live="perPage"
+                class="w-24">
+
+                <flux:select.option value="5">5</flux:select.option>
+                <flux:select.option value="10">10</flux:select.option>
+                <flux:select.option value="25">25</flux:select.option>
+                <flux:select.option value="50">50</flux:select.option>
+                <flux:select.option value="100">100</flux:select.option>
+
+            </flux:select>
+
+        </div>
+
+        <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-end w-full lg:w-auto">
+
+            <div class="w-full sm:w-80 lg:w-96">
 
                 <flux:input
                     wire:model.live.debounce.300ms="search"
-                    placeholder="Search CPAR No., Result No., reported by, employee..."
+                    placeholder="Search action, reported by, employee..."
                     icon="magnifying-glass" />
 
             </div>
 
-            <div class="w-full md:w-40">
+            @if ($search)
 
-                <flux:select
-                    wire:model.live="perPage"
-                    label="Rows">
+            <flux:button
+                type="button"
+                variant="ghost"
+                icon="x-mark"
+                wire:click="clearSearch"
+                class="shrink-0">
 
-                    <flux:select.option value="5">
-                        5
-                    </flux:select.option>
+                Clear Search
 
-                    <flux:select.option value="10">
-                        10
-                    </flux:select.option>
+            </flux:button>
 
-                    <flux:select.option value="50">
-                        50
-                    </flux:select.option>
-
-                    <flux:select.option value="100">
-                        100
-                    </flux:select.option>
-
-                </flux:select>
-
-            </div>
+            @endif
 
         </div>
 
     </div>
-
 
     {{-- TABLE --}}
 

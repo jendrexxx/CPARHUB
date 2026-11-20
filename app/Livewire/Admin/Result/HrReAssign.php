@@ -27,7 +27,7 @@ class HrReAssign extends Component
     public $data_information = [];
     public $technical_information = [];
     public $quality_information = [];
-    public $assigned = '', $assigned_head = '', $status_name = '', $result_id = '';
+    public $assigned = '', $assigned_head = '', $status_name = '', $result_id = '', $existing_attachment = '';
 
     protected $listeners = [
         'view-Result' => 'open_modal'
@@ -91,42 +91,13 @@ class HrReAssign extends Component
         }
 
         $result_assigned = DB::table('result_error_forms as a')
-            ->join(
-                'result_error_source_of_infos as b',
-                'a.source_of_information',
-                '=',
-                'b.id'
-            )
-            ->join(
-                'result_complain_categories as c',
-                'a.complainant_category',
-                '=',
-                'c.id'
-            )
-            ->join(
-                'cpar_assignments as d',
-                'a.id',
-                '=',
-                'd.result_id'
-            )
-            ->join(
-                'cpar_statuses as h',
-                'd.status_id',
-                '=',
-                'h.id'
-            )
-            ->leftJoin(
-                'employees as i',
-                'd.dept_head_assigned',
-                '=',
-                'i.id'
-            )
-            ->join(
-                'priority_levels as m',
-                'a.priority_level',
-                '=',
-                'm.id'
-            )
+            ->join('result_error_source_of_infos as b','a.source_of_information','=','b.id')
+            ->join('result_complain_categories as c','a.complainant_category','=','c.id')
+            ->join('cpar_assignments as d','a.id','=','d.result_id')
+            ->join('cpar_attachments as e', 'd.result_id', '=', 'e.result_id')
+            ->join('cpar_statuses as h','d.status_id','=','h.id')
+            ->leftJoin('employees as i','d.dept_head_assigned','=','i.id')
+            ->join('priority_levels as m','a.priority_level','=','m.id')
             ->select(
                 'a.id',
                 'a.result_no',
@@ -150,6 +121,7 @@ class HrReAssign extends Component
                 'd.remarks as assignment_remarks',
                 'd.dept_head_assigned',
                 'd.department_id',
+                'e.file_path',
                 'h.status_name',
                 'i.branch_id',
                 'i.first_name',
@@ -161,6 +133,7 @@ class HrReAssign extends Component
         if (!$result_assigned) {
             return;
         }
+        $this->existing_attachment = $result_assigned->file_path;
         $this->assignment_id = $result_assigned->assignment_id;
         $this->cpar_id = $result_assigned->result_id;
         $this->result_no = $result_assigned->result_no;

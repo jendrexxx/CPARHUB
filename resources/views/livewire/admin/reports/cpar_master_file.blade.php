@@ -194,23 +194,27 @@
                                 icon="ellipsis-vertical" />
 
                             <flux:menu>
-
                                 @if ($cpar->record_type === 'CPAR')
-
                                 <flux:menu.item
                                     wire:click="view({{ $cpar->assignment_id }})">
                                     View CPAR
                                 </flux:menu.item>
-
+                                <flux:menu.item
+                                    wire:click="deleteCPAR({{ $cpar->assignment_id ?? 'null' }}, {{ $cpar->rec_id }})"
+                                    wire:confirm="Are you sure you want to delete this CPAR assignment?">
+                                    Delete CPAR
+                                </flux:menu.item>
                                 @else
 
                                 <flux:menu.item
                                     wire:click="viewResult({{ $cpar->assignment_id }})">
                                     View Result
                                 </flux:menu.item>
-
+                                <flux:menu.item
+                                    wire:click="deleteResult({{ $cpar->assignment_id }})">
+                                    Delete Result
+                                </flux:menu.item>
                                 @endif
-
                             </flux:menu>
 
                         </flux:dropdown>

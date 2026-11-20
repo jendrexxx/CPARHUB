@@ -171,11 +171,12 @@ new #[Layout('components.layouts.auth')] class extends Component {
 
         </div>
 
-        <flux:button
-            class="w-full bg-[#9F0712] hover:bg-[#7F0510] text-white"
-            type="submit">
+        <button
+            type="submit"
+            class="w-full rounded-lg bg-[#9F0712] px-4 py-2 font-semibold text-white transition-colors hover:bg-[#7F0510] focus:outline-none focus:ring-2 focus:ring-[#9F0712] focus:ring-offset-2">
             Log in
-        </flux:button>
+        </button>
+
         <p class="text-center text-xs text-zinc-400">
             Corrective Preventive Action Report System © 2026
         </p>

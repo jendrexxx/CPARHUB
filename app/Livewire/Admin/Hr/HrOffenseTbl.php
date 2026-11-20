@@ -127,7 +127,6 @@ class HrOffenseTbl extends Component
             $cpar->where('h.employee_no', $employee_no);
             $result->where('h.employee_no', $employee_no);
         }
-
         $this->offenseList = $cpar
             ->unionAll($result)
             ->orderByDesc('record_date')

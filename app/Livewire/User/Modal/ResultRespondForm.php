@@ -32,7 +32,7 @@ class ResultRespondForm extends Component
     public $existing_ir_attachment = '', $employee_assigned_to = '', $employee_name = '';
     public $date_completed = '', $ir_id = '', $tat = '', $employeeName = '', $assigned_employee_no = '';
     public $identified_cause = '', $provided_solution = '', $recommendation = '', $ir_attachment = '';
-    public $action_taken_by = '';
+    public $action_taken_by = '', $attachment = '';
 
     protected $listeners = [
         'respond-Result' => 'open_modal',
@@ -88,6 +88,7 @@ class ResultRespondForm extends Component
             ->leftjoin('employees as h', 'd.assigned_to', '=', 'h.id')
             ->leftjoin('cpar_investigations as i', 'd.id', '=', 'i.assigned_id')
             ->leftJoin('cpar_ir_requests as j', 'd.id', '=', 'j.assignment_ir_id')
+            ->leftJoin('cpar_attachments as k', 'a.id', '=', 'k.result_id')
             ->select(
                 'a.result_no',
                 'a.reported_by',
@@ -123,7 +124,8 @@ class ResultRespondForm extends Component
                 'i.identified_cause',
                 'i.provided_solution',
                 'i.recommendation',
-                'j.ir_attachment'
+                'j.ir_attachment',
+                'k.file_path',
             )
             ->where('d.id', $id)
             ->first();
@@ -145,6 +147,7 @@ class ResultRespondForm extends Component
             $this->employeeName = trim($cpar_info->first_name . ' ' . $cpar_info->last_name);
         }
         $this->existing_ir_attachment = $result_assigned->ir_attachment;
+        $this->attachment = $result_assigned->file_path;
         $this->id = $result_assigned->id;
         $this->employee_assigned_to = $result_assigned->employee_assigned_to;
         $this->cpar_id   = $result_assigned->cpar_id;

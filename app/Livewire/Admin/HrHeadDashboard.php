@@ -145,10 +145,10 @@ class HrHeadDashboard extends Component
             ->count();
 
         $resultCount = DB::table('result_error_forms as a')
-            ->join('result_error_source_of_infos as b','a.source_of_information','=','b.id')
-            ->join('result_complain_categories as c','a.complainant_category','=','c.id')
-            ->join('cpar_assignments as d','a.id','=','d.result_id')
-            ->join('employees as i','d.assigned_to','=','i.id')
+            ->join('result_error_source_of_infos as b', 'a.source_of_information', '=', 'b.id')
+            ->join('result_complain_categories as c', 'a.complainant_category', '=', 'c.id')
+            ->join('cpar_assignments as d', 'a.id', '=', 'd.result_id')
+            ->join('employees as i', 'd.assigned_to', '=', 'i.id')
             ->whereIn('d.status_id', [20, 25, 30])
             ->where('d.record_type', 10)
             ->where('i.branch_id', $this->branch_id)
@@ -156,7 +156,7 @@ class HrHeadDashboard extends Component
 
         $this->hr_decision_count = $cparCount + $resultCount;
     }
-    
+
     public function loadMemoCount()
     {
         // Regular CPAR

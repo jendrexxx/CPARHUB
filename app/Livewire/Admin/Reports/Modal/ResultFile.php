@@ -43,6 +43,7 @@ class ResultFile extends Component
     public $disciplinaryCategories = [];
     public $offenseLevels = [];
     public $isNoDisciplinaryAction = false;
+    public $existingFilePath = '', $concern_attachment = '',$existingFileName = null;
     public $nte_no = '', $nte_attachment = '', $response_attachment = '', $response_nte = '';
     public $incident_date = '', $validUntil = '', $valid_until = '', $hr_decision_remarks = '', $management_remarks = '';
     protected $listeners = [
@@ -160,6 +161,7 @@ class ResultFile extends Component
             ->leftJoin('cpar_employee_disciplinary_records as j', 'd.id', '=', 'j.assignment_id')
             ->leftJoin('cpar_notice_to_explains as k', 'i.id', '=', 'k.assignment_id')
             ->leftJoin('cpar_nte_responses as l', 'k.id', '=', 'l.nte_id')
+            ->leftJoin('cpar_attachments as m', 'd.id', '=', 'm.result_id')
             ->select(
                 'a.id',
                 'a.result_no',
@@ -218,7 +220,10 @@ class ResultFile extends Component
                 // NTE EXPLANATION
                 'l.nte_id as response_nte',
                 'l.employee_no',
-                'l.response_attachment'
+                'l.response_attachment',
+                'm.file_name',
+                'm.file_path',
+                'm.file_type'
             )
             ->where('d.result_id', $id)
             ->first();
@@ -372,6 +377,7 @@ class ResultFile extends Component
         $this->valid_until = $result_assigned->valid_until;
         $this->hr_decision_remarks = $result_assigned->decision_remarks;
         $this->management_remarks = $result_assigned->management_remarks;
+        $this->existingFilePath = $result_assigned->file_path;
         $this->modal('result-file')->show();
     }
 
@@ -438,11 +444,13 @@ class ResultFile extends Component
         $this->validate([
             'ir_attachment' => 'nullable|file|mimes:pdf|max:10240',
             'nte_attachment' => 'nullable|file|mimes:pdf|max:10240',
+            'concern_attachment' => 'nullable|file|mimes:pdf|max:10240',
         ]);
 
         $irAttachmentPath = $this->existing_ir_attachment;
         $nteAttachmentPath = $this->existing_nte_attachment;
 
+        // Upload IR attachment
         if ($this->ir_attachment) {
             $irAttachmentPath = $this->ir_attachment->store(
                 'result/ir',
@@ -450,6 +458,7 @@ class ResultFile extends Component
             );
         }
 
+        // Upload NTE attachment
         if ($this->nte_attachment) {
             $nteAttachmentPath = $this->nte_attachment->store(
                 'cpar/nte',
@@ -457,14 +466,36 @@ class ResultFile extends Component
             );
         }
 
+        // Upload Concern Attachment
+        $concernAttachmentPath = null;
+        $concernAttachmentName = null;
+        $concernAttachmentType = null;
+
+        if ($this->concern_attachment) {
+            $concernAttachmentPath = $this->concern_attachment->store(
+                'result',
+                'public'
+            );
+
+            $concernAttachmentName =
+                $this->concern_attachment->getClientOriginalName();
+
+            $concernAttachmentType =
+                $this->concern_attachment->getMimeType();
+        }
+
         DB::transaction(function () use (
             $irAttachmentPath,
-            $nteAttachmentPath
+            $nteAttachmentPath,
+            $concernAttachmentPath,
+            $concernAttachmentName,
+            $concernAttachmentType,
         ) {
+            // Update Result Error Form
             DB::table('result_error_forms')
                 ->where('id', $this->result_id)
                 ->update([
-                    'employee_no' => $this->employee_no,
+                    'employee_no' => $this->employee_no ?? null,
                     'reported_by' => $this->reported_by,
                     'patient_name' => strtoupper($this->patient_name ?? ''),
                     'attending_physician' => strtoupper($this->attending_physician ?? ''),
@@ -488,6 +519,7 @@ class ResultFile extends Component
                     'updated_at' => now(),
                 ]);
 
+            // Update Assignment
             DB::table('cpar_assignments')
                 ->where('result_id', $this->result_id)
                 ->update([
@@ -498,39 +530,52 @@ class ResultFile extends Component
                     'updated_at' => now(),
                 ]);
 
-            DB::table('cpar_ir_requests')
-                ->updateOrInsert(
-                    [
-                        'assignment_ir_id' => $this->result_id,
-                    ],
-                    [
-                        'ir_attachment' => $irAttachmentPath,
-                        'updated_at' => now(),
-                    ]
-                );
+            // Update or Insert IR Request
+            DB::table('cpar_ir_requests')->updateOrInsert(
+                [
+                    'assignment_ir_id' => $this->result_id,
+                ],
+                [
+                    'ir_attachment' => $irAttachmentPath ?? null,
+                    'updated_at' => now(),
+                ]
+            );
 
-            DB::table('cpar_investigations')
-                ->updateOrInsert(
-                    [
-                        'assigned_id' => $this->result_id,
-                    ],
-                    [
-                        'identified_cause' => strtoupper(
-                            $this->identified_cause ?? ''
-                        ),
-                        'provided_solution' => strtoupper(
-                            $this->provided_solution ?? ''
-                        ),
-                        'recommendation' => strtoupper(
-                            $this->recommendation ?? ''
-                        ),
-                        'date_completed' => $this->date_completed ?: null,
-                        'tat' => $this->tat ?: null,
-                        'remarks' => strtoupper($this->remarks ?? ''),
-                        'updated_at' => now(),
-                    ]
-                );
+            // Update or Insert Investigation
+            DB::table('cpar_investigations')->updateOrInsert(
+                [
+                    'assigned_id' => $this->result_id,
+                ],
+                [
+                    'identified_cause' => strtoupper(
+                        $this->identified_cause ?? ''
+                    ),
+                    'provided_solution' => strtoupper(
+                        $this->provided_solution ?? ''
+                    ),
+                    'recommendation' => strtoupper(
+                        $this->recommendation ?? ''
+                    ),
+                    'date_completed' => $this->date_completed ?: null,
+                    'tat' => $this->tat ?: null,
+                    'remarks' => strtoupper($this->remarks ?? ''),
+                    'updated_at' => now(),
+                ]
+            );
 
+            // Update cpar_attachments
+            if ($concernAttachmentPath && $this->result_id) {
+                DB::table('cpar_attachments')
+                    ->where('id', $this->result_id)
+                    ->update([
+                        'file_name' => $concernAttachmentName,
+                        'file_path' => $concernAttachmentPath,
+                        'file_type' => $concernAttachmentType,
+                        'updated_at' => now(),
+                    ]);
+            }
+
+            // Update or Insert NTE
             if ($nteAttachmentPath) {
                 $now = now();
 
@@ -553,30 +598,29 @@ class ResultFile extends Component
                 );
             }
 
+            // Update or Insert NTE Response
             if ($this->response_attachment) {
-                $this->validate([
-                    'response_attachment' => 'required|file|mimes:pdf|max:10240',
-                ]);
-
                 $responseAttachmentPath = $this->response_attachment
                     ->store('cpar/response', 'public');
 
                 $now = now();
+
+                $response = DB::table('cpar_nte_responses');
+
+                if (!empty($this->response_nte)) {
+                    $response->where('nte_id', $this->response_nte);
+                } else {
+                    $response->whereNull('nte_id')
+                        ->where('employee_no', $this->employee_no);
+                }
+
+                $existingResponse = $response->first();
 
                 $responseData = [
                     'response_attachment' => $responseAttachmentPath,
                     'submitted_at' => $now,
                     'updated_at' => $now,
                 ];
-
-                $response = DB::table('cpar_nte_responses')
-                    ->where('nte_id', $this->response_nte);
-
-                if (!empty($this->response_nte)) {
-                    $response->where('nte_id', $this->response_nte);
-                }
-
-                $existingResponse = $response->first();
 
                 if ($existingResponse) {
                     DB::table('cpar_nte_responses')
@@ -597,6 +641,7 @@ class ResultFile extends Component
                 $this->response_attachment = null;
             }
 
+            // Disciplinary Record
             $assignmentId = $this->assignment_id ?: $this->result_id;
 
             $incidentDate = !empty($this->incident_date)
@@ -662,11 +707,18 @@ class ResultFile extends Component
             }
         });
 
+        // Refresh attachment properties
         $this->existing_ir_attachment = $irAttachmentPath;
         $this->ir_attachment = null;
 
         $this->existing_nte_attachment = $nteAttachmentPath;
         $this->nte_attachment = null;
+
+        if ($concernAttachmentPath) {
+            $this->existingFilePath = $concernAttachmentPath;
+            $this->existingFileName = $concernAttachmentName;
+            $this->concern_attachment = null;
+        }
 
         $this->dispatch(
             'toast',

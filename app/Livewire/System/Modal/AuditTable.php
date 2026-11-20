@@ -20,110 +20,123 @@ class AuditTable extends Component
         $this->resetPage();
     }
 
+
     public function render()
     {
         $auditLogs = DB::table('audit_logs as a')
 
-            // =====================================================
-            // USER REPORTED
-            // =====================================================
+            // Get reported employees
             ->leftJoin('employees as e1', function ($join) {
                 $join->whereRaw("
-                    FIND_IN_SET(
-                        e1.id,
+                FIND_IN_SET(
+                    e1.id,
+                    REPLACE(
                         REPLACE(
-                            REPLACE(
-                                REPLACE(a.user_reported, '[', ''),
-                                ']', ''
-                            ),
-                            ' ',
-                            ''
-                        )
+                            REPLACE(a.user_reported, '[', ''),
+                            ']', ''
+                        ),
+                        ' ',
+                        ''
                     )
-                ");
+                )
+            ");
             })
 
-            // =====================================================
-            // STATUS CHANGED BY
-            // =====================================================
-            ->leftJoin('employees as e2', function ($join) {
+            // Get the user who changed the status
+            ->leftJoin('users as u', function ($join) {
                 $join->whereRaw("
-                    e2.id = CAST(
+                u.id = CAST(
+                    REPLACE(
                         REPLACE(
-                            REPLACE(
-                                REPLACE(a.status_changed_by, '[', ''),
-                                ']', ''
-                            ),
-                            ' ',
-                            ''
-                        ) AS UNSIGNED
-                    )
-                ");
+                            REPLACE(a.status_changed_by, '[', ''),
+                            ']', ''
+                        ),
+                        ' ',
+                        ''
+                    ) AS UNSIGNED
+                )
+            ");
             })
 
-            // =====================================================
-            // SELECT
-            // =====================================================
+            // Find the employee linked to the user through email
+            ->leftJoin('employees as e2', 'e2.email', '=', 'u.email')
+
             ->select(
                 'a.*',
 
+                // Reported employee names
                 DB::raw("
-                    GROUP_CONCAT(
-                        DISTINCT CONCAT(
-                            e1.first_name,
-                            ' ',
-                            e1.last_name
-                        )
-                        ORDER BY e1.first_name
-                        SEPARATOR ', '
-                    ) AS reported_employee
-                "),
+                GROUP_CONCAT(
+                    DISTINCT CONCAT_WS(
+                        ' ',
+                        e1.first_name,
+                        e1.last_name
+                    )
+                    ORDER BY e1.first_name
+                    SEPARATOR ', '
+                ) AS reported_employee
+            "),
 
+                // Prefer the user's name; fallback to the employee's name
                 DB::raw("
-                    MAX(
-                        CONCAT(
-                            e2.first_name,
-                            ' ',
-                            e2.last_name
-                        )
-                    ) AS status_changed_employee
-                ")
+                MAX(
+                    COALESCE(
+                        NULLIF(
+                            TRIM(
+                                CONCAT_WS(
+                                    ' ',
+                                    e2.first_name,
+                                    e2.last_name
+                                )
+                            ),
+                            ''
+                        ),
+                        u.name
+                    )
+                ) AS status_changed_employee
+            ")
             )
 
-            // =====================================================
-            // SEARCH
-            // =====================================================
+            // Search
             ->when($this->search, function ($query) {
-
                 $search = '%' . trim($this->search) . '%';
 
                 $query->where(function ($q) use ($search) {
-
                     $q->where('a.action', 'like', $search)
-
                         ->orWhere('a.user_reported_by', 'like', $search)
-
                         ->orWhere('a.user_reported', 'like', $search)
-
                         ->orWhere('a.old_value', 'like', $search)
-
                         ->orWhere('a.new_value', 'like', $search)
 
-                        ->orWhereRaw(
-                            "CONCAT(e1.first_name, ' ', e1.last_name) LIKE ?",
-                            [$search]
-                        )
+                        ->orWhereRaw("
+                        CONCAT_WS(
+                            ' ',
+                            e1.first_name,
+                            e1.last_name
+                        ) LIKE ?
+                    ", [$search])
 
-                        ->orWhereRaw(
-                            "CONCAT(e2.first_name, ' ', e2.last_name) LIKE ?",
-                            [$search]
-                        );
+                        ->orWhere('u.name', 'like', $search)
+
+                        ->orWhereRaw("
+                        CONCAT_WS(
+                            ' ',
+                            u.first_name,
+                            u.last_name
+                        ) LIKE ?
+                    ", [$search])
+
+                        ->orWhereRaw("
+                        CONCAT_WS(
+                            ' ',
+                            e2.first_name,
+                            e2.last_name
+                        ) LIKE ?
+                    ", [$search]);
                 });
             })
 
-            // =====================================================
-            // GROUP
-            // =====================================================
+            // Group
             ->groupBy(
                 'a.id',
                 'a.user_reported_by',
@@ -137,14 +150,10 @@ class AuditTable extends Component
                 'a.updated_at'
             )
 
-            // =====================================================
-            // ORDER
-            // =====================================================
+            // Order
             ->orderBy('a.id', 'asc')
 
-            // =====================================================
-            // PAGINATION
-            // =====================================================
+            // Pagination
             ->paginate(
                 $this->perPage,
                 ['*'],

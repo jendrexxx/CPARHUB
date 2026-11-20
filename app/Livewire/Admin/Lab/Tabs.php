@@ -79,11 +79,12 @@ class Tabs extends Component
 
     public function render()
     {
+        $credentials = Auth::user()?->employee;
         $cparQuery = DB::table('cpar_request_forms as a')
             ->join('cpar_assignments as b', 'a.id', '=', 'b.cpar_id')
             ->leftJoin('departments as c', 'a.department_id', '=', 'c.id')
             ->leftJoin('cpar_statuses as d', 'b.status_id', '=', 'd.id')
-            ->leftJoin('employees as r', 'a.employee_no', '=', 'r.employee_no')
+            ->leftJoin('employees as r', 'b.id', '=', 'r.id')
             ->leftJoin('employees as e', 'b.assigned_to', '=', 'e.id')
             ->leftJoin('cpar_ir_requests as f', 'b.id', '=', 'f.assignment_ir_id')
             ->leftJoin('cpar_employee_disciplinary_records as g', 'b.id', '=', 'g.assignment_id')
@@ -231,6 +232,7 @@ class Tabs extends Component
             )
             ->where('b.record_type', 5)
             ->where('b.status_id', '!=', 50)
+            ->where('r.branch_id', $credentials->branch_id)
             ->groupBy(
                 'a.id',
                 'a.cpar_no',
@@ -262,7 +264,7 @@ class Tabs extends Component
             ->join('cpar_assignments as b', 'a.id', '=', 'b.result_id')
             ->leftJoin('departments as c', 'a.department_id', '=', 'c.id')
             ->leftJoin('cpar_statuses as d', 'b.status_id', '=', 'd.id')
-            ->leftJoin('employees as r', 'a.employee_no', '=', 'r.employee_no')
+            ->leftJoin('employees as r', 'b.id', '=', 'r.id')
             ->leftJoin('employees as e', 'b.assigned_to', '=', 'e.id')
             ->leftJoin('cpar_ir_requests as f', 'b.id', '=', 'f.assignment_ir_id')
             ->leftJoin('cpar_employee_disciplinary_records as g', 'b.id', '=', 'g.assignment_id')
@@ -410,6 +412,7 @@ class Tabs extends Component
             )
             ->where('b.record_type', 10)
             ->where('b.status_id', '!=', 50)
+            ->where('r.branch_id', $credentials->branch_id)
             ->groupBy(
                 'a.id',
                 'a.result_no',

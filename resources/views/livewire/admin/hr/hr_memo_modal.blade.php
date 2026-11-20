@@ -563,6 +563,7 @@
 
                 </div>
 
+
                 <style>
                     .memo-print-wrapper-sample {
                         display: none;
@@ -575,7 +576,7 @@
                     .memo-text-field {
                         margin: 0 !important;
                         padding: 0 !important;
-                        width: 100% !important;
+                        width: 120% !important;
                         text-align: left !important;
                         text-indent: 0 !important;
                         white-space: pre-wrap !important;
@@ -584,6 +585,50 @@
                         font-family: Arial, Helvetica, sans-serif !important;
                         font-size: 10pt !important;
                         line-height: 1.3 !important;
+                    }
+
+                    /* EDITABLE MEMO CONTENT */
+                    .memo-content {
+                        display: block !important;
+                        width: 120% !important;
+                        max-width: 120% !important;
+                        margin: 18px 0 0 0 !important;
+                        padding: 0 !important;
+                        box-sizing: border-box !important;
+                    }
+
+                    .memo-textarea {
+                        display: block !important;
+                        width: 120% !important;
+                        min-width: 120% !important;
+                        max-width: 120% !important;
+                        min-height: 250px !important;
+                        height: auto;
+                        margin: 0 !important;
+                        padding: 12px !important;
+
+                        font-family: Arial, Helvetica, sans-serif !important;
+                        font-size: 10pt !important;
+                        line-height: 1.5 !important;
+                        text-align: justify !important;
+
+                        white-space: pre-wrap !important;
+                        overflow-wrap: break-word !important;
+                        word-break: normal !important;
+
+                        border: 1px solid #d1d5db !important;
+                        border-radius: 5px !important;
+                        background: #fff !important;
+                        color: #000 !important;
+
+                        resize: vertical;
+                        outline: none;
+                        box-sizing: border-box !important;
+                    }
+
+                    .memo-textarea:focus {
+                        border-color: #9F0712 !important;
+                        box-shadow: 0 0 0 1px #9F0712 !important;
                     }
 
                     @media print {
@@ -640,6 +685,7 @@
                             box-sizing: border-box !important;
                         }
 
+                        /* LOGO */
                         body.hr-memo-printing .memo-logo {
                             display: flex !important;
                             justify-content: center !important;
@@ -662,6 +708,20 @@
                             object-fit: contain !important;
                         }
 
+                        /* MEMO TITLE */
+                        body.hr-memo-printing .memo-title {
+                            display: block !important;
+                            text-align: center !important;
+                            font-family: Arial, Helvetica, sans-serif !important;
+                            font-size: 16pt !important;
+                            font-weight: bold !important;
+                            letter-spacing: 1px !important;
+                            margin: 15px 0 25px 0 !important;
+                            padding: 0 !important;
+                            color: #000 !important;
+                        }
+
+                        /* MEMO FIELDS */
                         body.hr-memo-printing .memo-field {
                             display: grid !important;
                             grid-template-columns: 70px 1fr !important;
@@ -706,13 +766,14 @@
                             box-sizing: border-box !important;
                         }
 
+                        /* MEMO CONTENT */
                         body.hr-memo-printing .memo-content {
                             display: block !important;
                             width: 100% !important;
                             margin: 18px 0 0 0 !important;
                             padding: 0 !important;
-                            break-inside: avoid !important;
-                            page-break-inside: avoid !important;
+                            break-inside: auto !important;
+                            page-break-inside: auto !important;
                         }
 
                         body.hr-memo-printing .memo-content-label {
@@ -734,13 +795,19 @@
                             text-transform: uppercase !important;
                         }
 
+                        /* HIDE EDITABLE TEXTAREA WHEN PRINTING */
+                        body.hr-memo-printing .memo-textarea {
+                            display: none !important;
+                        }
+
+                        /* PRINTED MEMO TEXT */
                         body.hr-memo-printing .memo-text-field {
                             display: block !important;
-                            width: 100% !important;
-                            max-width: 100% !important;
+                            width: 120% !important;
+                            max-width: 120% !important;
                             margin: 0 !important;
                             padding: 0 !important;
-                            text-align: left !important;
+                            text-align: justify !important;
                             text-indent: 0 !important;
                             white-space: pre-wrap !important;
                             overflow-wrap: break-word !important;
@@ -749,12 +816,14 @@
                             font-size: 10pt !important;
                             line-height: 1.3 !important;
                             color: #000 !important;
+                            text-transform: uppercase !important;
                             box-sizing: border-box !important;
                         }
 
+                        /* SEPARATOR */
                         body.hr-memo-printing .memo-content-separator2 {
                             display: block !important;
-                            width: 100% !important;
+                            width: 120% !important;
                             height: 1px !important;
                             margin: 8px 0 12px 0 !important;
                             padding: 0 !important;
@@ -763,6 +832,7 @@
                             box-sizing: border-box !important;
                         }
 
+                        /* SIGNATORY */
                         body.hr-memo-printing .memo-signatory {
                             display: block !important;
                             width: 100% !important;
@@ -816,6 +886,7 @@
                             text-transform: uppercase !important;
                         }
 
+                        /* CONFORME */
                         body.hr-memo-printing .memo-conforme {
                             display: block !important;
                             width: 100% !important;
@@ -861,15 +932,16 @@
                             box-sizing: border-box !important;
                         }
 
+                        /* PRINT PAGE BREAKS */
                         body.hr-memo-printing .memo-logo,
                         body.hr-memo-printing .memo-field,
-                        body.hr-memo-printing .memo-content,
                         body.hr-memo-printing .memo-signatory,
                         body.hr-memo-printing .memo-conforme {
                             break-inside: avoid !important;
                             page-break-inside: avoid !important;
                         }
 
+                        /* FORCE BLACK TEXT AND WHITE BACKGROUND */
                         body.hr-memo-printing .memo-print-wrapper-sample,
                         body.hr-memo-printing .memo-print-wrapper-sample * {
                             color: #000 !important;
@@ -878,6 +950,7 @@
                         }
                     }
                 </style>
+
 
                 {{-- MEMO ATTACHMENT --}}
                 <div
@@ -1075,9 +1148,7 @@
             <div class="memo-content-separator2"></div>
 
             <div class="memo-content">
-                <div class="">
-                    {{ strtoupper($memo_content ?? '') }}
-                </div>
+                <div class="memo-text-field">{{ strtoupper($memo_content ?? '') }}</div>
             </div>
 
             <div class="memo-signatory">

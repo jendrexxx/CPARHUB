@@ -35,4 +35,7 @@ return [
         ],
     ],
 
+    // CPAR Mail Queue Runner
+    'queue_runner_token' => env('QUEUE_RUNNER_TOKEN'),
+
 ];

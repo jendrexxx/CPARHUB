@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Admin\Lab;
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 
@@ -26,6 +27,7 @@ class LabNotif extends Component
     public function loadLABReview()
     {
         $search = trim($this->search);
+        $credentials = Auth::user()?->employee;
 
         $cparQuery = DB::table('cpar_request_forms as a')
             ->leftJoin('cpar_assignments as b', 'a.id', '=', 'b.cpar_id')
@@ -35,6 +37,7 @@ class LabNotif extends Component
             ->leftJoin('cpar_employee_disciplinary_records as k', 'b.id', '=', 'k.assignment_id')
             ->leftJoin('cpar_ir_requests as m', 'b.id', '=', 'm.assignment_ir_id')
             ->leftJoin('cpar_notice_to_explains as l', 'm.id', '=', 'l.assignment_id')
+            ->leftJoin('employees as r', 'b.assigned_to', '=', 'r.id')
             ->leftJoin(
                 'cpar_decision_categories as n',
                 DB::raw("
@@ -77,6 +80,7 @@ class LabNotif extends Component
                 DB::raw("'CPAR' AS source_type")
             )
             ->where('b.status_id', 35)
+            ->where('r.branch_id', $credentials->branch_id)
             ->where(function ($query) {
                 $query
                     ->where(function ($q) {
@@ -112,6 +116,7 @@ class LabNotif extends Component
             ->leftJoin('cpar_employee_disciplinary_records as k', 'b.id', '=', 'k.assignment_id')
             ->leftJoin('cpar_ir_requests as m', 'b.id', '=', 'm.assignment_ir_id')
             ->leftJoin('cpar_notice_to_explains as l', 'm.id', '=', 'l.assignment_id')
+            ->leftJoin('employees as r', 'b.assigned_to', '=', 'r.id')
             ->leftJoin(
                 'cpar_decision_categories as n',
                 DB::raw("
@@ -154,6 +159,7 @@ class LabNotif extends Component
                 DB::raw("'RESULT' AS source_type")
             )
             ->where('b.status_id', 35)
+            ->where('r.branch_id', $credentials->branch_id)
             ->where(function ($query) {
                 $query
                     ->where(function ($q) {

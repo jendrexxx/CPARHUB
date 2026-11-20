@@ -17,7 +17,7 @@ return new class extends Migration
             $table->longText('identified_cause')->nullable();
             $table->longText('provided_solution')->nullable();
             $table->longText('recommendation')->nullable();
-            $table->longText('action_taken_by');
+            $table->longText('action_taken_by')->nullable();
             $table->string('date_completed');
             $table->string('tat');
             $table->text('remarks')->nullable();

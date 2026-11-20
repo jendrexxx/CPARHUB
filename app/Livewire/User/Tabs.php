@@ -58,6 +58,12 @@ class Tabs extends Component
         $this->loadCpar();
     }
 
+    public function clearSearch(): void
+    {
+        $this->search = '';
+        $this->resetPage(pageName: 'auditPage');
+    }
+
     public function updatedSearch(): void
     {
         $this->resetPage('cparPage');

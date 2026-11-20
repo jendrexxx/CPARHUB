@@ -34,6 +34,8 @@ class LabAssigned extends Component
 
     public function loadLabDetails()
     {
+        $credentials = Auth::user()?->employee;
+
         $cpar = DB::table('cpar_request_forms as a')
             ->join('cpar_assignments as b', 'a.id', '=', 'b.cpar_id')
             ->join('departments as c', 'a.department_id', '=', 'c.id')
@@ -60,7 +62,8 @@ class LabAssigned extends Component
                 DB::raw("CONCAT(f.first_name, ' ', f.last_name) as emp_dept_name")
             )
             ->where('b.status_id', '!=', 50)
-            ->where('b.record_type', 5);
+            ->where('b.record_type', 5)
+            ->where('e.branch_id', $credentials->branch_id);
 
         $result = DB::table('result_error_forms as a')
             ->join('cpar_assignments as b', 'a.id', '=', 'b.result_id')
@@ -88,7 +91,8 @@ class LabAssigned extends Component
                 DB::raw("CONCAT(f.first_name, ' ', f.last_name) as emp_dept_name")
             )
             ->where('b.status_id', '!=', 50)
-            ->where('b.record_type', 10);
+            ->where('b.record_type', 10)
+            ->where('e.branch_id', $credentials->branch_id);
 
         $query = $cpar->unionAll($result);
 

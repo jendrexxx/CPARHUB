@@ -34,11 +34,9 @@
 
                 </div>
 
-
                 {{-- CPAR DETAILS CONTENT --}}
                 <div class="mt-5 space-y-5">
 
-                    {{-- CPAR NO + DATE --}}
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 
                         <flux:input

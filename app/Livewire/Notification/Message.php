@@ -36,24 +36,27 @@ class Message extends Component
         'refreshNotificationCount' => 'loadNotifications',
     ];
 
-    public function mount()
+    public function mount($branch_id = null)
     {
         $user = Auth::user();
         $info = employee::where('email', $user->email)->first();
+
         if (!$info) {
             return;
         }
+        $this->branch_id = $branch_id;
         $this->employee_id = $info->id;
         $this->employee_no = $info->employee_no;
-        $this->branch_id = $info->branch_id;
         $this->email = $info->email;
         $this->id = $info->id;
         $this->user_role = $user->getRoleNames()->first() ?? '';
+
         $this->loadNotifications();
     }
 
     public function loadNotifications()
     {
+        $credentials = Auth::user()?->employee;
         $this->cpar_count = 0;
         $this->result_count = 0;
         $this->request_count = 0;
@@ -76,16 +79,20 @@ class Message extends Component
 
         $this->cpar_count = DB::table('cpar_request_forms as a')
             ->join('cpar_assignments as b', 'a.id', '=', 'b.cpar_id')
+            ->leftJoin('employees as c', 'b.assigned_to', '=', 'c.id')
             ->where('b.record_type', 5)
             ->where('b.status_id', 1)
             ->where('b.dept_head_assigned', $this->id)
+            ->where('c.branch_id', $credentials->branch_id)
             ->count();
 
         $this->result_count = DB::table('result_error_forms as a')
             ->join('cpar_assignments as b', 'a.id', '=', 'b.result_id')
+            ->leftJoin('employees as c', 'b.assigned_to', '=', 'c.id')
             ->where('b.record_type', 10)
             ->where('b.status_id', 1)
             ->where('b.dept_head_assigned', $this->id)
+            ->where('c.branch_id', $credentials->branch_id)
             ->count();
 
         $cparAcknowledgmentCount = DB::table('cpar_assignments as b')
@@ -93,6 +100,7 @@ class Message extends Component
             ->where('b.status_id', 15)
             ->where('b.record_type', 5)
             ->where('j.dept_head', $this->employee_no)
+            ->where('j.branch_id', $credentials->branch_id)
             ->count();
 
         $resultAcknowledgmentCount = DB::table('cpar_assignments as d')
@@ -100,6 +108,7 @@ class Message extends Component
             ->where('d.status_id', 15)
             ->where('d.record_type', 10)
             ->where('j.dept_head', $this->employee_no)
+            ->where('j.branch_id', $credentials->branch_id)
             ->count();
 
         $this->acknowledgment_count = $cparAcknowledgmentCount + $resultAcknowledgmentCount;
@@ -108,44 +117,50 @@ class Message extends Component
 
             $hrCparCount = DB::table('cpar_request_forms as a')
                 ->join('cpar_assignments as b', 'a.id', '=', 'b.cpar_id')
+                ->join('employees as i', 'b.assigned_to', '=', 'i.id')
                 ->where('b.status_id', 5)
                 ->where('b.record_type', 5)
                 ->distinct('a.id')
+                ->where('i.branch_id', $this->branch_id)
                 ->count('a.id');
 
             $hrResultCount = DB::table('result_error_forms as a')
                 ->join('cpar_assignments as d', 'a.id', '=', 'd.result_id')
+                ->join('employees as i', 'd.assigned_to', '=', 'i.id')
                 ->where('d.status_id', 5)
                 ->where('d.record_type', 10)
+                ->where('i.branch_id', $this->branch_id)
                 ->distinct('a.id')
                 ->count('a.id');
 
-            $this->hr_request_count =
-                $hrCparCount +
-                $hrResultCount;
+            $this->hr_request_count = $hrCparCount + $hrResultCount;
 
             $hrAcknowledgedCparCount = DB::table('cpar_assignments as b')
                 ->join('cpar_request_forms as a', 'a.id', '=', 'b.cpar_id')
                 ->join('cpar_investigations as j', 'b.id', '=', 'j.assigned_id')
+                ->join('employees as i', 'b.assigned_to', '=', 'i.id')
                 ->where('b.status_id', 20)
                 ->where('b.record_type', 5)
+                ->where('i.branch_id', $this->branch_id)
                 ->count();
 
             $hrAcknowledgedResultCount = DB::table('cpar_assignments as b')
                 ->join('result_error_forms as a', 'a.id', '=', 'b.result_id')
+                ->join('cpar_investigations as j', 'b.id', '=', 'j.assigned_id')
+                ->join('employees as i', 'b.assigned_to', '=', 'i.id')
                 ->where('b.status_id', 20)
                 ->where('b.record_type', 10)
+                ->where('i.branch_id', $this->branch_id)
                 ->count();
 
-            $this->acknowledged_cpar =
-                $hrAcknowledgedCparCount +
-                $hrAcknowledgedResultCount;
+            $this->acknowledged_cpar = $hrAcknowledgedCparCount + $hrAcknowledgedResultCount;
 
             $hrDecisionCparCount = DB::table('cpar_request_forms as a')
                 ->join('cpar_assignments as b', 'a.id', '=', 'b.cpar_id')
                 ->join('employees as i', 'b.assigned_to', '=', 'i.id')
                 ->whereIn('b.status_id', [20, 25, 30])
                 ->where('b.record_type', 5)
+                ->where('i.branch_id', $this->branch_id)
                 ->count();
 
             $hrDecisionResultCount = DB::table('result_error_forms as a')
@@ -156,9 +171,7 @@ class Message extends Component
                 ->where('i.branch_id', $this->branch_id)
                 ->count();
 
-            $this->hr_decision_count =
-                $hrDecisionCparCount +
-                $hrDecisionResultCount;
+            $this->hr_decision_count = $hrDecisionCparCount + $hrDecisionResultCount;
 
             $memoCparCount = DB::table('cpar_request_forms as a')
                 ->join('cpar_assignments as b', 'a.id', '=', 'b.cpar_id')
@@ -176,12 +189,12 @@ class Message extends Component
                 ->where('i.branch_id', $this->branch_id)
                 ->count();
 
-            $this->memo_count =
-                $memoCparCount +
-                $memoResultCount;
+            $this->memo_count = $memoCparCount + $memoResultCount;
         }
 
         if ($this->user_role === 'LAB SUPERVISOR') {
+
+            $credentials = Auth::user()?->employee;
 
             $status = cpar_statuses::where('id', '!=', 50)
                 ->get(['id', 'status_name']);
@@ -191,14 +204,18 @@ class Message extends Component
             $labCparCount = DB::table('cpar_request_forms as a')
                 ->join('cpar_assignments as b', 'a.id', '=', 'b.cpar_id')
                 ->join('cpar_statuses as h', 'b.status_id', '=', 'h.id')
+                ->leftJoin('employees as r', 'b.assigned_to', '=', 'r.id')
                 ->whereIn('h.id', $statusIds)
+                ->where('r.branch_id', $credentials->branch_id)
                 ->where('b.record_type', 5)
                 ->count();
 
             $labResultCount = DB::table('result_error_forms as a')
                 ->join('cpar_assignments as b', 'a.id', '=', 'b.result_id')
                 ->join('cpar_statuses as h', 'b.status_id', '=', 'h.id')
+                ->leftJoin('employees as r', 'b.assigned_to', '=', 'r.id')
                 ->whereIn('h.id', $statusIds)
+                ->where('r.branch_id', $credentials->branch_id)
                 ->where('b.record_type', 10)
                 ->count();
 
