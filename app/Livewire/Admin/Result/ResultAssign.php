@@ -17,6 +17,7 @@ class ResultAssign extends Component
     protected $listeners = [
         'open-assign-result' => 'open_modal'
     ];
+    
     protected $casts = [
         'assigned_to' => 'array',
     ];

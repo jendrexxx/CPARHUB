@@ -83,7 +83,6 @@ class Message extends Component
             ->where('b.record_type', 5)
             ->where('b.status_id', 1)
             ->where('b.dept_head_assigned', $this->id)
-            ->where('c.branch_id', $credentials->branch_id)
             ->count();
 
         $this->result_count = DB::table('result_error_forms as a')
@@ -92,7 +91,6 @@ class Message extends Component
             ->where('b.record_type', 10)
             ->where('b.status_id', 1)
             ->where('b.dept_head_assigned', $this->id)
-            ->where('c.branch_id', $credentials->branch_id)
             ->count();
 
         $cparAcknowledgmentCount = DB::table('cpar_assignments as b')
@@ -113,84 +111,138 @@ class Message extends Component
 
         $this->acknowledgment_count = $cparAcknowledgmentCount + $resultAcknowledgmentCount;
 
+
         if ($this->user_role === 'HR') {
 
-            $hrCparCount = DB::table('cpar_request_forms as a')
+            // Optional branch filtering
+            $branchId = $this->branch_id;
+
+            // CPAR Pending / HR Request
+            $hrCparQuery = DB::table('cpar_request_forms as a')
                 ->join('cpar_assignments as b', 'a.id', '=', 'b.cpar_id')
                 ->join('employees as i', 'b.assigned_to', '=', 'i.id')
                 ->where('b.status_id', 5)
-                ->where('b.record_type', 5)
-                ->distinct('a.id')
-                ->where('i.branch_id', $this->branch_id)
+                ->where('b.record_type', 5);
+
+            if (!empty($branchId)) {
+                $hrCparQuery->where('i.branch_id', $branchId);
+            }
+
+            $hrCparCount = $hrCparQuery
+                ->distinct()
                 ->count('a.id');
 
-            $hrResultCount = DB::table('result_error_forms as a')
+
+            // RESULT Pending / HR Request
+            $hrResultQuery = DB::table('result_error_forms as a')
                 ->join('cpar_assignments as d', 'a.id', '=', 'd.result_id')
                 ->join('employees as i', 'd.assigned_to', '=', 'i.id')
                 ->where('d.status_id', 5)
-                ->where('d.record_type', 10)
-                ->where('i.branch_id', $this->branch_id)
-                ->distinct('a.id')
+                ->where('d.record_type', 10);
+
+            if (!empty($branchId)) {
+                $hrResultQuery->where('i.branch_id', $branchId);
+            }
+
+            $hrResultCount = $hrResultQuery
+                ->distinct()
                 ->count('a.id');
 
             $this->hr_request_count = $hrCparCount + $hrResultCount;
 
-            $hrAcknowledgedCparCount = DB::table('cpar_assignments as b')
+
+            // HR ACKNOWLEDGED CPAR
+            $hrAcknowledgedCparQuery = DB::table('cpar_assignments as b')
                 ->join('cpar_request_forms as a', 'a.id', '=', 'b.cpar_id')
                 ->join('cpar_investigations as j', 'b.id', '=', 'j.assigned_id')
                 ->join('employees as i', 'b.assigned_to', '=', 'i.id')
                 ->where('b.status_id', 20)
-                ->where('b.record_type', 5)
-                ->where('i.branch_id', $this->branch_id)
-                ->count();
+                ->where('b.record_type', 5);
 
-            $hrAcknowledgedResultCount = DB::table('cpar_assignments as b')
+            if (!empty($branchId)) {
+                $hrAcknowledgedCparQuery->where('i.branch_id', $branchId);
+            }
+
+            $hrAcknowledgedCparCount = $hrAcknowledgedCparQuery->count();
+
+
+            // HR ACKNOWLEDGED RESULT
+            $hrAcknowledgedResultQuery = DB::table('cpar_assignments as b')
                 ->join('result_error_forms as a', 'a.id', '=', 'b.result_id')
                 ->join('cpar_investigations as j', 'b.id', '=', 'j.assigned_id')
                 ->join('employees as i', 'b.assigned_to', '=', 'i.id')
                 ->where('b.status_id', 20)
-                ->where('b.record_type', 10)
-                ->where('i.branch_id', $this->branch_id)
-                ->count();
+                ->where('b.record_type', 10);
+
+            if (!empty($branchId)) {
+                $hrAcknowledgedResultQuery->where('i.branch_id', $branchId);
+            }
+
+            $hrAcknowledgedResultCount = $hrAcknowledgedResultQuery->count();
 
             $this->acknowledged_cpar = $hrAcknowledgedCparCount + $hrAcknowledgedResultCount;
 
-            $hrDecisionCparCount = DB::table('cpar_request_forms as a')
+
+            // HR DECISION CPAR
+            $hrDecisionCparQuery = DB::table('cpar_request_forms as a')
                 ->join('cpar_assignments as b', 'a.id', '=', 'b.cpar_id')
                 ->join('employees as i', 'b.assigned_to', '=', 'i.id')
                 ->whereIn('b.status_id', [20, 25, 30])
-                ->where('b.record_type', 5)
-                ->where('i.branch_id', $this->branch_id)
-                ->count();
+                ->where('b.record_type', 5);
 
-            $hrDecisionResultCount = DB::table('result_error_forms as a')
+            if (!empty($branchId)) {
+                $hrDecisionCparQuery->where('i.branch_id', $branchId);
+            }
+
+            $hrDecisionCparCount = $hrDecisionCparQuery->count();
+
+
+            // HR DECISION RESULT
+            $hrDecisionResultQuery = DB::table('result_error_forms as a')
                 ->join('cpar_assignments as d', 'a.id', '=', 'd.result_id')
                 ->join('employees as i', 'd.assigned_to', '=', 'i.id')
                 ->whereIn('d.status_id', [20, 25, 30])
-                ->where('d.record_type', 10)
-                ->where('i.branch_id', $this->branch_id)
-                ->count();
+                ->where('d.record_type', 10);
+
+            if (!empty($branchId)) {
+                $hrDecisionResultQuery->where('i.branch_id', $branchId);
+            }
+
+            $hrDecisionResultCount = $hrDecisionResultQuery->count();
 
             $this->hr_decision_count = $hrDecisionCparCount + $hrDecisionResultCount;
 
-            $memoCparCount = DB::table('cpar_request_forms as a')
+
+            // MEMO CPAR
+            $memoCparQuery = DB::table('cpar_request_forms as a')
                 ->join('cpar_assignments as b', 'a.id', '=', 'b.cpar_id')
                 ->join('employees as i', 'b.assigned_to', '=', 'i.id')
                 ->where('b.status_id', 40)
-                ->where('b.record_type', 5)
-                ->where('i.branch_id', $this->branch_id)
-                ->count();
+                ->where('b.record_type', 5);
 
-            $memoResultCount = DB::table('result_error_forms as a')
+            if (!empty($branchId)) {
+                $memoCparQuery->where('i.branch_id', $branchId);
+            }
+
+            $memoCparCount = $memoCparQuery->count();
+
+
+            // MEMO RESULT
+            $memoResultQuery = DB::table('result_error_forms as a')
                 ->join('cpar_assignments as b', 'a.id', '=', 'b.result_id')
                 ->join('employees as i', 'b.assigned_to', '=', 'i.id')
                 ->where('b.status_id', 40)
-                ->where('b.record_type', 10)
-                ->where('i.branch_id', $this->branch_id)
-                ->count();
+                ->where('b.record_type', 10);
+
+            if (!empty($branchId)) {
+                $memoResultQuery->where('i.branch_id', $branchId);
+            }
+
+            $memoResultCount = $memoResultQuery->count();
 
             $this->memo_count = $memoCparCount + $memoResultCount;
         }
+
 
         if ($this->user_role === 'LAB SUPERVISOR') {
 

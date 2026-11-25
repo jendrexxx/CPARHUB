@@ -193,7 +193,7 @@
 
                                         <flux:menu.item
                                             icon="arrow-path"
-                                            wire:click="Assignresult({{ $request->assignment_id }})">
+                                            wire:click="open_reported({{ $request->assignment_id }})">
                                             Assign
                                         </flux:menu.item>
 

@@ -151,7 +151,7 @@ class AuditTable extends Component
             )
 
             // Order
-            ->orderBy('a.id', 'asc')
+            ->orderBy('a.id', 'desc')
 
             // Pagination
             ->paginate(

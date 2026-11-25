@@ -220,4 +220,6 @@
     </div>
     <livewire:admin.dashboard.reported_list />
     <livewire:admin.dashboard.assigned_list />
+    <livewire:admin.dashboard.modal.reported />
+    <livewire:admin.dashboard.modal.assigned  :branch_id="$branch_id" lazy />
 </div>

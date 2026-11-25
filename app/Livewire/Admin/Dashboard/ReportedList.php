@@ -11,9 +11,36 @@ use Livewire\Component;
 class ReportedList extends Component
 {
     use WithPagination;
-    public $employee_no = '';
-    public $id = '';
+
     public $reported_requests = '';
+    public $assigned_requests = [];
+    public $editingId = null;
+    public $showEditModal = false;
+    public $edit_cpar_no = '';
+    public $edit_reported_by = '';
+    public $edit_date_open = '';
+    public $edit_department_name = '';
+    public $result_no = '', $reported_by = '', $patient_name = '', $attending_physician = '', $actual_released_date = '', $source_name = '', $complain_name = '', $concern_description = '', $department_name = '', $priority = '', $remarks = '', $status = '', $dept_head_assigned = '', $date_reported = '', $test_procedure = '', $complainant_name = '';
+    public $employeeName = '', $emp_reported = '', $id = '', $employee_no = '', $branch_id = '', $department_id = '', $assignment_remarks = '', $assignment_id = '', $result_id = '';
+    public $employees = [];
+    public $assigned_to = [];
+    public $new_assignees = [];
+    public $data = [];
+    public $quality = [];
+    public $technical = [];
+    public $data_information = [];
+    public $technical_information = [];
+    public $quality_information = [];
+    public $existing_attachment = '';
+
+    protected $listeners = [
+        'refreshAdminRecords' => 'loadReportedRecords',
+    ];
+
+    public function open_reported($assignment_id)
+    {
+        $this->dispatch('open-assign-result', id: $assignment_id);
+    }
 
     public function mount()
     {
@@ -78,8 +105,6 @@ class ReportedList extends Component
             ->orderByDesc('assignment_id')
             ->get();
     }
-
-    
     
 
     public function render()

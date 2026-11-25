@@ -282,7 +282,7 @@ class CparReAssigned extends Component
                 'action'            => $mainAssignment->wasRecentlyCreated ? 'CREATED' : 'ASSIGNED',
                 'old_value'         => $oldValue ? json_encode($oldValue) : null,
                 'new_value'         => json_encode($newValue),
-                'status_changed_by' => $this->id,
+                'status_changed_by' => auth()->id(),
                 'date'              => now(),
                 'created_at'        => now(),
                 'updated_at'        => now(),

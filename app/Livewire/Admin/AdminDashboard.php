@@ -22,6 +22,11 @@ class AdminDashboard extends Component
     public $memo_count = '';
     public $branches = [];
 
+    protected $listeners = [
+        'refreshAdminCount' => 'loadHeadCount',
+        'refreshAssignedCount' => 'loadAssignedCount',
+    ];
+
     public function mount()
     {
         $user = Auth::user();

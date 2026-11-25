@@ -18,12 +18,14 @@ class CheckSessionTimeout
 
             $lastActivity = session('last_activity');
 
+            // Check session inactivity
             if ($lastActivity && (time() - $lastActivity > $timeout)) {
 
                 Auth::logout();
 
                 $request->session()->invalidate();
                 $request->session()->regenerateToken();
+
                 return redirect()
                     ->route('auth.login')
                     ->with(
@@ -32,7 +34,7 @@ class CheckSessionTimeout
                     );
             }
 
-            // Update activity timestamp
+            // Update last activity timestamp
             session(['last_activity' => time()]);
         }
 

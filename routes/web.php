@@ -22,6 +22,11 @@ use App\Livewire\System\Users;
 use App\Livewire\User\Cpar\CparRequestForm;
 use App\Livewire\User\Result\ResultRequestForm;
 
+// Login URL
+Route::get('/login', function () {
+    return redirect()->route('auth.login');
+})->name('login');
+
 Route::middleware(['auth'])->group(function () {
     Route::redirect('settings', 'settings/profile');
     Volt::route('settings/profile', 'settings.profile')->name('settings.profile');
